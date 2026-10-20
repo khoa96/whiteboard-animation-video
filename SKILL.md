@@ -30,7 +30,13 @@ Mọi ảnh gốc của các cảnh phải cùng một ngôn ngữ hình ảnh. 
 - **Phong cách và bố cục:** minh hoạ vẽ tay tối giản, kiểu phác thảo bút chì/bút mực, thẩm mỹ nét vẽ tiết chế giống Notion. Ưu tiên truyền đạt ý, không cầu kỳ tả thực; bố cục đơn giản, nền sạch, nhiều khoảng trống; cảm xúc nhẹ nhàng, rõ ràng. Nét vẽ, nhân vật, màu sắc thống nhất trong cả loạt.
 - **Màu sắc và chất liệu:** nền giấy màu kem `#F5EBD7`, nét phác xám đậm; chỉ dùng **đỏ, cam, xanh dương** làm điểm nhấn ít ỏi. Không dùng màu nhấn khác, màu quá rực hay chất liệu phức tạp.
 - **Nhân vật và đồ vật:** thể hiện bằng đường viền đơn giản, ít nét, chừa khoảng trống; nhấn vào quan hệ/biến đổi/ý chính, không vào tỉ lệ, chất liệu, chi tiết thật.
-- **Tuyệt đối cấm:** bất kỳ chữ, từ, chữ cái, số, font hay nhãn nào trong ảnh cảnh; cảm giác tả thực, chi tiết ảnh chụp, hiệu ứng 3D, chất liệu tranh sơn; cảnh phức tạp, nền dày đặc, trang trí rườm rà, màu quá rực.
+- **Quy chuẩn chữ viết & đồ họa cho video bài giảng (Educational & English Lessons):**
+  - Chữ viết (Text) là nội dung cốt lõi của bài giảng: Tiêu đề, công thức ngữ pháp, câu hỏi trắc nghiệm (A/B/C/D), từ vựng, phiên âm IPA, lời giải thích.
+  - Chữ phải rõ ràng, nét thanh mảnh hoặc nét viết bảng trắng, chừa khoảng cách dòng thoáng (line spacing) để người xem dễ theo dõi.
+  - Hỗ trợ đầy đủ các cử chỉ giảng dạy: gạch chân từ khóa (`underline`), khoanh tròn đáp án (`circle`), mũi tên nối ý (`arrow`), đóng khung công thức (`box`).
+  - Gán đúng trường `type` trong `annotation.json` (`text`, `underline`, `circle`, `arrow`, `box`, `icon`, `colored_image`) để engine vẽ đúng thứ tự từ trái qua phải và không tô màu vô nghĩa lên chữ.
+- **Yếu tố cấm:** cảm giác tả thực, chi tiết ảnh chụp, hiệu ứng 3D, chất liệu sơn dầu; cảnh phức tạp, nền dày đặc rối rắm làm chìm chữ viết, màu sắc quá rực rỡ gây mất tập trung.
+
 - **Ngoại lệ bàn tay vẽ:** nếu người dùng nói rõ chữ trên thân bút trong `drawing-hand.png` là dấu nhận diện của họ và muốn giữ, thì được giữ; nó không tính là chữ trong ảnh cảnh. Khi chưa có xác nhận đó, coi như ảnh không được có chữ.
 
 ## Điểm dừng xác nhận (bắt buộc)

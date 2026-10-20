@@ -92,6 +92,9 @@ class Config:
     ink_path_mode: str = "grid"
     skeleton_min_points: int = 8        # 骨架笔画最少点数（过滤碎片）
     skeleton_resample_spacing: float = 2.5  # 骨架重采样间距（像素）
+    # ── 上色策略模式 ──
+    # color_mode: "auto" (Chữ viết & nét vẽ đơn sắc chỉ đi nét, hình minh họa mới tô màu); "never" (bỏ tô màu toàn bộ); "always"
+    color_mode: str = "auto"
 
 
 # ──────────────────────────────────────────────────────────────
@@ -956,6 +959,220 @@ def _order_skeleton_strokes(strokes: list[list[tuple[float, float]]]) -> list[li
         length = _stroke_cumulative_length(s)[-1]
         return (min(ys) // 12, min(xs), min(ys), -length)
     return sorted(strokes, key=sort_key)
+
+
+# ──────────────────────────────────────────────────────────────
+# 文本笔画自然书写排序 (Phân dòng & phân cụm chữ viết tự nhiên)
+# ──────────────────────────────────────────────────────────────
+def _orient_stroke_natural(pts: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Định hướng nét viết tự nhiên: từ trên xuống dưới hoặc từ trái sang phải."""
+    if len(pts) < 2:
+        return pts
+    x0, y0 = pts[0]
+    x1, y1 = pts[-1]
+    dx = x1 - x0
+    dy = y1 - y0
+    # Nếu nét chủ yếu theo phương đứng: ưu tiên viết từ trên xuống dưới (dy > 0)
+    if abs(dy) >= abs(dx):
+        if dy < -4.0:  # đang vẽ từ dưới lên trên -> đảo ngược lại
+            return list(reversed(pts))
+    else:
+        # Nếu nét chủ yếu theo phương ngang: ưu tiên viết từ trái sang phải (dx > 0)
+        if dx < -4.0:  # đang vẽ từ phải sang trái -> đảo ngược lại
+            return list(reversed(pts))
+    return pts
+
+
+def _order_text_strokes(strokes: list[list[tuple[float, float]]]) -> list[list[tuple[float, float]]]:
+    """
+    Sắp xếp các nét chữ theo quy chuẩn viết tự nhiên:
+      1. Phân thành các dòng văn bản từ trên xuống dưới.
+      2. Trong mỗi dòng, sắp xếp từ trái sang phải nghiêm ngặt.
+      3. Trong mỗi cụm từ/ký tự, sắp xếp nét theo trật tự viết tự nhiên.
+    Triệt tiêu hoàn toàn hiện tượng bút nhảy nét linh tinh giữa các từ/dòng.
+    """
+    if not strokes:
+        return []
+
+    stroke_metas = []
+    heights = []
+    for s in strokes:
+        if not s:
+            continue
+        xs = [p[0] for p in s]
+        ys = [p[1] for p in s]
+        min_x, max_x = min(xs), max(xs)
+        min_y, max_y = min(ys), max(ys)
+        cy = (min_y + max_y) / 2.0
+        h = max_y - min_y
+        heights.append(h)
+        stroke_metas.append({
+            "stroke": s,
+            "min_x": min_x,
+            "max_x": max_x,
+            "min_y": min_y,
+            "max_y": max_y,
+            "center_y": cy,
+            "center_x": (min_x + max_x) / 2.0,
+            "height": h,
+        })
+
+    if not stroke_metas:
+        return []
+
+    # Ước lượng độ cao dòng trung bình
+    med_h = float(np.median(heights)) if heights else 20.0
+    line_threshold = max(14.0, med_h * 0.75)
+
+    # Gom cụm các nét vào từng dòng văn bản
+    # Sắp xếp thô theo center_y trước
+    stroke_metas.sort(key=lambda m: m["center_y"])
+
+    lines: list[list[dict]] = []
+    for meta in stroke_metas:
+        assigned = False
+        for line in lines:
+            # Tính trung vị center_y của dòng hiện tại
+            line_cy = sum(item["center_y"] for item in line) / len(line)
+            if abs(meta["center_y"] - line_cy) <= line_threshold:
+                line.append(meta)
+                assigned = True
+                break
+        if not assigned:
+            lines.append([meta])
+
+    # Sắp xếp các dòng từ trên xuống dưới
+    lines.sort(key=lambda l: sum(item["center_y"] for item in l) / len(l))
+
+    # Trong mỗi dòng, sắp xếp nghiêm ngặt từ trái qua phải (theo min_x)
+    final_strokes: list[list[tuple[float, float]]] = []
+    for line in lines:
+        # Nếu hai nét có x quá gần nhau (cùng 1 chữ cái), nét ở trên viết trước
+        line.sort(key=lambda m: (m["min_x"], m["min_y"]))
+        for m in line:
+            oriented = _orient_stroke_natural(m["stroke"])
+            final_strokes.append(oriented)
+
+    return final_strokes
+
+
+# ──────────────────────────────────────────────────────────────
+# Bộ sinh quỹ đạo cử chỉ hình học giảng dạy (Vector Gestures)
+# ──────────────────────────────────────────────────────────────
+def generate_underline_strokes(x0: int, y0: int, x1: int, y1: int,
+                              spacing: float = 2.5) -> list[list[tuple[int, int]]]:
+    """Sinh quỹ đạo gạch chân từ khóa: 1 nét lướt mượt mà từ trái sang phải."""
+    width = max(10, x1 - x0)
+    # Gạch ở 80% chiều cao vùng hoặc chính giữa nếu vùng thấp
+    y_line = y0 + (y1 - y0) * 0.85 if (y1 - y0) > 15 else (y0 + y1) / 2.0
+    n_pts = max(4, int(width / spacing))
+    pts = []
+    for i in range(n_pts + 1):
+        t = i / n_pts
+        x = x0 + t * width
+        # Thêm độ uốn cong nhẹ tự nhiên của nét vẽ tay
+        wobble = math.sin(t * math.pi) * 1.5
+        y = y_line + wobble
+        pts.append((int(round(x)), int(round(y))))
+    return [pts]
+
+
+def generate_circle_strokes(x0: int, y0: int, x1: int, y1: int,
+                            clockwise: bool = True,
+                            overlap_ratio: float = 0.15,
+                            spacing: float = 2.5) -> list[list[tuple[int, int]]]:
+    """
+    Sinh quỹ đạo khoanh tròn / elip đáp án:
+    Bắt đầu từ đỉnh trên (-90 độ), lượn một vòng khép kín và chờm nhẹ ở đuôi.
+    """
+    cx = (x0 + x1) / 2.0
+    cy = (y0 + y1) / 2.0
+    rx = max(10.0, (x1 - x0) / 2.0)
+    ry = max(8.0, (y1 - y0) / 2.0)
+    perimeter = 2.0 * math.pi * math.sqrt((rx * rx + ry * ry) / 2.0)
+    total_angle = 2.0 * math.pi * (1.0 + overlap_ratio)
+    n_pts = max(16, int(perimeter * (1.0 + overlap_ratio) / spacing))
+
+    pts = []
+    for i in range(n_pts + 1):
+        t = i / n_pts
+        angle = -math.pi / 2.0 + (total_angle * t if clockwise else -total_angle * t)
+        # Bán kính có một chút biến thiên nhỏ cho cảm giác vẽ tay
+        r_wobble = 1.0 + 0.02 * math.sin(t * math.pi * 3.0)
+        x = cx + rx * r_wobble * math.cos(angle)
+        y = cy + ry * r_wobble * math.sin(angle)
+        pts.append((int(round(x)), int(round(y))))
+    return [pts]
+
+
+def generate_arrow_strokes(x0: int, y0: int, x1: int, y1: int,
+                           direction: str = "left_to_right",
+                           head_len: float = 18.0) -> list[list[tuple[int, int]]]:
+    """
+    Sinh quỹ đạo mũi tên chỉ dẫn: thân mũi tên + 2 cánh nhọn ở đầu mũi tên.
+    """
+    if direction == "left_to_right":
+        start_pt = (x0, int((y0 + y1) / 2))
+        end_pt = (x1, int((y0 + y1) / 2))
+    elif direction == "right_to_left":
+        start_pt = (x1, int((y0 + y1) / 2))
+        end_pt = (x0, int((y0 + y1) / 2))
+    elif direction == "top_to_bottom":
+        start_pt = (int((x0 + x1) / 2), y0)
+        end_pt = (int((x0 + x1) / 2), y1)
+    else:
+        start_pt = (int((x0 + x1) / 2), y1)
+        end_pt = (int((x0 + x1) / 2), y0)
+
+    # Thân mũi tên
+    shaft = [start_pt, end_pt]
+
+    # Tính góc hướng của mũi tên
+    dx = end_pt[0] - start_pt[0]
+    dy = end_pt[1] - start_pt[1]
+    angle = math.atan2(dy, dx)
+
+    wing_angle = math.radians(28.0)
+    w1_x = end_pt[0] - head_len * math.cos(angle - wing_angle)
+    w1_y = end_pt[1] - head_len * math.sin(angle - wing_angle)
+    w2_x = end_pt[0] - head_len * math.cos(angle + wing_angle)
+    w2_y = end_pt[1] - head_len * math.sin(angle + wing_angle)
+
+    wing1 = [end_pt, (int(round(w1_x)), int(round(w1_y)))]
+    wing2 = [end_pt, (int(round(w2_x)), int(round(w2_y)))]
+
+    return [shaft, wing1, wing2]
+
+
+def generate_box_strokes(x0: int, y0: int, x1: int, y1: int) -> list[list[tuple[int, int]]]:
+    """Sinh quỹ đạo đóng khung hộp công thức / ghi chú: 4 cạnh khép kín."""
+    pts = [
+        (x0, y0),
+        (x1, y0),
+        (x1, y1),
+        (x0, y1),
+        (x0, y0),
+    ]
+    return [pts]
+
+
+# ──────────────────────────────────────────────────────────────
+# Kiểm tra độ bão hòa màu nội dung (Content-Aware Colorfulness)
+# ──────────────────────────────────────────────────────────────
+def is_region_colorful(crop_bgr: np.ndarray, sat_thresh: int = 35,
+                       min_colored_ratio: float = 0.02) -> bool:
+    """
+    Kiểm tra xem vùng ảnh cắt có màu sắc hay chỉ là chữ viết / nét mực đen trên nền giấy.
+    Nếu tỷ lệ pixel có Saturation > sat_thresh nhỏ hơn min_colored_ratio -> Đơn sắc (Text/Nét).
+    """
+    if crop_bgr is None or crop_bgr.size == 0:
+        return False
+    hsv = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2HSV)
+    sat = hsv[:, :, 1]
+    colored_count = int(np.count_nonzero(sat > sat_thresh))
+    total_count = sat.size
+    return (colored_count / total_count) >= min_colored_ratio
+
 
 
 # ──────────────────────────────────────────────────────────────

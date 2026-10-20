@@ -1,0 +1,231 @@
+{
+  "sceneId": "scene-04-comparison",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "sceneDurationMs": 13100,
+  "storyBasis": "So sánh Người A bắt đầu tuổi 20 đạt gấp 3 lần tài sản so với Người B tuổi 30. Kêu gọi hành động ngay hôm nay.",
+  "elements": [
+    {
+      "id": "scene_title",
+      "label": "Tiêu đề So sánh: Bắt đầu tuổi 20 vs 30",
+      "sequence": 1,
+      "type": "text",
+      "colorMode": "none",
+      "narrativeRole": "Đưa ra dẫn chứng thực tế",
+      "subtitle": "Bắt đầu ở tuổi hai mươi sẽ mang lại tài sản gấp ba lần so với tuổi ba mươi.",
+      "region": {
+        "x": 90,
+        "y": 40,
+        "width": 1400,
+        "height": 95
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 200,
+        "durationMs": 1800,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          100,
+          70
+        ],
+        "end": [
+          1450,
+          125
+        ]
+      }
+    },
+    {
+      "id": "col_a_box",
+      "label": "Khung Cột Người A: Tuổi 20",
+      "sequence": 2,
+      "type": "box",
+      "colorMode": "none",
+      "narrativeRole": "Khung minh chứng bắt đầu sớm",
+      "subtitle": "Bắt đầu ở tuổi hai mươi sẽ mang lại tài sản gấp ba lần so với tuổi ba mươi.",
+      "region": {
+        "x": 100,
+        "y": 160,
+        "width": 820,
+        "height": 620
+      },
+      "reveal": {
+        "direction": "clockwise",
+        "startMs": 2100,
+        "durationMs": 700,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          100,
+          160
+        ],
+        "end": [
+          920,
+          780
+        ]
+      }
+    },
+    {
+      "id": "col_a_content",
+      "label": "Nội dung Người A: Cột 3X & Tài sản gấp 3",
+      "sequence": 3,
+      "type": "colored_image",
+      "colorMode": "auto",
+      "narrativeRole": "Minh họa tài sản 3X tuổi 20",
+      "subtitle": "Bắt đầu ở tuổi hai mươi sẽ mang lại tài sản gấp ba lần so với tuổi ba mươi.",
+      "region": {
+        "x": 137,
+        "y": 190,
+        "width": 734,
+        "height": 546
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 2900,
+        "durationMs": 2700,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          504,
+          463
+        ],
+        "end": [
+          504,
+          736
+        ],
+        "easing": "easeInOut"
+      }
+    },
+    {
+      "id": "col_b_box",
+      "label": "Khung Cột Người B: Tuổi 30",
+      "sequence": 4,
+      "type": "box",
+      "colorMode": "none",
+      "narrativeRole": "Khung hệ quả trì hoãn",
+      "subtitle": "Dù nỗ lực bỏ vốn nhiều hơn nhưng khó đuổi kịp.",
+      "region": {
+        "x": 1000,
+        "y": 160,
+        "width": 820,
+        "height": 620
+      },
+      "reveal": {
+        "direction": "clockwise",
+        "startMs": 5700,
+        "durationMs": 700,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          1000,
+          160
+        ],
+        "end": [
+          1820,
+          780
+        ]
+      }
+    },
+    {
+      "id": "col_b_content",
+      "label": "Nội dung Người B: Cột 1X & Chỉ đạt 1/3",
+      "sequence": 5,
+      "type": "colored_image",
+      "colorMode": "auto",
+      "narrativeRole": "Minh họa tài sản 1X tuổi 30",
+      "subtitle": "Dù nỗ lực bỏ vốn nhiều hơn nhưng khó đuổi kịp.",
+      "region": {
+        "x": 1034,
+        "y": 192,
+        "width": 770,
+        "height": 554
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 6500,
+        "durationMs": 2800,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          1419,
+          469
+        ],
+        "end": [
+          1419,
+          746
+        ],
+        "easing": "easeInOut"
+      }
+    },
+    {
+      "id": "cta_border",
+      "label": "Khung Viền Thông điệp Kêu gọi hành động",
+      "sequence": 6,
+      "type": "box",
+      "colorMode": "none",
+      "narrativeRole": "Khung viền CTA",
+      "subtitle": "Đừng chờ đợi sự hoàn hảo. Hãy hành động và gieo hạt giống ngay hôm nay!",
+      "region": {
+        "x": 100,
+        "y": 810,
+        "width": 1720,
+        "height": 175
+      },
+      "reveal": {
+        "direction": "clockwise",
+        "startMs": 9500,
+        "durationMs": 700,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          100,
+          810
+        ],
+        "end": [
+          1820,
+          985
+        ]
+      }
+    },
+    {
+      "id": "cta_content",
+      "label": "Nội dung CTA & Icon Tên lửa 🚀",
+      "sequence": 7,
+      "type": "colored_image",
+      "colorMode": "auto",
+      "narrativeRole": "Kêu gọi hành động gieo hạt giống tài chính",
+      "subtitle": "Đừng chờ đợi sự hoàn hảo. Hãy hành động và gieo hạt giống ngay hôm nay!",
+      "region": {
+        "x": 161,
+        "y": 836,
+        "width": 1559,
+        "height": 125
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 10300,
+        "durationMs": 2300,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          940.5,
+          898.5
+        ],
+        "end": [
+          1720,
+          898.5
+        ],
+        "easing": "easeInOut"
+      }
+    }
+  ]
+}

@@ -1,0 +1,295 @@
+{
+  "sceneId": "scene-03-mindmap",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "sceneDurationMs": 16200,
+  "storyBasis": "3 yếu tố cốt lõi: Vốn (P), Lãi suất (r), và Thời gian (t - Đòn bẩy quyền năng nhất).",
+  "elements": [
+    {
+      "id": "scene_title",
+      "label": "Tiêu đề 3 Chân Kiềng Tạo Nên Lãi Kép",
+      "sequence": 1,
+      "type": "text",
+      "colorMode": "none",
+      "narrativeRole": "Đặt vấn đề các yếu tố cốt lõi",
+      "subtitle": "Có ba yếu tố tạo nên Lãi kép: Số vốn, Lãi suất, và Thời gian.",
+      "region": {
+        "x": 90.82061173273132,
+        "y": 40,
+        "width": 1150,
+        "height": 95
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 200,
+        "durationMs": 1800,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          665.8206117327313,
+          87.5
+        ],
+        "end": [
+          1240.8206117327313,
+          87.5
+        ],
+        "easing": "easeInOut"
+      }
+    },
+    {
+      "id": "center_box",
+      "label": "Khung Node công thức trung tâm",
+      "sequence": 2,
+      "type": "box",
+      "colorMode": "none",
+      "narrativeRole": "Viền bao công thức",
+      "subtitle": "Có ba yếu tố tạo nên Lãi kép: Số vốn, Lãi suất, và Thời gian.",
+      "region": {
+        "x": 483,
+        "y": 150,
+        "width": 917,
+        "height": 175
+      },
+      "reveal": {
+        "direction": "clockwise",
+        "startMs": 2100,
+        "durationMs": 800,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          941.5,
+          237.5
+        ],
+        "end": [
+          941.5,
+          325
+        ],
+        "easing": "easeInOut"
+      }
+    },
+    {
+      "id": "center_text",
+      "label": "Công thức A = P * (1 + r)^t",
+      "sequence": 3,
+      "type": "text",
+      "colorMode": "none",
+      "narrativeRole": "Công thức toán học bao quát",
+      "subtitle": "Có ba yếu tố tạo nên Lãi kép: Số vốn, Lãi suất, và Thời gian.",
+      "region": {
+        "x": 540,
+        "y": 160,
+        "width": 840,
+        "height": 120
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 3000,
+        "durationMs": 1000,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          560,
+          175
+        ],
+        "end": [
+          1280,
+          260
+        ]
+      }
+    },
+    {
+      "id": "branch_1_box",
+      "label": "Khung Nhánh 1: Vốn ban đầu (P)",
+      "sequence": 4,
+      "type": "box",
+      "colorMode": "none",
+      "narrativeRole": "Khung yếu tố số vốn",
+      "subtitle": "Thứ nhất là số vốn, không cần quá lớn nhưng cần đều đặn.",
+      "region": {
+        "x": 100,
+        "y": 330,
+        "width": 560,
+        "height": 650
+      },
+      "reveal": {
+        "direction": "clockwise",
+        "startMs": 4100,
+        "durationMs": 700,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          100,
+          330
+        ],
+        "end": [
+          660,
+          980
+        ]
+      }
+    },
+    {
+      "id": "branch_1_content",
+      "label": "Nội dung Vốn (P) & Túi tiền",
+      "sequence": 5,
+      "type": "colored_image",
+      "colorMode": "auto",
+      "narrativeRole": "Minh họa vốn ban đầu",
+      "subtitle": "Thứ nhất là số vốn, không cần quá lớn nhưng cần đều đặn.",
+      "region": {
+        "x": 124,
+        "y": 381,
+        "width": 510,
+        "height": 561
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 4900,
+        "durationMs": 2600,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          379,
+          661.5
+        ],
+        "end": [
+          379,
+          942
+        ],
+        "easing": "easeInOut"
+      }
+    },
+    {
+      "id": "branch_2_box",
+      "label": "Khung Nhánh 2: Lãi suất (r)",
+      "sequence": 6,
+      "type": "box",
+      "colorMode": "none",
+      "narrativeRole": "Khung yếu tố lãi suất",
+      "subtitle": "Thứ hai là tỷ suất sinh lời bình quân hàng năm.",
+      "region": {
+        "x": 690,
+        "y": 330,
+        "width": 540,
+        "height": 650
+      },
+      "reveal": {
+        "direction": "clockwise",
+        "startMs": 7600,
+        "durationMs": 700,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          690,
+          330
+        ],
+        "end": [
+          1230,
+          980
+        ]
+      }
+    },
+    {
+      "id": "branch_2_content",
+      "label": "Nội dung Lãi suất (r) & Cột tăng trưởng",
+      "sequence": 7,
+      "type": "colored_image",
+      "colorMode": "auto",
+      "narrativeRole": "Minh họa tỷ suất sinh lời",
+      "subtitle": "Thứ hai là tỷ suất sinh lời bình quân hàng năm.",
+      "region": {
+        "x": 714,
+        "y": 372,
+        "width": 501,
+        "height": 576
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 8400,
+        "durationMs": 2600,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          964.5,
+          660
+        ],
+        "end": [
+          964.5,
+          948
+        ],
+        "easing": "easeInOut"
+      }
+    },
+    {
+      "id": "branch_3_box",
+      "label": "Khung Nhánh 3: Thời gian (t) Đòn bẩy số 1",
+      "sequence": 8,
+      "type": "box",
+      "colorMode": "none",
+      "narrativeRole": "Khung yếu tố thời gian",
+      "subtitle": "Nhưng hãy nhớ: Thời gian chính là đòn bẩy quyền năng nhất. Bạn không cần vốn khổng lồ, chỉ cần cho thời gian đủ dài để phép màu xảy ra.",
+      "region": {
+        "x": 1260,
+        "y": 320,
+        "width": 560,
+        "height": 660
+      },
+      "reveal": {
+        "direction": "clockwise",
+        "startMs": 11100,
+        "durationMs": 800,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          1260,
+          320
+        ],
+        "end": [
+          1820,
+          980
+        ]
+      }
+    },
+    {
+      "id": "branch_3_content",
+      "label": "Nội dung Thời gian (t) & Đồng hồ cát",
+      "sequence": 9,
+      "type": "colored_image",
+      "colorMode": "auto",
+      "narrativeRole": "Minh họa đòn bẩy quyền năng nhất",
+      "subtitle": "Nhưng hãy nhớ: Thời gian chính là đòn bẩy quyền năng nhất. Bạn không cần vốn khổng lồ, chỉ cần cho thời gian đủ dài để phép màu xảy ra.",
+      "region": {
+        "x": 1291,
+        "y": 368,
+        "width": 522,
+        "height": 575
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 12000,
+        "durationMs": 3900,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          1552,
+          655.5
+        ],
+        "end": [
+          1552,
+          943
+        ],
+        "easing": "easeInOut"
+      }
+    }
+  ]
+}

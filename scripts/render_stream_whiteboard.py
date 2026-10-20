@@ -143,9 +143,20 @@ class RegionStreamRenderer:
         mask = np.zeros((self.out_h, self.out_w), dtype=bool)
         x0, y0, x1, y1 = _scaled_rect(element["region"], self.sx, self.sy, self.out_w, self.out_h)
         mask[y0:y1, x0:x1] = True
+
+        el_type = element.get("type", "object")
+        is_cur_gesture = el_type in ["underline", "circle", "arrow", "box", "gesture"]
+
         for later in later_elements:
+            later_type = later.get("type", "object")
+            is_later_gesture = later_type in ["underline", "circle", "arrow", "box", "gesture"]
+            # Không trừ hộp chữ nhật nếu một trong hai là gesture/annotation
+            # để tránh khoét thủng chữ hoặc cắt đứt đường gạch chân / khoanh tròn
+            if is_cur_gesture or is_later_gesture:
+                continue
             lx0, ly0, lx1, ly1 = _scaled_rect(later["region"], self.sx, self.sy, self.out_w, self.out_h)
             mask[ly0:ly1, lx0:lx1] = False
+
         for prot in element.get("reveal", {}).get("protectedRegions", []):
             px0, py0, px1, py1 = _scaled_rect(prot, self.sx, self.sy, self.out_w, self.out_h)
             mask[py0:py1, px0:px1] = False
@@ -162,9 +173,25 @@ class RegionStreamRenderer:
         streams = sr.cluster_ink_streams(active)
         return sr.flatten_streams(streams)
 
-    def _region_skeleton_strokes(self, allowed: np.ndarray) -> list[list[tuple[int, int]]]:
-        """骨架模式：区域内墨迹细化 + 8 邻接追踪 + 重采样平滑。"""
+    def _region_skeleton_strokes(self, allowed: np.ndarray, element: dict | None = None) -> list[list[tuple[int, int]]]:
+        """骨架模式：支持 vector gesture 自动生成，以及文本自然书写排序。"""
         cfg = self.cfg
+        el_type = element.get("type", "object") if element else "object"
+
+        # 1. Nếu là các cử chỉ hình học vector giảng dạy
+        if element and el_type in ["underline", "circle", "arrow", "box"]:
+            x0, y0, x1, y1 = _scaled_rect(element["region"], self.sx, self.sy, self.out_w, self.out_h)
+            if el_type == "underline":
+                return sr.generate_underline_strokes(x0, y0, x1, y1, spacing=cfg.skeleton_resample_spacing)
+            elif el_type == "circle":
+                return sr.generate_circle_strokes(x0, y0, x1, y1, clockwise=True, spacing=cfg.skeleton_resample_spacing)
+            elif el_type == "arrow":
+                direction = element.get("reveal", {}).get("direction", "left_to_right")
+                return sr.generate_arrow_strokes(x0, y0, x1, y1, direction=direction)
+            elif el_type == "box":
+                return sr.generate_box_strokes(x0, y0, x1, y1)
+
+        # 2. Trích xuất skeleton từ ma trận pixel mực
         region_ink = self.ink_pixels & allowed
         if not region_ink.any():
             return []
@@ -181,6 +208,10 @@ class RegionStreamRenderer:
             pts = sr._resample_stroke_points(pts, spacing)
             if len(pts) >= 2 and sr._stroke_cumulative_length(pts)[-1] > 2.0:
                 out.append([(int(round(x)), int(round(y))) for x, y in pts])
+
+        # Nếu là text (hoặc không chỉ định), dùng bộ sắp xếp chữ tự nhiên (từ trên xuống dưới, trái qua phải)
+        if el_type in ["text", "object"]:
+            return sr._order_text_strokes(out)
         return sr._order_skeleton_strokes(out)
 
     # ── 落墨（限制在 allowed 内）──
@@ -188,8 +219,9 @@ class RegionStreamRenderer:
         seg = np.zeros((self.out_h, self.out_w), dtype=np.uint8)
         thick = max(1, self.cfg.ink_reveal_radius * 2 + 1)
         cv2.line(seg, a, b, 255, thickness=thick, lineType=cv2.LINE_AA)
-        revealed = (seg > 0) & self.ink_pixels & allowed
-        self.drawn[revealed] = self.ink_paint[revealed]
+        revealed = (seg > 0) & allowed
+        # Lấy trực tiếp màu sắc từ color_img để giữ nguyên màu bút thật (đỏ, xanh, đen...)
+        self.drawn[revealed] = self.color_img[revealed].astype(np.float32)
 
     def _ink_stamp_cell(self, cell: tuple[int, int], allowed: np.ndarray) -> None:
         r, c = cell
@@ -197,9 +229,9 @@ class RegionStreamRenderer:
         block = self.grid_blocks[r, c]
         allow_block = allowed[r * e:r * e + e, c * e:c * e + e]
         ink_region = (block < self.cfg.ink_threshold) & allow_block
-        paint = np.repeat(block[:, :, None], 3, axis=2)
         target = self.drawn[r * e:r * e + e, c * e:c * e + e]
-        target[ink_region] = paint[ink_region]
+        source = self.color_img[r * e:r * e + e, c * e:c * e + e].astype(np.float32)
+        target[ink_region] = source[ink_region]
 
     def _color_stamp(self, px: int, py: int, disk: np.ndarray, allowed: np.ndarray) -> None:
         radius = self.cfg.brush_radius
@@ -216,6 +248,7 @@ class RegionStreamRenderer:
         source = self.color_img[y0:y1, x0:x1].astype(np.float32)
         for ch in range(3):
             target[:, :, ch] = target[:, :, ch] * inv + source[:, :, ch] * m
+
 
     # ── 起笔段（骨架模式）：沿笔迹逐段揭原图墨迹，无块填充 ──
     def _lay_ink(self, writer, frames: int, samples: list[tuple[int, int]],
@@ -376,11 +409,44 @@ class RegionStreamRenderer:
                 fill_static(start_ms)
 
                 allowed = self._allowed_mask(element, elements[idx + 1:])
-                ink_frames = max(1, round(dur_ms * cfg.ink_weight / weight_sum * cfg.fps / 1000))
-                color_frames = max(1, round(dur_ms * cfg.color_weight / weight_sum * cfg.fps / 1000))
+
+                # Quyết định pha tô màu thông minh
+                el_type = element.get("type", "object")
+                el_color_mode = element.get("colorMode", "auto")
+                x0, y0, x1, y1 = _scaled_rect(element["region"], self.sx, self.sy, self.out_w, self.out_h)
+                crop = self.color_img[y0:y1, x0:x1]
+                is_colorful = sr.is_region_colorful(crop)
+
+                color_mode_opt = getattr(cfg, "color_mode", "auto")
+                if color_mode_opt == "never":
+                    needs_color_wash = False
+                elif color_mode_opt == "always":
+                    needs_color_wash = True
+                else:  # auto
+                    if el_type in ["box", "text", "underline", "circle", "arrow"]:
+                        needs_color_wash = False
+                    elif el_color_mode == "none":
+                        needs_color_wash = False
+                    elif el_color_mode == "wash":
+                        needs_color_wash = True
+                    elif el_type in ["icon", "line_art"]:
+                        needs_color_wash = False
+                    else:
+                        needs_color_wash = is_colorful
+
+                total_element_frames = max(1, round(dur_ms * cfg.fps / 1000))
+                if needs_color_wash:
+                    ink_frames = max(1, round(total_element_frames * 0.6))
+                    color_frames = max(1, total_element_frames - ink_frames)
+                else:
+                    ink_frames = total_element_frames
+                    color_frames = 0
+
+                label_name = element.get("label", f"region_{idx+1}")
+                print(f"  [{label_name}] type={el_type} ink={ink_frames}f color={color_frames}f")
 
                 if cfg.ink_path_mode == "skeleton":
-                    strokes = self._region_skeleton_strokes(allowed)
+                    strokes = self._region_skeleton_strokes(allowed, element)
                     if strokes:
                         samples, pen_lifts = [], set()
                         for si, stroke in enumerate(strokes):
@@ -402,16 +468,24 @@ class RegionStreamRenderer:
                         self._lay_ink_grid(writer, ink_frames, samples, pen_lifts, sample_cell, path, allowed)
                         centers = [self._cell_center(c) for c in path]
                     else:
-                        self._lay_ink(writer, ink_frames, [], set(), None, allowed)
+                        self._lay_ink(writer, ink_frames, [], set(), allowed)
                         centers = []
 
                 cur_ms += ink_frames * ms_per_frame
 
-                if cfg.color_fill == "contour-wipe":
-                    self._wash_contour(writer, color_frames, allowed)
-                else:
-                    self._wash_brush(writer, color_frames, centers, allowed)
-                cur_ms += color_frames * ms_per_frame
+                if color_frames > 0:
+                    # Loại trừ hoàn toàn pixel mực của các phần tử viết sau khỏi allowed_wash
+                    # để tuyệt đối không làm lộ trước chữ hoặc chi tiết nét vẽ sau
+                    allowed_wash = allowed.copy()
+                    for later in elements[idx + 1:]:
+                        lx0, ly0, lx1, ly1 = _scaled_rect(later["region"], self.sx, self.sy, self.out_w, self.out_h)
+                        allowed_wash[ly0:ly1, lx0:lx1] &= ~self.ink_pixels[ly0:ly1, lx0:lx1]
+
+                    if cfg.color_fill == "contour-wipe":
+                        self._wash_contour(writer, color_frames, allowed_wash)
+                    else:
+                        self._wash_brush(writer, color_frames, centers, allowed_wash)
+                    cur_ms += color_frames * ms_per_frame
 
             # 凝视：补到 total_ms，并确保结尾至少停留 0.5s 完整原图
             gaze_until = max(total_ms, cur_ms + 500)
@@ -462,10 +536,12 @@ def _parse_args(argv=None):
     p.add_argument("hand", nargs="?", default=str(DEFAULT_HAND), help="手部素材 PNG（默认内置）")
     p.add_argument("--total-ms", type=int, default=None, help="总时长；缺省用标注 sceneDurationMs")
     p.add_argument("--bare-tip", action="store_true", help="不叠加笔尖/手部")
-    p.add_argument("--ink-path", default="grid", choices=["grid", "skeleton"],
-                   help="笔迹路径: grid 网格(默认); skeleton 骨架追踪")
+    p.add_argument("--ink-path", default="skeleton", choices=["skeleton", "grid"],
+                   help="笔迹路径: skeleton 骨架追踪(默认, viết tự nhiên); grid 网格")
     p.add_argument("--color-fill", default="contour-wipe", choices=["contour-wipe", "brush"],
                    help="上色: contour-wipe 轮廓扫描(默认); brush 沿轨迹刷")
+    p.add_argument("--color-mode", default="auto", choices=["auto", "always", "never"],
+                   help="Chế độ tô màu: auto (tự động: text/gesture không tô, ảnh màu tô); always; never")
     p.add_argument("--pause", default="heavy", choices=["heavy", "auto", "light", "off"],
                    help="起笔段停顿节奏（预留，逐区域画法下影响较弱）")
     p.add_argument("--fps", type=int, default=None)
@@ -488,29 +564,31 @@ def _build_cfg(args) -> sr.Config:
         kw["cap_long_edge"] = args.cap_long_edge
     kw["ink_path_mode"] = args.ink_path
     kw["color_fill"] = args.color_fill
+    kw["color_mode"] = args.color_mode
     kw["pause_mode"] = args.pause
     return sr.Config(**kw)
+
 
 
 def main(argv=None) -> int:
     args = _parse_args(argv)
     cfg = _build_cfg(args)
 
-    print("=" * 56)
-    print("SRT 白板动画整合渲染器 (mask 编排 + stream 画法)")
-    print("=" * 56)
+    print("=" * 60)
+    print("Engine Render Bảng Trắng Whiteboard (Mask Orchestration + Stream Drawing)")
+    print("=" * 60)
 
     image_bgr = sr._imread_any(args.image)
     if image_bgr is None:
-        print(f"[err] 无法读取图片: {args.image}")
+        print(f"[Lỗi] Không thể đọc ảnh: {args.image}")
         return 1
     try:
         annotation = json.loads(Path(args.annotation).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as e:
-        print(f"[err] 无法读取标注: {e}")
+        print(f"[Lỗi] Không thể đọc file annotation: {e}")
         return 1
     if not annotation.get("elements"):
-        print("[err] 标注中没有 elements")
+        print("[Lỗi] File annotation không chứa elements")
         return 1
 
     total_ms = args.total_ms if args.total_ms is not None else annotation.get("sceneDurationMs")
@@ -524,19 +602,20 @@ def main(argv=None) -> int:
 
     hand_png = Path(args.hand) if args.hand else None
     renderer = RegionStreamRenderer(image_bgr, annotation, cfg, hand_png, args.bare_tip)
-    print(f"  输入: {args.image}")
-    print(f"  输出尺寸: {renderer.out_w}x{renderer.out_h}, 帧率: {cfg.fps}")
-    print(f"  区域数: {len(annotation['elements'])}, 总时长: {total_ms}ms, "
-          f"笔迹: {cfg.ink_path_mode}, 上色: {cfg.color_fill}")
+    print(f"  • Ảnh đầu vào : {args.image}")
+    print(f"  • Độ phân giải : {renderer.out_w}x{renderer.out_h}, Tốc độ: {cfg.fps} fps")
+    print(f"  • Số vùng vẽ   : {len(annotation['elements'])}, Thời lượng: {total_ms}ms")
+    print(f"  • Thuật toán   : Nét bút={cfg.ink_path_mode}, Kiểu màu={cfg.color_fill}, Chế độ màu={cfg.color_mode}")
 
     renderer.render_to(raw_path, total_ms)
     final = sr.transcode_h264(raw_path, out_path)
 
     size_mb = final.stat().st_size / (1024 * 1024)
-    print(f"\n最终视频: {final}  ({size_mb:.2f} MB)")
-    print("=" * 56)
+    print(f"\n🎉 Video hoàn thành: {final}  ({size_mb:.2f} MB)")
+    print("=" * 60)
     print(f"OUTPUT={final}")
     return 0
+
 
 
 if __name__ == "__main__":

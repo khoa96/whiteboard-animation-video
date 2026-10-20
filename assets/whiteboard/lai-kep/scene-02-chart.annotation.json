@@ -1,0 +1,234 @@
+{
+  "sceneId": "scene-02-chart",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "sceneDurationMs": 15600,
+  "storyBasis": "So sánh đường thẳng Tuyến tính vs Đường cong Lãi kép vút thẳng tại Điểm bùng phát.",
+  "elements": [
+    {
+      "id": "scene_title",
+      "label": "Tiêu đề Biểu đồ Tuyến tính vs Cấp số nhân",
+      "sequence": 1,
+      "type": "text",
+      "colorMode": "none",
+      "narrativeRole": "Giới thiệu đồ thị toán học",
+      "subtitle": "Sự khác biệt nằm ở đây: Tiết kiệm thông thường chỉ tăng theo đường thẳng tuyến tính.",
+      "region": {
+        "x": 90,
+        "y": 39.58968963703313,
+        "width": 1350,
+        "height": 95
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 200,
+        "durationMs": 2000,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          765,
+          87.08968963703313
+        ],
+        "end": [
+          1440,
+          87.08968963703313
+        ],
+        "easing": "easeInOut"
+      }
+    },
+    {
+      "id": "chart_box",
+      "label": "Khung biểu đồ tọa độ",
+      "sequence": 2,
+      "type": "box",
+      "colorMode": "none",
+      "narrativeRole": "Bảng đồ thị",
+      "subtitle": "Tiết kiệm thông thường chỉ tăng theo đường thẳng tuyến tính.",
+      "region": {
+        "x": 100,
+        "y": 160,
+        "width": 1720,
+        "height": 820
+      },
+      "reveal": {
+        "direction": "clockwise",
+        "startMs": 2300,
+        "durationMs": 1000,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          100,
+          160
+        ],
+        "end": [
+          1820,
+          980
+        ]
+      }
+    },
+    {
+      "id": "axis_y",
+      "label": "Trục tung Y & Nhãn Tài sản tích lũy ($)",
+      "sequence": 3,
+      "type": "object",
+      "colorMode": "none",
+      "narrativeRole": "Định vị trục giá trị tài sản",
+      "subtitle": "Trục tung biểu thị giá trị tài sản tích lũy.",
+      "region": {
+        "x": 218,
+        "y": 227,
+        "width": 59,
+        "height": 634
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 3400,
+        "durationMs": 1200,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          247.5,
+          544
+        ],
+        "end": [
+          247.5,
+          861
+        ],
+        "easing": "easeInOut"
+      }
+    },
+    {
+      "id": "axis_x",
+      "label": "Trục hoành X & Mốc thời gian 0-30 năm",
+      "sequence": 4,
+      "type": "object",
+      "colorMode": "none",
+      "narrativeRole": "Định vị trục thời gian",
+      "subtitle": "Trục hoành biểu thị số năm tích lũy.",
+      "region": {
+        "x": 260.62082872141065,
+        "y": 833.5533929510783,
+        "width": 1450,
+        "height": 75
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 4700,
+        "durationMs": 1400,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          985.6208287214106,
+          871.0533929510783
+        ],
+        "end": [
+          1710.6208287214106,
+          871.0533929510783
+        ],
+        "easing": "easeInOut"
+      }
+    },
+    {
+      "id": "linear_curve",
+      "label": "Đường thẳng Tiết kiệm đơn (Tuyến tính)",
+      "sequence": 5,
+      "type": "object",
+      "colorMode": "none",
+      "narrativeRole": "Mô hình tăng trưởng chậm tuyến tính",
+      "subtitle": "Tiết kiệm thông thường chỉ tăng theo đường thẳng tuyến tính.",
+      "region": {
+        "x": 336.5170029260595,
+        "y": 553.9531825355076,
+        "width": 1450,
+        "height": 235
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 6200,
+        "durationMs": 2500,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          1061.5170029260594,
+          671.4531825355076
+        ],
+        "end": [
+          1786.5170029260594,
+          671.4531825355076
+        ],
+        "easing": "easeInOut"
+      }
+    },
+    {
+      "id": "exponential_curve",
+      "label": "Đường cong Lãi Kép vút thẳng đứng",
+      "sequence": 6,
+      "type": "colored_image",
+      "colorMode": "auto",
+      "narrativeRole": "Tăng trưởng cấp số nhân bùng nổ",
+      "subtitle": "Nhưng với Lãi kép, sau giai đoạn tích lũy âm thầm,",
+      "region": {
+        "x": 298,
+        "y": 230,
+        "width": 1469,
+        "height": 612
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 8800,
+        "durationMs": 3400,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          1032.5,
+          536
+        ],
+        "end": [
+          1767,
+          536
+        ],
+        "easing": "easeInOut"
+      }
+    },
+    {
+      "id": "tipping_point",
+      "label": "Khung Điểm Bùng Phát (Tipping Point)",
+      "sequence": 7,
+      "type": "colored_image",
+      "colorMode": "auto",
+      "narrativeRole": "Nhấn mạnh mốc chuyển mình quan trọng",
+      "subtitle": "đồ thị sẽ chạm tới Điểm Bùng Phát và vút thẳng theo cấp số nhân.",
+      "region": {
+        "x": 500,
+        "y": 415,
+        "width": 500,
+        "height": 346
+      },
+      "reveal": {
+        "direction": "clockwise",
+        "startMs": 12300,
+        "durationMs": 3000,
+        "maskPaddingPx": 0
+      },
+      "handPath": {
+        "start": [
+          750,
+          588
+        ],
+        "end": [
+          750,
+          761
+        ],
+        "easing": "easeInOut"
+      }
+    }
+  ]
+}
