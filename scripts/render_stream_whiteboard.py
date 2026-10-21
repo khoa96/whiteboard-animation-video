@@ -196,28 +196,33 @@ class RegionStreamRenderer:
         if not region_ink.any():
             return []
         skel = sr._zhang_suen_skeleton(region_ink, max_iterations=160)
-        raw = sr.trace_8connected(skel, min_points=cfg.skeleton_min_points)
+        # Đối với text: hạ min_points = 2 để không bỏ sót bất kỳ dấu tiếng Việt nào (sắc, huyền, hỏi, ngã, nặng, chấm)
+        min_pts = 2 if el_type == "text" else cfg.skeleton_min_points
+        raw = sr.trace_8connected(skel, min_points=min_pts)
         if not raw:
             return []
         spacing = cfg.skeleton_resample_spacing
         out: list[list[tuple[int, int]]] = []
         for stroke in raw:
             pts = [(float(x), float(y)) for x, y in stroke]
+            if len(pts) == 1:
+                pts = [pts[0], pts[0]]
             pts = sr._resample_stroke_points(pts, spacing)
             pts = sr._chaikin_smooth(pts, iterations=1)
             pts = sr._resample_stroke_points(pts, spacing)
-            if len(pts) >= 2 and sr._stroke_cumulative_length(pts)[-1] > 2.0:
+            if len(pts) >= 1:
                 out.append([(int(round(x)), int(round(y))) for x, y in pts])
 
-        # Nếu là text (hoặc không chỉ định), dùng bộ sắp xếp chữ tự nhiên (từ trên xuống dưới, trái qua phải)
-        if el_type in ["text", "object"]:
+        # Nếu là text: dùng thuật toán Character Clustering viết trọn vẹn từng chữ cái kèm dấu
+        if el_type == "text":
             return sr._order_text_strokes(out)
         return sr._order_skeleton_strokes(out)
 
     # ── 落墨（限制在 allowed 内）──
-    def _reveal_ink_segment(self, a: tuple[int, int], b: tuple[int, int], allowed: np.ndarray) -> None:
+    def _reveal_ink_segment(self, a: tuple[int, int], b: tuple[int, int], allowed: np.ndarray, radius: int | None = None) -> None:
+        r = radius if radius is not None else self.cfg.ink_reveal_radius
         seg = np.zeros((self.out_h, self.out_w), dtype=np.uint8)
-        thick = max(1, self.cfg.ink_reveal_radius * 2 + 1)
+        thick = max(1, r * 2 + 1)
         cv2.line(seg, a, b, 255, thickness=thick, lineType=cv2.LINE_AA)
         revealed = (seg > 0) & allowed
         # Lấy trực tiếp màu sắc từ color_img để giữ nguyên màu bút thật (đỏ, xanh, đen...)
@@ -252,7 +257,7 @@ class RegionStreamRenderer:
 
     # ── 起笔段（骨架模式）：沿笔迹逐段揭原图墨迹，无块填充 ──
     def _lay_ink(self, writer, frames: int, samples: list[tuple[int, int]],
-                 pen_lifts: set[int], allowed: np.ndarray) -> None:
+                 pen_lifts: set[int], allowed: np.ndarray, radius: int | None = None) -> None:
         if frames <= 0:
             return
         n = len(samples)
@@ -264,12 +269,12 @@ class RegionStreamRenderer:
         last: int | None = None
         for si in idx_for_frame:
             if last is None:
-                self._reveal_ink_segment(samples[si], samples[si], allowed)
+                self._reveal_ink_segment(samples[si], samples[si], allowed, radius=radius)
             else:
                 for k in range(last + 1, si + 1):
                     if k in pen_lifts:
                         continue
-                    self._reveal_ink_segment(samples[k - 1], samples[k], allowed)
+                    self._reveal_ink_segment(samples[k - 1], samples[k], allowed, radius=radius)
             sx, sy = samples[si]
             writer.write(self._snapshot_with_tip(sx, sy))
             last = si
@@ -445,6 +450,7 @@ class RegionStreamRenderer:
                 label_name = element.get("label", f"region_{idx+1}")
                 print(f"  [{label_name}] type={el_type} ink={ink_frames}f color={color_frames}f")
 
+                reveal_radius = 7 if el_type == "text" else self.cfg.ink_reveal_radius
                 if cfg.ink_path_mode == "skeleton":
                     strokes = self._region_skeleton_strokes(allowed, element)
                     if strokes:
@@ -453,12 +459,12 @@ class RegionStreamRenderer:
                             if si > 0:
                                 pen_lifts.add(len(samples))
                             samples.extend(stroke)
-                        self._lay_ink(writer, ink_frames, samples, pen_lifts, allowed)
+                        self._lay_ink(writer, ink_frames, samples, pen_lifts, allowed, radius=reveal_radius)
                         centers = samples
                     else:
                         path = self._region_grid_path(allowed)
                         samples, pen_lifts, _ = self._grid_plan(path) if path else ([], set(), [])
-                        self._lay_ink(writer, ink_frames, samples, pen_lifts, allowed)
+                        self._lay_ink(writer, ink_frames, samples, pen_lifts, allowed, radius=reveal_radius)
                         centers = [self._cell_center(c) for c in path]
                 else:
                     path = self._region_grid_path(allowed)
@@ -470,6 +476,10 @@ class RegionStreamRenderer:
                     else:
                         self._lay_ink(writer, ink_frames, [], set(), allowed)
                         centers = []
+
+                # Với text: khi nét bút hoàn tất vùng chữ, đảm bảo 100% pixel mực của vùng này hiển thị hoàn chỉnh
+                if el_type == "text":
+                    self.drawn[allowed & self.ink_pixels] = self.color_img[allowed & self.ink_pixels].astype(np.float32)
 
                 cur_ms += ink_frames * ms_per_frame
 

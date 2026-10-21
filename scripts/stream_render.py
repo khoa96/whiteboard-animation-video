@@ -985,17 +985,18 @@ def _orient_stroke_natural(pts: list[tuple[float, float]]) -> list[tuple[float, 
 
 def _order_text_strokes(strokes: list[list[tuple[float, float]]]) -> list[list[tuple[float, float]]]:
     """
-    Sắp xếp các nét chữ theo quy chuẩn viết tự nhiên:
-      1. Phân thành các dòng văn bản từ trên xuống dưới.
-      2. Trong mỗi dòng, sắp xếp từ trái sang phải nghiêm ngặt.
-      3. Trong mỗi cụm từ/ký tự, sắp xếp nét theo trật tự viết tự nhiên.
-    Triệt tiêu hoàn toàn hiện tượng bút nhảy nét linh tinh giữa các từ/dòng.
+    Sắp xếp các nét chữ theo quy chuẩn viết tự nhiên của con người:
+      1. Phân thành các dòng văn bản từ trên xuống dưới dựa trên khoảng giao nhau trục dọc.
+      2. Trong mỗi dòng, gom cụm các nét thành từng KÝ TỰ (Character Clustering) theo trục X.
+         -> Dấu tiếng Việt (^, ~, ', `, ?, ., móc, râu) có tọa độ X trùng với thân chữ cái
+            sẽ được gắn chặt vào ký tự đó và viết ngay lập tức, không bị tách rời hay vẽ trước.
+      3. Trong mỗi ký tự: Viết thân chữ trước, viết dấu ngay sau đó.
+      4. Viết tuần tự từng ký tự từ trái qua phải nghiêm ngặt, kết thúc chữ nào dứt điểm chữ đó.
     """
     if not strokes:
         return []
 
     stroke_metas = []
-    heights = []
     for s in strokes:
         if not s:
             continue
@@ -1003,38 +1004,35 @@ def _order_text_strokes(strokes: list[list[tuple[float, float]]]) -> list[list[t
         ys = [p[1] for p in s]
         min_x, max_x = min(xs), max(xs)
         min_y, max_y = min(ys), max(ys)
-        cy = (min_y + max_y) / 2.0
         h = max_y - min_y
-        heights.append(h)
+        w = max_x - min_x
         stroke_metas.append({
             "stroke": s,
             "min_x": min_x,
             "max_x": max_x,
             "min_y": min_y,
             "max_y": max_y,
-            "center_y": cy,
+            "center_y": (min_y + max_y) / 2.0,
             "center_x": (min_x + max_x) / 2.0,
             "height": h,
+            "width": w,
         })
 
     if not stroke_metas:
         return []
 
-    # Ước lượng độ cao dòng trung bình
-    med_h = float(np.median(heights)) if heights else 20.0
-    line_threshold = max(14.0, med_h * 0.75)
-
-    # Gom cụm các nét vào từng dòng văn bản
-    # Sắp xếp thô theo center_y trước
-    stroke_metas.sort(key=lambda m: m["center_y"])
+    # ── 1. Gom nét vào từng dòng văn bản thực sự ──
+    # Sắp xếp thô theo min_y để nhóm từ trên xuống dưới
+    stroke_metas.sort(key=lambda m: (m["min_y"], m["min_x"]))
 
     lines: list[list[dict]] = []
     for meta in stroke_metas:
         assigned = False
         for line in lines:
-            # Tính trung vị center_y của dòng hiện tại
-            line_cy = sum(item["center_y"] for item in line) / len(line)
-            if abs(meta["center_y"] - line_cy) <= line_threshold:
+            l_min_y = min(item["min_y"] for item in line)
+            l_max_y = max(item["max_y"] for item in line)
+            # Hai nét thuộc cùng 1 dòng nếu khoảng Y của chúng giao nhau hoặc khoảng cách rất nhỏ (<= 14px)
+            if not (meta["min_y"] > l_max_y + 14 or meta["max_y"] < l_min_y - 14):
                 line.append(meta)
                 assigned = True
                 break
@@ -1042,16 +1040,47 @@ def _order_text_strokes(strokes: list[list[tuple[float, float]]]) -> list[list[t
             lines.append([meta])
 
     # Sắp xếp các dòng từ trên xuống dưới
-    lines.sort(key=lambda l: sum(item["center_y"] for item in l) / len(l))
+    lines.sort(key=lambda l: min(item["min_y"] for item in l))
 
-    # Trong mỗi dòng, sắp xếp nghiêm ngặt từ trái qua phải (theo min_x)
+    # ── 2. Trong mỗi dòng, gom cụm theo từng ký tự (Character Clustering) ──
     final_strokes: list[list[tuple[float, float]]] = []
     for line in lines:
-        # Nếu hai nét có x quá gần nhau (cùng 1 chữ cái), nét ở trên viết trước
         line.sort(key=lambda m: (m["min_x"], m["min_y"]))
-        for m in line:
-            oriented = _orient_stroke_natural(m["stroke"])
-            final_strokes.append(oriented)
+        line_h = max(item["max_y"] for item in line) - min(item["min_y"] for item in line)
+
+        char_clusters: list[list[dict]] = []
+        for meta in line:
+            assigned = False
+            for cluster in char_clusters:
+                c_min_x = min(item["min_x"] for item in cluster)
+                c_max_x = max(item["max_x"] for item in cluster)
+                # Hai nét thuộc cùng một chữ cái nếu khoảng X giao nhau hoặc cách nhau <= 6px
+                if not (meta["min_x"] > c_max_x + 6 or meta["max_x"] < c_min_x - 6):
+                    cluster.append(meta)
+                    assigned = True
+                    break
+            if not assigned:
+                char_clusters.append([meta])
+
+        # Sắp xếp các cụm chữ cái nghiêm ngặt từ trái sang phải
+        char_clusters.sort(key=lambda c: min(item["min_x"] for item in c))
+
+        # ── 3. Trong mỗi cụm chữ cái: thân chữ vẽ trước, dấu vẽ ngay sau đó ──
+        for cluster in char_clusters:
+            c_min_y = min(item["min_y"] for item in cluster)
+            c_max_y = max(item["max_y"] for item in cluster)
+            c_h = c_max_y - c_min_y
+
+            for m in cluster:
+                # Dấu tiếng Việt là nét nhỏ (chiều cao < 45% chiều cao chữ) nằm ở phần trên/dưới
+                is_accent = (c_h > 20 and m["height"] < c_h * 0.45 and (m["max_y"] < c_min_y + c_h * 0.5 or m["min_y"] > c_min_y + c_h * 0.75))
+                m["is_accent"] = is_accent
+
+            # Thân chữ viết trước (is_accent = False), sau đó viết dấu (is_accent = True)
+            cluster.sort(key=lambda m: (1 if m.get("is_accent") else 0, m["min_x"], m["min_y"]))
+            for m in cluster:
+                oriented = _orient_stroke_natural(m["stroke"])
+                final_strokes.append(oriented)
 
     return final_strokes
 
