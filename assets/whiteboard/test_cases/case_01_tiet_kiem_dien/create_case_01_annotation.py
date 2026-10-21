@@ -1,0 +1,292 @@
+#!/usr/bin/env python3
+"""
+Tạo annotation.json chuẩn cho Test Case 1: 3 BƯỚC TIẾT KIỆM ĐIỆN.
+"""
+from pathlib import Path
+import json
+
+TEST_DIR = Path(__file__).resolve().parent
+ANN_PATH = TEST_DIR / "tiet_kiem_dien.annotation.json"
+
+annotation = {
+    "version": "1.0",
+    "canvas": {
+        "width": 1920,
+        "height": 1080
+    },
+    "sceneDurationMs": 19500,
+    "storyBasis": "3 Bước Tiết Kiệm Điện: 1. Tắt đèn, 2. Rút sạc, 3. Điều hòa 26°C",
+    "elements": [
+        {
+            "id": "el-01-title",
+            "sequence": 1,
+            "label": "Tiêu đề: 3 BƯỚC TIẾT KIỆM ĐIỆN",
+            "type": "text",
+            "narrativeRole": "Giới thiệu chủ đề tiết kiệm điện",
+            "region": {
+                "x": 265,
+                "y": 65,
+                "width": 1395,
+                "height": 170
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 400,
+                "durationMs": 1800,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-02-underline",
+            "sequence": 2,
+            "label": "Gạch chân tiêu đề xanh dương",
+            "type": "underline",
+            "narrativeRole": "Nhấn mạnh tiêu đề",
+            "region": {
+                "x": 265,
+                "y": 240,
+                "width": 1400,
+                "height": 45
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 2200,
+                "durationMs": 600,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-03-step1-num",
+            "sequence": 3,
+            "label": "Số 1 trong vòng tròn xanh lá",
+            "type": "colored_image",
+            "narrativeRole": "Đánh số bước 1",
+            "region": {
+                "x": 95,
+                "y": 715,
+                "width": 120,
+                "height": 120
+            },
+            "reveal": {
+                "direction": "radial_outward",
+                "startMs": 3000,
+                "durationMs": 900,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-04-step1-bulb",
+            "sequence": 4,
+            "label": "Icon Bóng đèn phát sáng",
+            "type": "colored_image",
+            "narrativeRole": "Biểu tượng tắt đèn",
+            "region": {
+                "x": 235,
+                "y": 385,
+                "width": 240,
+                "height": 295
+            },
+            "reveal": {
+                "direction": "top_to_bottom",
+                "startMs": 3900,
+                "durationMs": 1800,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-05-step1-text",
+            "sequence": 5,
+            "label": "Chữ: TẮT ĐÈN",
+            "type": "text",
+            "narrativeRole": "Nội dung hành động bước 1",
+            "region": {
+                "x": 215,
+                "y": 685,
+                "width": 310,
+                "height": 135
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 5700,
+                "durationMs": 1100,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-06-arrow-1",
+            "sequence": 6,
+            "label": "Mũi tên khối nối Bước 1 -> 2",
+            "type": "colored_image",
+            "narrativeRole": "Chuyển tiếp bước 1 sang bước 2",
+            "region": {
+                "x": 565,
+                "y": 505,
+                "width": 180,
+                "height": 105
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 6900,
+                "durationMs": 800,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-07-step2-num",
+            "sequence": 7,
+            "label": "Số 2 trong vòng tròn xanh lá",
+            "type": "colored_image",
+            "narrativeRole": "Đánh số bước 2",
+            "region": {
+                "x": 705,
+                "y": 715,
+                "width": 120,
+                "height": 120
+            },
+            "reveal": {
+                "direction": "radial_outward",
+                "startMs": 7800,
+                "durationMs": 900,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-08-step2-charger",
+            "sequence": 8,
+            "label": "Icon Củ sạc & Phích cắm",
+            "type": "colored_image",
+            "narrativeRole": "Biểu tượng rút sạc",
+            "region": {
+                "x": 840,
+                "y": 375,
+                "width": 255,
+                "height": 305
+            },
+            "reveal": {
+                "direction": "top_to_bottom",
+                "startMs": 8700,
+                "durationMs": 1800,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-09-step2-text",
+            "sequence": 9,
+            "label": "Chữ: RÚT SẠC",
+            "type": "text",
+            "narrativeRole": "Nội dung hành động bước 2",
+            "region": {
+                "x": 825,
+                "y": 685,
+                "width": 300,
+                "height": 135
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 10500,
+                "durationMs": 1100,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-10-arrow-2",
+            "sequence": 10,
+            "label": "Mũi tên khối nối Bước 2 -> 3",
+            "type": "colored_image",
+            "narrativeRole": "Chuyển tiếp bước 2 sang bước 3",
+            "region": {
+                "x": 1170,
+                "y": 505,
+                "width": 175,
+                "height": 105
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 11700,
+                "durationMs": 800,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-11-step3-num",
+            "sequence": 11,
+            "label": "Số 3 trong vòng tròn xanh lá",
+            "type": "colored_image",
+            "narrativeRole": "Đánh số bước 3",
+            "region": {
+                "x": 1300,
+                "y": 690,
+                "width": 120,
+                "height": 120
+            },
+            "reveal": {
+                "direction": "radial_outward",
+                "startMs": 12600,
+                "durationMs": 900,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-12-step3-ac",
+            "sequence": 12,
+            "label": "Icon Máy điều hòa nhiệt độ",
+            "type": "colored_image",
+            "narrativeRole": "Biểu tượng điều hòa",
+            "region": {
+                "x": 1395,
+                "y": 445,
+                "width": 405,
+                "height": 190
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 13500,
+                "durationMs": 1800,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-13-step3-text",
+            "sequence": 13,
+            "label": "Chữ: ĐIỀU HÒA",
+            "type": "text",
+            "narrativeRole": "Nội dung hành động bước 3",
+            "region": {
+                "x": 1425,
+                "y": 680,
+                "width": 340,
+                "height": 95
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 15300,
+                "durationMs": 1100,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-14-step3-temp-oval",
+            "sequence": 14,
+            "label": "Nhiệt độ 26°C khoanh bầu dục cam",
+            "type": "colored_image",
+            "narrativeRole": "Khuyến nghị nhiệt độ tối ưu",
+            "region": {
+                "x": 1445,
+                "y": 778,
+                "width": 325,
+                "height": 160
+            },
+            "reveal": {
+                "direction": "radial_outward",
+                "startMs": 16500,
+                "durationMs": 1800,
+                "protectedRegions": []
+            }
+        }
+    ]
+}
+
+with open(ANN_PATH, "w", encoding="utf-8") as f:
+    json.dump(annotation, f, ensure_ascii=False, indent=2)
+
+print(f"✓ Đã tạo annotation JSON: {ANN_PATH}")

@@ -1,0 +1,274 @@
+#!/usr/bin/env python3
+"""
+Tạo annotation.json chuẩn cho Test Case 2: VÒNG TUẦN HOÀN CỦA NƯỚC (Water Cycle)
+Bố cục vòng tròn 4 giai đoạn theo chiều kim đồng hồ, kết nối bằng 4 mũi tên cong.
+"""
+from pathlib import Path
+import json
+
+CASE_DIR = Path(__file__).resolve().parent
+ANN_PATH = CASE_DIR / "water_cycle.annotation.json"
+
+annotation = {
+    "version": "1.0",
+    "canvas": {
+        "width": 1920,
+        "height": 1080
+    },
+    "sceneDurationMs": 21500,
+    "storyBasis": "Vòng Tuần Hoàn Của Nước: Bốc hơi -> Ngưng tụ -> Mưa -> Tích tụ -> Bốc hơi (Khép kín vòng tuần hoàn)",
+    "elements": [
+        {
+            "id": "el-01-title",
+            "sequence": 1,
+            "label": "Tiêu đề: VÒNG TUẦN HOÀN CỦA NƯỚC",
+            "type": "text",
+            "narrativeRole": "Giới thiệu sơ đồ chu trình nước",
+            "region": {
+                "x": 340,
+                "y": 55,
+                "width": 1240,
+                "height": 105
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 400,
+                "durationMs": 1800,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-02-stage1-sun-water",
+            "sequence": 2,
+            "label": "Minh họa Mặt trời & Nước bốc hơi",
+            "type": "colored_image",
+            "narrativeRole": "Nhiệt lượng mặt trời làm nước bay hơi",
+            "region": {
+                "x": 415,
+                "y": 195,
+                "width": 365,
+                "height": 330
+            },
+            "reveal": {
+                "direction": "bottom_to_top",
+                "startMs": 2400,
+                "durationMs": 2000,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-03-stage1-label",
+            "sequence": 3,
+            "label": "Nhãn: BỐC HƠI",
+            "type": "text",
+            "narrativeRole": "Ghi chú giai đoạn 1",
+            "region": {
+                "x": 475,
+                "y": 530,
+                "width": 280,
+                "height": 85
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 4500,
+                "durationMs": 900,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-04-arrow-top",
+            "sequence": 4,
+            "label": "Mũi tên cong đỉnh (Bốc hơi -> Ngưng tụ)",
+            "type": "colored_image",
+            "narrativeRole": "Hơi nước bay lên cao gặp lạnh",
+            "region": {
+                "x": 780,
+                "y": 200,
+                "width": 375,
+                "height": 125
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 5600,
+                "durationMs": 1200,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-05-stage2-cloud",
+            "sequence": 5,
+            "label": "Minh họa Đám mây",
+            "type": "colored_image",
+            "narrativeRole": "Hơi nước ngưng tụ thành mây",
+            "region": {
+                "x": 1145,
+                "y": 250,
+                "width": 415,
+                "height": 185
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 7000,
+                "durationMs": 1800,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-06-stage2-label",
+            "sequence": 6,
+            "label": "Nhãn: NGƯNG TỤ",
+            "type": "text",
+            "narrativeRole": "Ghi chú giai đoạn 2",
+            "region": {
+                "x": 1165,
+                "y": 435,
+                "width": 390,
+                "height": 95
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 8900,
+                "durationMs": 900,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-07-arrow-right",
+            "sequence": 7,
+            "label": "Mũi tên cong phải (Ngưng tụ -> Mưa)",
+            "type": "colored_image",
+            "narrativeRole": "Mây tích nước nặng dần trút mưa",
+            "region": {
+                "x": 1535,
+                "y": 395,
+                "width": 120,
+                "height": 415
+            },
+            "reveal": {
+                "direction": "top_to_bottom",
+                "startMs": 10000,
+                "durationMs": 1200,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-08-stage3-rain",
+            "sequence": 8,
+            "label": "Minh họa Mây mưa & Giọt nước rơi",
+            "type": "colored_image",
+            "narrativeRole": "Mưa rơi xuống mặt đất",
+            "region": {
+                "x": 1180,
+                "y": 615,
+                "width": 380,
+                "height": 290
+            },
+            "reveal": {
+                "direction": "top_to_bottom",
+                "startMs": 11400,
+                "durationMs": 2000,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-09-stage3-label",
+            "sequence": 9,
+            "label": "Nhãn: MƯA",
+            "type": "text",
+            "narrativeRole": "Ghi chú giai đoạn 3",
+            "region": {
+                "x": 1245,
+                "y": 895,
+                "width": 180,
+                "height": 90
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 13500,
+                "durationMs": 800,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-10-arrow-bottom",
+            "sequence": 10,
+            "label": "Mũi tên cong đáy (Mưa -> Tích tụ)",
+            "type": "colored_image",
+            "narrativeRole": "Nước mưa chảy vào sông hồ",
+            "region": {
+                "x": 780,
+                "y": 895,
+                "width": 405,
+                "height": 130
+            },
+            "reveal": {
+                "direction": "right_to_left",
+                "startMs": 14500,
+                "durationMs": 1200,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-11-stage4-lake",
+            "sequence": 11,
+            "label": "Minh họa Hồ nước / Thủy vực",
+            "type": "colored_image",
+            "narrativeRole": "Nước tích tụ ở sông hồ biển",
+            "region": {
+                "x": 405,
+                "y": 740,
+                "width": 435,
+                "height": 145
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 15900,
+                "durationMs": 1800,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-12-stage4-label",
+            "sequence": 12,
+            "label": "Nhãn: TÍCH TỤ",
+            "type": "text",
+            "narrativeRole": "Ghi chú giai đoạn 4",
+            "region": {
+                "x": 480,
+                "y": 895,
+                "width": 275,
+                "height": 90
+            },
+            "reveal": {
+                "direction": "left_to_right",
+                "startMs": 17800,
+                "durationMs": 900,
+                "protectedRegions": []
+            }
+        },
+        {
+            "id": "el-13-arrow-left",
+            "sequence": 13,
+            "label": "Mũi tên cong trái (Tích tụ -> Bốc hơi)",
+            "type": "colored_image",
+            "narrativeRole": "Khép kín chu trình tuần hoàn vĩnh cửu",
+            "region": {
+                "x": 275,
+                "y": 410,
+                "width": 145,
+                "height": 400
+            },
+            "reveal": {
+                "direction": "bottom_to_top",
+                "startMs": 18900,
+                "durationMs": 1300,
+                "protectedRegions": []
+            }
+        }
+    ]
+}
+
+with open(ANN_PATH, "w", encoding="utf-8") as f:
+    json.dump(annotation, f, ensure_ascii=False, indent=2)
+
+print(f"✓ Đã tạo annotation JSON: {ANN_PATH}")

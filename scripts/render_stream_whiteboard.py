@@ -116,6 +116,10 @@ class RegionStreamRenderer:
                 ax, ay = 0.5, 0.70
             self.tip = sr.TipOverlay(hand_data[0], hand_data[1], tip_anchor_x=ax, tip_anchor_y=ay)
 
+        # Trích xuất và gán Connected Components cho từng element để triệt tiêu lỗi mất nét vùng biên
+        self.elements = annotation.get("elements", [])
+        self._init_element_ink_masks()
+
     # 采样原图四角，把接近背景色的像素替换为画布底色
     def _match_original_background(self) -> None:
         img = self.color_img
@@ -138,24 +142,82 @@ class RegionStreamRenderer:
             self.tip.stamp(snap, px, py)
         return snap
 
-    # ── 单区域的允许掩码：矩形 - 后续区域 - protectedRegions ──
-    def _allowed_mask(self, element: dict, later_elements: list[dict]) -> np.ndarray:
-        mask = np.zeros((self.out_h, self.out_w), dtype=bool)
-        x0, y0, x1, y1 = _scaled_rect(element["region"], self.sx, self.sy, self.out_w, self.out_h)
-        mask[y0:y1, x0:x1] = True
+    def _init_element_ink_masks(self) -> None:
+        """Phân tích các thành phần liên thông (CC) của mực và gán về đúng element.
+        Giải quyết triệt để lỗi under-bounding (box thiếu vài chục px làm mất dấu/mất đuôi chữ)
+        và lỗi khoét lẹm giữa các vùng lân cận.
+        """
+        n_elems = len(self.elements)
+        self.element_rects = []
+        self.element_rect_masks = []
+        for el in self.elements:
+            x0, y0, x1, y1 = _scaled_rect(el["region"], self.sx, self.sy, self.out_w, self.out_h)
+            self.element_rects.append((x0, y0, x1, y1))
+            m = np.zeros((self.out_h, self.out_w), dtype=bool)
+            m[y0:y1, x0:x1] = True
+            self.element_rect_masks.append(m)
 
-        el_type = element.get("type", "object")
-        is_cur_gesture = el_type in ["underline", "circle", "arrow", "box", "gesture"]
+        self.element_ink_mask = [np.zeros((self.out_h, self.out_w), dtype=bool) for _ in range(n_elems)]
+        self.element_safe_mask = [m.copy() for m in self.element_rect_masks]
 
-        for later in later_elements:
-            later_type = later.get("type", "object")
-            is_later_gesture = later_type in ["underline", "circle", "arrow", "box", "gesture"]
-            # Không trừ hộp chữ nhật nếu một trong hai là gesture/annotation
-            # để tránh khoét thủng chữ hoặc cắt đứt đường gạch chân / khoanh tròn
-            if is_cur_gesture or is_later_gesture:
+        # Trích xuất tất cả Connected Components từ toàn bộ ảnh mực
+        ink_u8 = self.ink_pixels.astype(np.uint8)
+        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(ink_u8)
+
+        for cc_id in range(1, num_labels):
+            cc_area = stats[cc_id, cv2.CC_STAT_AREA]
+            if cc_area < 2:
                 continue
-            lx0, ly0, lx1, ly1 = _scaled_rect(later["region"], self.sx, self.sy, self.out_w, self.out_h)
-            mask[ly0:ly1, lx0:lx1] = False
+            cc_mask = (labels == cc_id)
+
+            # Tìm element có diện tích giao nhau lớn nhất với CC này
+            best_elem = -1
+            max_overlap = 0
+            for e_idx in range(n_elems):
+                overlap = np.count_nonzero(cc_mask & self.element_rect_masks[e_idx])
+                if overlap > max_overlap:
+                    max_overlap = overlap
+                    best_elem = e_idx
+
+            # Nếu CC nằm ngoài mép các bounding box (ví dụ dấu tiếng Việt, dấu chấm, chóp mũi tên)
+            # gán cho element có khoảng cách gần nhất
+            if best_elem == -1 or max_overlap == 0:
+                cx, cy = centroids[cc_id]
+                best_dist = float('inf')
+                for e_idx in range(n_elems):
+                    x0, y0, x1, y1 = self.element_rects[e_idx]
+                    dx = max(x0 - cx, 0, cx - x1)
+                    dy = max(y0 - cy, 0, cy - y1)
+                    dist = dx * dx + dy * dy
+                    if dist < best_dist:
+                        best_dist = dist
+                        best_elem = e_idx
+                if best_dist > 80 * 80:
+                    continue
+
+            self.element_ink_mask[best_elem] |= cc_mask
+
+        # Mở rộng safe mask của mỗi element để bao trọn mọi nét mực và dấu tiếng Việt của nó
+        k_dilate = np.ones((7, 7), np.uint8)
+        for e_idx in range(n_elems):
+            if self.element_ink_mask[e_idx].any():
+                ink_dilated = cv2.dilate(self.element_ink_mask[e_idx].astype(np.uint8), k_dilate).astype(bool)
+                self.element_safe_mask[e_idx] |= ink_dilated
+
+    # ── Đơn vị mask thông minh: Safe mask - Mực của các element sau - protectedRegions ──
+    def _allowed_mask(self, idx: int, element: dict, later_elements: list[dict]) -> np.ndarray:
+        # Bắt đầu bằng safe mask bao trọn toàn bộ ink của element này
+        mask = self.element_safe_mask[idx].copy()
+
+        # Thay vì khoét cả hình chữ nhật của các element sau (gây mất nét hoặc khoét lẹm chữ),
+        # chỉ trừ các pixel thực sự thuộc về nét mực của element sau (được giãn nhẹ 2px).
+        # Nhờ đó khoảng trắng hoặc đường biên không bao giờ khoét thủng nét vẽ của element trước!
+        k_ink = np.ones((3, 3), np.uint8)
+        for later_idx in range(idx + 1, len(self.elements)):
+            later_ink = self.element_ink_mask[later_idx]
+            if later_ink.any():
+                later_ink_d = cv2.dilate(later_ink.astype(np.uint8), k_ink).astype(bool)
+                mask &= ~later_ink_d
 
         for prot in element.get("reveal", {}).get("protectedRegions", []):
             px0, py0, px1, py1 = _scaled_rect(prot, self.sx, self.sy, self.out_w, self.out_h)
@@ -196,8 +258,8 @@ class RegionStreamRenderer:
         if not region_ink.any():
             return []
         skel = sr._zhang_suen_skeleton(region_ink, max_iterations=160)
-        # Đối với text: hạ min_points = 2 để không bỏ sót bất kỳ dấu tiếng Việt nào (sắc, huyền, hỏi, ngã, nặng, chấm)
-        min_pts = 2 if el_type == "text" else cfg.skeleton_min_points
+        # Hạ min_points = 2 cho mọi đối tượng để không bỏ sót bất kỳ nét nhỏ, dấu câu, chi tiết biểu tượng nào
+        min_pts = 2
         raw = sr.trace_8connected(skel, min_points=min_pts)
         if not raw:
             return []
@@ -386,7 +448,25 @@ class RegionStreamRenderer:
     # ── 主渲染 ──
     def render_to(self, raw_path: Path, total_ms: int) -> Path:
         cfg = self.cfg
-        elements = sorted(self.ann["elements"], key=lambda e: e["reveal"]["startMs"])
+        def _get_elem_start(e: dict) -> float:
+            rev = e.get("reveal", {})
+            if "startMs" in rev:
+                return float(rev["startMs"])
+            return float(e.get("startMs", 0))
+
+        def _get_elem_duration(e: dict) -> float:
+            rev = e.get("reveal", {})
+            if "durationMs" in rev:
+                return float(rev["durationMs"])
+            if "endMs" in rev and "startMs" in rev:
+                return float(rev["endMs"] - rev["startMs"])
+            if "durationMs" in e:
+                return float(e["durationMs"])
+            if "endMs" in e and "startMs" in e:
+                return float(e["endMs"] - e["startMs"])
+            return 1000.0
+
+        elements = sorted(self.ann["elements"], key=_get_elem_start)
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         writer = cv2.VideoWriter(str(raw_path), fourcc, cfg.fps, (self.out_w, self.out_h))
         if not writer.isOpened():
@@ -408,12 +488,11 @@ class RegionStreamRenderer:
 
         try:
             for idx, element in enumerate(elements):
-                reveal = element["reveal"]
-                start_ms = reveal["startMs"]
-                dur_ms = reveal["durationMs"]
+                start_ms = _get_elem_start(element)
+                dur_ms = _get_elem_duration(element)
                 fill_static(start_ms)
 
-                allowed = self._allowed_mask(element, elements[idx + 1:])
+                allowed = self._allowed_mask(idx, element, elements[idx + 1:])
 
                 # Quyết định pha tô màu thông minh
                 el_type = element.get("type", "object")
@@ -477,8 +556,10 @@ class RegionStreamRenderer:
                         self._lay_ink(writer, ink_frames, [], set(), allowed)
                         centers = []
 
-                # Với text: khi nét bút hoàn tất vùng chữ, đảm bảo 100% pixel mực của vùng này hiển thị hoàn chỉnh
-                if el_type == "text":
+                # Đảm bảo 100% pixel mực thuộc về element này hiển thị sắc nét hoàn chỉnh ngay khi nét bút vẽ xong
+                if self.element_ink_mask[idx].any():
+                    self.drawn[self.element_ink_mask[idx]] = self.color_img[self.element_ink_mask[idx]].astype(np.float32)
+                else:
                     self.drawn[allowed & self.ink_pixels] = self.color_img[allowed & self.ink_pixels].astype(np.float32)
 
                 cur_ms += ink_frames * ms_per_frame
@@ -487,9 +568,12 @@ class RegionStreamRenderer:
                     # Loại trừ hoàn toàn pixel mực của các phần tử viết sau khỏi allowed_wash
                     # để tuyệt đối không làm lộ trước chữ hoặc chi tiết nét vẽ sau
                     allowed_wash = allowed.copy()
-                    for later in elements[idx + 1:]:
-                        lx0, ly0, lx1, ly1 = _scaled_rect(later["region"], self.sx, self.sy, self.out_w, self.out_h)
-                        allowed_wash[ly0:ly1, lx0:lx1] &= ~self.ink_pixels[ly0:ly1, lx0:lx1]
+                    k_wash = np.ones((5, 5), np.uint8)
+                    for later_idx in range(idx + 1, len(elements)):
+                        later_ink = self.element_ink_mask[later_idx]
+                        if later_ink.any():
+                            later_ink_d = cv2.dilate(later_ink.astype(np.uint8), k_wash).astype(bool)
+                            allowed_wash &= ~later_ink_d
 
                     if cfg.color_fill == "contour-wipe":
                         self._wash_contour(writer, color_frames, allowed_wash)

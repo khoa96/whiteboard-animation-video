@@ -1,0 +1,353 @@
+{
+  "version": "1.0",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "sceneDurationMs": 22000,
+  "storyBasis": "Ngữ pháp tiếng Anh: Quy tắc chuyển đổi Danh từ số ít sang số nhiều (Singular -> Plural)",
+  "elements": [
+    {
+      "id": "el-01-title",
+      "sequence": 1,
+      "label": "Tiêu đề: SINGULAR -> PLURAL",
+      "type": "text",
+      "narrativeRole": "Giới thiệu chủ đề Danh từ Số ít & Số nhiều",
+      "region": {
+        "x": 375,
+        "y": 65,
+        "width": 1175,
+        "height": 118
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 400,
+        "durationMs": 1400,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-02-kw-one",
+      "sequence": 2,
+      "label": "Từ khóa: ONE (Số ít)",
+      "type": "text",
+      "narrativeRole": "Khái niệm số ít - một đối tượng",
+      "region": {
+        "x": 558,
+        "y": 210,
+        "width": 172,
+        "height": 82
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 1900,
+        "durationMs": 500,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-03-kw-many",
+      "sequence": 3,
+      "label": "Từ khóa: MANY (Số nhiều)",
+      "type": "text",
+      "narrativeRole": "Khái niệm số nhiều - nhiều đối tượng",
+      "region": {
+        "x": 820,
+        "y": 210,
+        "width": 240,
+        "height": 82
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 2500,
+        "durationMs": 500,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-04-kw-noun",
+      "sequence": 4,
+      "label": "Từ khóa: NOUN (Danh từ)",
+      "type": "text",
+      "narrativeRole": "Đối tượng áp dụng quy tắc",
+      "region": {
+        "x": 1140,
+        "y": 210,
+        "width": 230,
+        "height": 82
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 3100,
+        "durationMs": 500,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-05-left-one",
+      "sequence": 5,
+      "label": "Nhãn cột trái: ONE",
+      "type": "text",
+      "narrativeRole": "Chỉ định nhóm số ít",
+      "region": {
+        "x": 260,
+        "y": 290,
+        "width": 175,
+        "height": 79
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 3750,
+        "durationMs": 500,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-06-left-cat",
+      "sequence": 6,
+      "label": "Hình vẽ: 1 chú mèo hoạt hình",
+      "type": "colored_image",
+      "narrativeRole": "Minh họa 1 cá thể danh từ số ít",
+      "region": {
+        "x": 215,
+        "y": 382,
+        "width": 215,
+        "height": 222
+      },
+      "reveal": {
+        "direction": "radial_outward",
+        "startMs": 4350,
+        "durationMs": 1400,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-07-left-cat-label",
+      "sequence": 7,
+      "label": "Nhãn từ: cat",
+      "type": "text",
+      "narrativeRole": "Từ số ít ở dạng nguyên bản",
+      "region": {
+        "x": 250,
+        "y": 607,
+        "width": 175,
+        "height": 83
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 5850,
+        "durationMs": 650,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-08-trans-eq",
+      "sequence": 8,
+      "label": "Quy trình chuyển đổi: cat -> cat + s -> cats",
+      "type": "colored_image",
+      "narrativeRole": "Mô phỏng thêm đuôi 's' vào danh từ",
+      "region": {
+        "x": 575,
+        "y": 430,
+        "width": 770,
+        "height": 93
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 6650,
+        "durationMs": 1800,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-09-right-many",
+      "sequence": 9,
+      "label": "Nhãn cột phải: MANY",
+      "type": "text",
+      "narrativeRole": "Chỉ định nhóm số nhiều",
+      "region": {
+        "x": 1485,
+        "y": 290,
+        "width": 240,
+        "height": 80
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 8600,
+        "durationMs": 500,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-10-right-3cats",
+      "sequence": 10,
+      "label": "Hình vẽ: 3 chú mèo hoạt hình",
+      "type": "colored_image",
+      "narrativeRole": "Minh họa nhiều cá thể danh từ số nhiều",
+      "region": {
+        "x": 1425,
+        "y": 380,
+        "width": 395,
+        "height": 225
+      },
+      "reveal": {
+        "direction": "radial_outward",
+        "startMs": 9200,
+        "durationMs": 2000,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-11-right-cats-label",
+      "sequence": 11,
+      "label": "Nhãn từ: cats (chữ s xanh lá)",
+      "type": "text",
+      "narrativeRole": "Từ số nhiều hoàn chỉnh",
+      "region": {
+        "x": 1515,
+        "y": 607,
+        "width": 215,
+        "height": 83
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 11300,
+        "durationMs": 700,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-12-rule",
+      "sequence": 12,
+      "label": "Quy tắc ngữ pháp: NOUN + S -> PLURAL",
+      "type": "colored_image",
+      "narrativeRole": "Công thức đúc kết nguyên tắc chung",
+      "region": {
+        "x": 580,
+        "y": 612,
+        "width": 760,
+        "height": 82
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 12150,
+        "durationMs": 1600,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-13-sentence",
+      "sequence": 13,
+      "label": "Câu ví dụ: I have three cats.",
+      "type": "text",
+      "narrativeRole": "Ứng dụng trong câu giao tiếp thực tế",
+      "region": {
+        "x": 500,
+        "y": 745,
+        "width": 925,
+        "height": 122
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 13950,
+        "durationMs": 1800,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-14-underline",
+      "sequence": 14,
+      "label": "Gạch chân xanh duy nhất: dưới từ 'cats'",
+      "type": "gesture",
+      "narrativeRole": "Nhấn mạnh danh từ số nhiều trong câu",
+      "region": {
+        "x": 1168,
+        "y": 868,
+        "width": 231,
+        "height": 27
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 15850,
+        "durationMs": 650,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-15-ex-book-icon",
+      "sequence": 15,
+      "label": "Biểu tượng: Cuốn sách",
+      "type": "colored_image",
+      "narrativeRole": "Ví dụ bổ sung 1: đồ vật",
+      "region": {
+        "x": 220,
+        "y": 914,
+        "width": 118,
+        "height": 121
+      },
+      "reveal": {
+        "direction": "radial_outward",
+        "startMs": 16650,
+        "durationMs": 900,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-16-ex-book-text",
+      "sequence": 16,
+      "label": "Ví dụ: book -> books",
+      "type": "colored_image",
+      "narrativeRole": "Chuyển đổi số nhiều của book",
+      "region": {
+        "x": 347,
+        "y": 925,
+        "width": 511,
+        "height": 95
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 17650,
+        "durationMs": 1200,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-17-ex-apple-icon",
+      "sequence": 17,
+      "label": "Biểu tượng: Quả táo",
+      "type": "colored_image",
+      "narrativeRole": "Ví dụ bổ sung 2: hoa quả",
+      "region": {
+        "x": 1045,
+        "y": 915,
+        "width": 100,
+        "height": 115
+      },
+      "reveal": {
+        "direction": "radial_outward",
+        "startMs": 19000,
+        "durationMs": 900,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-18-ex-apple-text",
+      "sequence": 18,
+      "label": "Ví dụ: apple -> apples",
+      "type": "colored_image",
+      "narrativeRole": "Chuyển đổi số nhiều của apple",
+      "region": {
+        "x": 1155,
+        "y": 925,
+        "width": 545,
+        "height": 115
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 20000,
+        "durationMs": 1300,
+        "protectedRegions": []
+      }
+    }
+  ]
+}
