@@ -1,0 +1,230 @@
+{
+  "sceneId": "test_case_segmentation_12_cooking",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "sceneDurationMs": 25000,
+  "elements": [
+    {
+      "id": "el-01-title",
+      "label": "Tiêu đề: COOKING VERBS",
+      "sequence": 1,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 500,
+        "y": 40,
+        "width": 920,
+        "height": 120
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-02-chop",
+      "label": "Hành động 1: CHOP (Chặt, băm nhỏ)",
+      "sequence": 2,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 80,
+        "y": 160,
+        "width": 310,
+        "height": 390
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 2600,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-03-slice",
+      "label": "Hành động 2: SLICE (Thái lát mỏng)",
+      "sequence": 3,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 390,
+        "y": 160,
+        "width": 380,
+        "height": 390
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 4700,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-04-whisk",
+      "label": "Hành động 3: WHISK (Đánh trứng, khuấy lồng)",
+      "sequence": 4,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 770,
+        "y": 160,
+        "width": 370,
+        "height": 390
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 6800,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-05-stir",
+      "label": "Hành động 4: STIR (Khuấy đều bằng thìa)",
+      "sequence": 5,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1140,
+        "y": 160,
+        "width": 360,
+        "height": 390
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 8900,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-06-pour",
+      "label": "Hành động 5: POUR (Rót nước)",
+      "sequence": 6,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1500,
+        "y": 160,
+        "width": 360,
+        "height": 390
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 11000,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-07-peel",
+      "label": "Hành động 6: PEEL (Gọt vỏ)",
+      "sequence": 7,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 80,
+        "y": 550,
+        "width": 310,
+        "height": 480
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 13200,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-08-grate",
+      "label": "Hành động 7: GRATE (Bào sợi)",
+      "sequence": 8,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 390,
+        "y": 550,
+        "width": 380,
+        "height": 480
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 15300,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-09-knead",
+      "label": "Hành động 8: KNEAD (Nhào bột bằng tay)",
+      "sequence": 9,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 770,
+        "y": 550,
+        "width": 370,
+        "height": 480
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 17400,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-10-drain",
+      "label": "Hành động 9: DRAIN (Lọc ráo nước qua rổ)",
+      "sequence": 10,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1140,
+        "y": 550,
+        "width": 360,
+        "height": 480
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 19500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-11-sprinkle",
+      "label": "Hành động 10: SPRINKLE (Rắc gia vị)",
+      "sequence": 11,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1500,
+        "y": 550,
+        "width": 360,
+        "height": 480
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 21600,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    }
+  ]
+}

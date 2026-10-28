@@ -1,0 +1,224 @@
+{
+  "sceneId": "test_case_segmentation_04_watercycle",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "sceneDurationMs": 22000,
+  "elements": [
+    {
+      "id": "el-01-title",
+      "label": "Tiêu đề: THE WATER CYCLE",
+      "sequence": 1,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 569,
+        "y": 64,
+        "width": 782,
+        "height": 77
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 500,
+        "durationMs": 2500,
+        "maskPaddingPx": 8,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-02-sun",
+      "label": "Mặt trời chiếu sáng (Sun)",
+      "sequence": 2,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 104,
+        "y": 72,
+        "width": 399,
+        "height": 396
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 3000,
+        "durationMs": 2500,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-03-lake",
+      "label": "Hồ nước mặt đất (Lake)",
+      "sequence": 3,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 355,
+        "y": 750,
+        "width": 1045,
+        "height": 270
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 5500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-04-evap",
+      "label": "Giai đoạn 1: Bay hơi (EVAPORATION)",
+      "sequence": 4,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 519,
+        "y": 400,
+        "width": 401,
+        "height": 380
+      },
+      "reveal": {
+        "direction": "bottom_to_top",
+        "startMs": 7500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": [
+          {
+            "x": 355,
+            "y": 750,
+            "width": 1045,
+            "height": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "el-05-cond",
+      "label": "Giai đoạn 2: Ngưng tụ (CONDENSATION)",
+      "sequence": 5,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 622,
+        "y": 240,
+        "width": 478,
+        "height": 190
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 9500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": [
+          {
+            "x": 104,
+            "y": 72,
+            "width": 399,
+            "height": 396
+          }
+        ]
+      }
+    },
+    {
+      "id": "el-06-clouds",
+      "label": "Đám mây tích tụ hơi nước (Clouds)",
+      "sequence": 6,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 780,
+        "y": 177,
+        "width": 753,
+        "height": 183
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 11500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-07-precip",
+      "label": "Giai đoạn 3: Giáng thủy / Mưa rơi (PRECIPITATION)",
+      "sequence": 7,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1200,
+        "y": 300,
+        "width": 350,
+        "height": 230
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 13500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": [
+          {
+            "x": 780,
+            "y": 177,
+            "width": 753,
+            "height": 183
+          }
+        ]
+      }
+    },
+    {
+      "id": "el-08-mountain",
+      "label": "Núi đồi, Rừng cây & Dòng sông",
+      "sequence": 8,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1000,
+        "y": 400,
+        "width": 850,
+        "height": 450
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 15500,
+        "durationMs": 2500,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-09-collec",
+      "label": "Giai đoạn 4: Thu nhận dòng chảy về hồ (COLLECTION)",
+      "sequence": 9,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1200,
+        "y": 800,
+        "width": 535,
+        "height": 180
+      },
+      "reveal": {
+        "direction": "right_to_left",
+        "startMs": 18000,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": [
+          {
+            "x": 355,
+            "y": 750,
+            "width": 1045,
+            "height": 270
+          },
+          {
+            "x": 1000,
+            "y": 400,
+            "width": 850,
+            "height": 450
+          }
+        ]
+      }
+    }
+  ]
+}

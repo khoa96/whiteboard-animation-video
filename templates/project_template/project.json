@@ -1,0 +1,27 @@
+{
+  "project_name": "new_whiteboard_project",
+  "title": "[Tên Chủ Đề Dự Án]",
+  "version": "1.0.0",
+  "settings": {
+    "resolution": {
+      "width": 1920,
+      "height": 1080
+    },
+    "canvas_color": "#FFFFFF",
+    "production_fps": 60,
+    "draft_fps": 30,
+    "voice": {
+      "engine": "edge-tts",
+      "model": "en-US-AndrewMultilingualNeural",
+      "rate": "+0%",
+      "volume": "+0%"
+    },
+    "subtitles": {
+      "font_size": 13,
+      "margin_v": 4,
+      "border_style": 3,
+      "primary_color": "&H00FFFFFF",
+      "back_color": "&H80000000"
+    }
+  }
+}

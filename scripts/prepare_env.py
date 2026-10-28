@@ -31,6 +31,7 @@ DEPS: dict[str, str] = {
     "av": "av",  # PyAV：纯 pip 安装的 H.264 编码，无需系统 ffmpeg
     "PIL": "Pillow",  # render_annotation_preview.py 画区域编号预览图（含中文标签）
     "edge_tts": "edge-tts",  # tts_narration.py --provider edge（免费旁白）
+    "pydub": "pydub",  # tts_gemini.py 锚点静音切割算法
 }
 
 

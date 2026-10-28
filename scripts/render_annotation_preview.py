@@ -88,9 +88,10 @@ def main(image_path: str, annotation_path: str, output_path: str) -> None:
 
         # Vẽ nhãn nền trắng mờ
         text_w = len(label_text) * 11 + 20
-        label_right = min(right - 6, x + 44 + text_w)
-        draw.rounded_rectangle((x + 44, y + 6, label_right, y + 38), radius=6, fill=(255, 255, 255, 230))
-        draw.text((x + 50, y + 11), label_text, font=small_font, fill=(20, 24, 33, 255))
+        label_x0 = x + 44
+        label_right = max(label_x0 + 60, min(image.width - 10, label_x0 + text_w))
+        draw.rounded_rectangle((label_x0, y + 6, label_right, y + 38), radius=6, fill=(255, 255, 255, 230))
+        draw.text((label_x0 + 6, y + 11), label_text, font=small_font, fill=(20, 24, 33, 255))
 
         # Vẽ handPath hoặc vectorPath nếu có
         hand_path = element.get("handPath")

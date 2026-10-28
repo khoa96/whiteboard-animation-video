@@ -44,6 +44,7 @@ SAMPLE_RATE = 44100
 
 VBEE_DEFAULT_VOICE = "n_hanoi_male_protrainer_education_vc"
 EDGE_DEFAULT_VOICE = "vi-VN-NamMinhNeural"
+GEMINI_DEFAULT_VOICE = "Charon"
 EDGE_COMMA_TRIES = 4  # 原句失败后最多尝试几个加逗号的变体
 
 
@@ -167,7 +168,16 @@ def probe_duration(path: Path) -> float:
         ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(path)],
         capture_output=True, text=True, check=True,
     )
-    return float(res.stdout.strip())
+    val = res.stdout.strip()
+    if val and val != "N/A":
+        return float(val)
+    # Thử lấy duration từ stream nếu format duration bị N/A
+    res2 = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries", "stream=duration", "-of", "csv=p=0", str(path)],
+        capture_output=True, text=True, check=True,
+    )
+    val2 = res2.stdout.strip()
+    return float(val2) if (val2 and val2 != "N/A") else 0.0
 
 
 def trim_silence(clip: Path) -> Path:
@@ -181,6 +191,8 @@ def trim_silence(clip: Path) -> Path:
              "-ar", str(SAMPLE_RATE), "-ac", "1", str(out)],
             check=True,
         )
+    if not out.exists() or out.stat().st_size < 100 or probe_duration(out) < 0.1:
+        return clip
     return out
 
 
@@ -280,9 +292,9 @@ def main(argv=None) -> int:
     p.add_argument("--output", required=True, help="旁白音轨输出 (.m4a)")
     p.add_argument("--video", help="要混入旁白的成片 MP4")
     p.add_argument("--video-out", help="带旁白的成片输出路径（默认 <video>-voice.mp4）")
-    p.add_argument("--provider", choices=["vbee", "edge"],
-                   default=(os.environ.get("TTS_PROVIDER") or "vbee").lower(), help="TTS 引擎")
-    p.add_argument("--voice", help="声音：Vbee voice_code（从 Vbee 界面复制），或 Edge 声音名（如 vi-VN-HoaiMyNeural）")
+    p.add_argument("--provider", choices=["vbee", "edge", "gemini"],
+                   default=(os.environ.get("TTS_PROVIDER") or "gemini").lower(), help="TTS 引擎 (gemini / edge / vbee)")
+    p.add_argument("--voice", help="声音：Gemini 预置声音（如 Charon, Puck, Kore, Erinome），Vbee voice_code，或 Edge 声音名")
     p.add_argument("--speed", type=float, default=float(os.environ.get("TTS_SPEED") or 1.0),
                    help="语速 0.1–1.9（1.0 = 正常）")
     p.add_argument("--cache-dir", help="单条语音缓存目录（默认 <srt 所在目录>/tts-cache）")
@@ -306,16 +318,24 @@ def main(argv=None) -> int:
         if not app_id or not token:
             print("[err] 缺少 VBEE_APP_ID / VBEE_ACCESS_TOKEN（.env 或环境变量）", file=sys.stderr)
             return 1
-        # voice_code 原样传给 API；.env 的 TTS_VOICE 若是 Edge 声音名则不沿用
         voice = args.voice or (env_voice if env_voice and not env_voice.endswith("Neural")
                                else VBEE_DEFAULT_VOICE)
+    elif args.provider == "gemini":
+        from tts_gemini import GeminiKeyPool, load_voice_config, synthesize_gemini_master_and_split
+        pool = GeminiKeyPool.from_env()
+        if not pool.has_keys():
+            print("[err] 缺少 GEMINI_API_KEYS 或 GEMINI_API_KEY（.env 或 gemini_keys.txt）", file=sys.stderr)
+            return 1
+        cfg = load_voice_config()
+        configured_voice = cfg.get("active_voice") or GEMINI_DEFAULT_VOICE
+        voice = args.voice or (env_voice if env_voice and not env_voice.endswith("Neural") and "_" not in env_voice
+                               else configured_voice)
     else:
         try:
             import edge_tts  # noqa: F401
         except ImportError:
             print("[err] 缺少 edge-tts，先运行 prepare_env.py", file=sys.stderr)
             return 1
-        # .env 的 TTS_VOICE 可能是 Vbee voice_code，仅在形如 Edge 声音名时沿用
         voice = args.voice or (env_voice if env_voice.endswith("Neural") else EDGE_DEFAULT_VOICE)
     if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
         print("[err] 需要系统 ffmpeg / ffprobe", file=sys.stderr)
@@ -335,23 +355,27 @@ def main(argv=None) -> int:
     print(f"{args.provider} 配音: {len(cues)} 条字幕, 声音 {voice}, 语速 {args.speed}")
 
     clips: list[Path] = []
-    for cue in cues:
-        key_src = f"{args.provider}|{voice}|{args.speed}|{cue['text']}"
-        key = hashlib.sha1(key_src.encode("utf-8")).hexdigest()[:12]
-        clip = cache / f"cue-{cue['index']:03d}-{key}.mp3"
-        if not clip.exists():
-            try:
-                if args.provider == "vbee":
-                    download(synthesize(cue["text"], app_id, token, voice, args.speed), clip)
-                else:
-                    synthesize_edge(cue["text"], voice, args.speed, clip)
-            except Exception as e:  # 网络/服务端错误统一报告并退出
-                print(f"[err] 字幕 {cue['index']} 合成失败: {e}", file=sys.stderr)
-                return 1
-            print(f"  字幕 {cue['index']:>2} 合成完成 ({probe_duration(clip):.2f}s): {cue['text'][:40]}")
-        else:
-            print(f"  字幕 {cue['index']:>2} 使用缓存")
-        clips.append(clip if args.no_trim else trim_silence(clip))
+    if args.provider == "gemini":
+        model = os.environ.get("GEMINI_MODEL") or cfg.get("selected_model") or "gemini-2.5-flash-preview-tts"
+        clips = synthesize_gemini_master_and_split(cues, cache, voice=voice, speed=args.speed, model=model)
+    else:
+        for cue in cues:
+            key_src = f"{args.provider}|{voice}|{args.speed}|{cue['text']}"
+            key = hashlib.sha1(key_src.encode("utf-8")).hexdigest()[:12]
+            clip = cache / f"cue-{cue['index']:03d}-{key}.mp3"
+            if not clip.exists():
+                try:
+                    if args.provider == "vbee":
+                        download(synthesize(cue["text"], app_id, token, voice, args.speed), clip)
+                    else:
+                        synthesize_edge(cue["text"], voice, args.speed, clip)
+                except Exception as e:  # 网络/服务端错误统一报告并退出
+                    print(f"[err] 字幕 {cue['index']} 合成失败: {e}", file=sys.stderr)
+                    return 1
+                print(f"  字幕 {cue['index']:>2} 合成完成 ({probe_duration(clip):.2f}s): {cue['text'][:40]}")
+            else:
+                print(f"  字幕 {cue['index']:>2} 使用缓存")
+            clips.append(clip if args.no_trim else trim_silence(clip))
 
     if args.retime_out:
         cues = retime_cues(cues, clips, args.gap, pauses, args.tail)

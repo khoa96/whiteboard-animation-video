@@ -1,0 +1,47 @@
+{
+  "totalDurationMs": 31540,
+  "cues": [
+    {
+      "index": 1,
+      "startMs": 500,
+      "endMs": 3452,
+      "durationMs": 2952,
+      "text": "Bây giờ, đến quy tắc quan trọng nhất."
+    },
+    {
+      "index": 2,
+      "startMs": 3952,
+      "endMs": 7024,
+      "durationMs": 3072,
+      "text": "Dùng A trước từ bắt đầu bằng âm phụ âm."
+    },
+    {
+      "index": 3,
+      "startMs": 7524,
+      "endMs": 10740,
+      "durationMs": 3216,
+      "text": "Dùng AN trước từ bắt đầu bằng âm nguyên âm."
+    },
+    {
+      "index": 4,
+      "startMs": 11240,
+      "endMs": 17120,
+      "durationMs": 5880,
+      "text": "Hãy nhìn ví dụ a book. Từ book bắt đầu bằng âm phụ âm, nên ta dùng A."
+    },
+    {
+      "index": 5,
+      "startMs": 17620,
+      "endMs": 23500,
+      "durationMs": 5880,
+      "text": "Với an apple, apple bắt đầu bằng âm nguyên âm, nên ta dùng AN."
+    },
+    {
+      "index": 6,
+      "startMs": 24000,
+      "endMs": 29040,
+      "durationMs": 5040,
+      "text": "Đây là điểm mấu chốt: nghe âm đầu, đừng chỉ nhìn chữ cái đầu tiên."
+    }
+  ]
+}

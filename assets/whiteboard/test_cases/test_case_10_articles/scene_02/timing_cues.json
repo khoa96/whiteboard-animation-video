@@ -1,0 +1,47 @@
+{
+  "totalDurationMs": 33172,
+  "cues": [
+    {
+      "index": 1,
+      "startMs": 500,
+      "endMs": 4124,
+      "durationMs": 3624,
+      "text": "Trước tiên, hãy nhìn vào bảng chữ cái tiếng Anh."
+    },
+    {
+      "index": 2,
+      "startMs": 4624,
+      "endMs": 10096,
+      "durationMs": 5472,
+      "text": "Năm chữ cái thường được gọi là nguyên âm là A, E, I, O, U."
+    },
+    {
+      "index": 3,
+      "startMs": 10596,
+      "endMs": 14844,
+      "durationMs": 4248,
+      "text": "Các chữ cái còn lại thường được xếp vào nhóm phụ âm cơ bản."
+    },
+    {
+      "index": 4,
+      "startMs": 15344,
+      "endMs": 19976,
+      "durationMs": 4632,
+      "text": "Riêng chữ Y đôi khi đại diện cho âm nguyên âm trong một số từ."
+    },
+    {
+      "index": 5,
+      "startMs": 20476,
+      "endMs": 25540,
+      "durationMs": 5064,
+      "text": "Nhưng chữ cái và âm thanh không phải lúc nào cũng cho ta cùng một câu trả lời."
+    },
+    {
+      "index": 6,
+      "startMs": 26040,
+      "endMs": 30672,
+      "durationMs": 4632,
+      "text": "Khi chọn A hay AN, điều quan trọng là âm đầu tiên ta nghe được."
+    }
+  ]
+}

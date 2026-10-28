@@ -1,0 +1,23 @@
+1
+00:00:00,000 --> 00:00:05,000
+[SCENE 01] Chào mừng các bạn đến với bài học hôm nay về [Chủ đề bài học].
+
+2
+00:00:05,500 --> 00:00:12,000
+Trong bài học này, chúng ta sẽ cùng khám phá những quy tắc quan trọng nhất.
+
+3
+00:00:12,500 --> 00:00:20,000
+Bây giờ, hãy cùng quan sát ví dụ đầu tiên để hiểu rõ bản chất nhé.
+
+4
+00:00:21,000 --> 00:00:28,000
+[SCENE 02] Trước hết, quy tắc số một mà bạn cần ghi nhớ chính là...
+
+5
+00:00:28,500 --> 00:00:35,000
+Khi đi với các danh từ số ít, chúng ta áp dụng công thức sau đây.
+
+6
+00:00:36,000 --> 00:00:43,000
+[SCENE 03] Sang phần tiếp theo, hãy cùng xem các trường hợp cụ thể...

@@ -507,20 +507,19 @@ class RegionStreamRenderer:
                 elif color_mode_opt == "always":
                     needs_color_wash = True
                 else:  # auto
-                    if el_type in ["box", "text", "underline", "circle", "arrow"]:
-                        needs_color_wash = False
-                    elif el_color_mode == "none":
+                    if el_color_mode == "none":
                         needs_color_wash = False
                     elif el_color_mode == "wash":
                         needs_color_wash = True
-                    elif el_type in ["icon", "line_art"]:
+                    elif el_type in ["box", "text", "underline", "circle", "arrow", "icon", "line_art"]:
                         needs_color_wash = False
                     else:
                         needs_color_wash = is_colorful
 
                 total_element_frames = max(1, round(dur_ms * cfg.fps / 1000))
                 if needs_color_wash:
-                    ink_frames = max(1, round(total_element_frames * 0.6))
+                    # Chuẩn tỉ lệ 90:10 (90% phác nét ink, 10% quét màu color siêu tốc)
+                    ink_frames = max(1, round(total_element_frames * 0.90))
                     color_frames = max(1, total_element_frames - ink_frames)
                 else:
                     ink_frames = total_element_frames
@@ -636,6 +635,8 @@ def _parse_args(argv=None):
                    help="上色: contour-wipe 轮廓扫描(默认); brush 沿轨迹刷")
     p.add_argument("--color-mode", default="auto", choices=["auto", "always", "never"],
                    help="Chế độ tô màu: auto (tự động: text/gesture không tô, ảnh màu tô); always; never")
+    p.add_argument("--canvas-hex", default="#FFFFFF",
+                   help="Màu nền bảng canvas (mặc định #FFFFFF trắng thuần)")
     p.add_argument("--pause", default="heavy", choices=["heavy", "auto", "light", "off"],
                    help="起笔段停顿节奏（预留，逐区域画法下影响较弱）")
     p.add_argument("--fps", type=int, default=None)
@@ -656,6 +657,8 @@ def _build_cfg(args) -> sr.Config:
         kw["brush_radius"] = args.brush_radius
     if args.cap_long_edge is not None:
         kw["cap_long_edge"] = args.cap_long_edge
+    if args.canvas_hex:
+        kw["canvas_hex"] = args.canvas_hex
     kw["ink_path_mode"] = args.ink_path
     kw["color_fill"] = args.color_fill
     kw["color_mode"] = args.color_mode

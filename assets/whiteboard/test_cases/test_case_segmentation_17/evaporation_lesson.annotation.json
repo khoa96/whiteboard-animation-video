@@ -1,0 +1,150 @@
+{
+  "sceneId": "test_case_segmentation_17_evaporation",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "sceneDurationMs": 20000,
+  "elements": [
+    {
+      "id": "ev-01-title",
+      "label": "Tiêu đề: 1. EVAPORATION",
+      "sequence": 1,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 400,
+        "y": 40,
+        "width": 1120,
+        "height": 130
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "ev-02-sun",
+      "label": "Mặt trời: Sun (Nguồn phát nhiệt bức xạ)",
+      "sequence": 2,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 700,
+        "y": 180,
+        "width": 520,
+        "height": 310
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 2700,
+        "durationMs": 2200,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "ev-03-liquid-water",
+      "label": "Khối nước lỏng: Các tầng sóng nước",
+      "sequence": 3,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 450,
+        "y": 670,
+        "width": 1020,
+        "height": 125
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 5100,
+        "durationMs": 2400,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "ev-04-water-label",
+      "label": "Nhãn danh xưng: LIQUID WATER",
+      "sequence": 4,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 650,
+        "y": 795,
+        "width": 620,
+        "height": 85
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 7700,
+        "durationMs": 1600,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "ev-05-vapor-arrows",
+      "label": "Động năng bốc hơi: 3 mũi tên chỉ hướng hơi nước bốc lên",
+      "sequence": 5,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 750,
+        "y": 495,
+        "width": 350,
+        "height": 175
+      },
+      "reveal": {
+        "direction": "bottom_to_top",
+        "startMs": 9500,
+        "durationMs": 2200,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "ev-06-vapor-label",
+      "label": "Nhãn danh xưng: WATER VAPOR",
+      "sequence": 6,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 1100,
+        "y": 495,
+        "width": 500,
+        "height": 175
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 11900,
+        "durationMs": 1800,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "ev-07-sentence",
+      "label": "Khái quát bản chất: HEAT TURNS LIQUID WATER INTO WATER VAPOR.",
+      "sequence": 7,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 200,
+        "y": 890,
+        "width": 1520,
+        "height": 120
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 14000,
+        "durationMs": 3500,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    }
+  ]
+}

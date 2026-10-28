@@ -1,0 +1,23 @@
+1
+00:00:00,000 --> 00:00:03,929
+Bạn có bao giờ tự hỏi: những giọt mưa từ đâu rơi xuống?
+
+2
+00:00:03,929 --> 00:00:09,072
+Mọi thứ bắt đầu khi ánh nắng mặt trời làm ấm các dòng sông và đại dương.
+
+3
+00:00:09,072 --> 00:00:13,501
+Nước ấm dần lên, biến thành hơi nước nhẹ bay vút lên bầu trời.
+
+4
+00:00:13,501 --> 00:00:18,430
+Lên cao gặp lạnh, các hạt hơi nước gom lại thành những đám mây trắng.
+
+5
+00:00:18,430 --> 00:00:23,073
+Khi mây quá nặng, nước rơi xuống mặt đất tạo thành những cơn mưa.
+
+6
+00:00:23,073 --> 00:00:27,644
+Nước mưa chảy về sông suối, tiếp tục một vòng tuần hoàn bất tận.

@@ -1,0 +1,208 @@
+{
+  "sceneId": "test_case_segmentation_05_saleschart",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "sceneDurationMs": 21000,
+  "elements": [
+    {
+      "id": "el-01-title",
+      "label": "Tiêu đề: PRODUCT SALES COMPARISON",
+      "sequence": 1,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 408,
+        "y": 85,
+        "width": 1103,
+        "height": 66
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 500,
+        "durationMs": 2500,
+        "maskPaddingPx": 8,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-02-axis-v",
+      "label": "Trục tung SALES & Thang đo (0, 10, 20, 30, 40)",
+      "sequence": 2,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 340,
+        "y": 240,
+        "width": 180,
+        "height": 610
+      },
+      "reveal": {
+        "direction": "bottom_to_top",
+        "startMs": 3000,
+        "durationMs": 2500,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-03-axis-h",
+      "label": "Trục hoành PRODUCT & Nhãn sản phẩm (A, B, C)",
+      "sequence": 3,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 458,
+        "y": 820,
+        "width": 1018,
+        "height": 122
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 5500,
+        "durationMs": 2500,
+        "maskPaddingPx": 6,
+        "protectedRegions": [
+          {
+            "x": 550,
+            "y": 516,
+            "width": 200,
+            "height": 364
+          },
+          {
+            "x": 830,
+            "y": 283,
+            "width": 200,
+            "height": 597
+          },
+          {
+            "x": 1130,
+            "y": 411,
+            "width": 200,
+            "height": 469
+          }
+        ]
+      }
+    },
+    {
+      "id": "el-04-target",
+      "label": "Đường mục tiêu đứt nét & Nhãn TARGET (y=30)",
+      "sequence": 4,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 459,
+        "y": 340,
+        "width": 1192,
+        "height": 80
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 8000,
+        "durationMs": 2000,
+        "maskPaddingPx": 4,
+        "protectedRegions": [
+          {
+            "x": 550,
+            "y": 516,
+            "width": 200,
+            "height": 364
+          },
+          {
+            "x": 830,
+            "y": 283,
+            "width": 200,
+            "height": 597
+          },
+          {
+            "x": 1130,
+            "y": 411,
+            "width": 200,
+            "height": 469
+          }
+        ]
+      }
+    },
+    {
+      "id": "el-05-bar-a",
+      "label": "Cột Product A: Doanh số = 20",
+      "sequence": 5,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 550,
+        "y": 516,
+        "width": 200,
+        "height": 364
+      },
+      "reveal": {
+        "direction": "bottom_to_top",
+        "startMs": 10000,
+        "durationMs": 2500,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-06-bar-b",
+      "label": "Cột Product B: Doanh số = 35 (Vượt Target)",
+      "sequence": 6,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 830,
+        "y": 283,
+        "width": 200,
+        "height": 597
+      },
+      "reveal": {
+        "direction": "bottom_to_top",
+        "startMs": 12500,
+        "durationMs": 2500,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-07-bar-c",
+      "label": "Cột Product C: Doanh số = 25",
+      "sequence": 7,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1130,
+        "y": 411,
+        "width": 200,
+        "height": 469
+      },
+      "reveal": {
+        "direction": "bottom_to_top",
+        "startMs": 15000,
+        "durationMs": 2500,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-08-legend",
+      "label": "Bảng chú giải (Legend: Solid Bars & Dashed Target Line)",
+      "sequence": 8,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 1487,
+        "y": 549,
+        "width": 313,
+        "height": 81
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 17500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    }
+  ]
+}

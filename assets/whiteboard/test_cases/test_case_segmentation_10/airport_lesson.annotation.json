@@ -1,0 +1,230 @@
+{
+  "sceneId": "test_case_segmentation_10_airport",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "sceneDurationMs": 25000,
+  "elements": [
+    {
+      "id": "el-01-title",
+      "label": "Tiêu đề: AT THE AIRPORT",
+      "sequence": 1,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 500,
+        "y": 40,
+        "width": 920,
+        "height": 115
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-02-passport",
+      "label": "Mục 1: PASSPORT (Hộ chiếu)",
+      "sequence": 2,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 80,
+        "y": 160,
+        "width": 330,
+        "height": 395
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 2600,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-03-boarding-pass",
+      "label": "Mục 2: BOARDING PASS (Thẻ lên máy bay)",
+      "sequence": 3,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 410,
+        "y": 160,
+        "width": 370,
+        "height": 395
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 4700,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-04-luggage-tag",
+      "label": "Mục 3: LUGGAGE TAG (Thẻ hành lý)",
+      "sequence": 4,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 780,
+        "y": 160,
+        "width": 365,
+        "height": 395
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 6800,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-05-suitcase",
+      "label": "Mục 4: SUITCASE (Va li kéo)",
+      "sequence": 5,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1145,
+        "y": 160,
+        "width": 355,
+        "height": 395
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 8900,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-06-carry-on",
+      "label": "Mục 5: CARRY-ON (Túi xách tay)",
+      "sequence": 6,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1500,
+        "y": 160,
+        "width": 370,
+        "height": 395
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 11000,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-07-check-in-counter",
+      "label": "Mục 6: CHECK-IN COUNTER (Quầy làm thủ tục)",
+      "sequence": 7,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 80,
+        "y": 555,
+        "width": 330,
+        "height": 470
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 13200,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-08-security-checkpoint",
+      "label": "Mục 7: SECURITY CHECKPOINT (Cổng an ninh soi chiếu)",
+      "sequence": 8,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 410,
+        "y": 555,
+        "width": 370,
+        "height": 470
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 15300,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-09-departure-board",
+      "label": "Mục 8: DEPARTURE BOARD (Bảng thông tin chuyến bay)",
+      "sequence": 9,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 780,
+        "y": 555,
+        "width": 365,
+        "height": 470
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 17400,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-10-boarding-gate",
+      "label": "Mục 9: BOARDING GATE (Cổng lên máy bay)",
+      "sequence": 10,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1145,
+        "y": 555,
+        "width": 355,
+        "height": 470
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 19500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-11-baggage-carousel",
+      "label": "Mục 10: BAGGAGE CAROUSEL (Băng chuyền hành lý)",
+      "sequence": 11,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1500,
+        "y": 555,
+        "width": 370,
+        "height": 470
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 21600,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,307 @@
+{
+  "selected_model": "gemini-2.5-flash-preview-tts",
+  "active_voice": "Alnilam",
+  "speed": 1.0,
+  "description": "Cấu hình 30 giọng nói Google AI Studio (Gemini Audio) cho Whiteboard Animation Video",
+  "voice_profile": {
+    "age_and_gender": "Nam thanh niên 25 tuổi, trẻ trung, thanh thoát, ấm áp, nhiệt huyết",
+    "accent_vietnamese": "Giọng miền Bắc - Hà Nội chuẩn hiện đại, tự nhiên, rõ ràng, không trịnh trọng già nua",
+    "accent_english": "100% General American NATIVE ACCENT (Phát âm chuẩn người Mỹ bản xứ, Anti-Vinglish)",
+    "target_level": "Level A1 (Người mới bắt đầu)",
+    "vocal_style": "Thầy giáo trẻ / gia sư thân thiện, truyền cảm, nhả rõ âm cuối, không nuốt âm, có hồn",
+    "pronunciation_rules": [
+      "QUY TẮC ANTI-VINGLISH: Tuyệt đối KHÔNG đọc tiếng Anh bằng ngữ âm tiếng Việt.",
+      "Khi gặp từ hoặc câu tiếng Anh ('There is', 'There are', 'cat', 'desk'...), lập tức chuyển sang ngữ âm chuẩn Mỹ bản địa.",
+      "Bật cực kỳ rõ và chuẩn xác các âm cuối (/t/, /d/, /s/, /z/, /k/, /p/, /ks/, /dʒ/...).",
+      "Tuyệt đối không nuốt âm, không nối âm quá nhanh để người học A1 nghe chuẩn từng âm vị.",
+      "Ngữ điệu sống động: câu hỏi (?) lên giọng tự nhiên, câu (!) hào hứng dứt khoát, câu (.) trầm ấm rõ ràng."
+    ]
+  },
+  "recommended_warm_male_voices": [
+    {
+      "name": "Algieba",
+      "tone": "Mượt mà (Smooth), lịch lãm, truyền cảm, ấm áp kiểu MC radio/thầy giáo",
+      "character": "Tông ấm vừa, nhả chữ mượt, cực kỳ dễ nghe, êm dịu",
+      "sample_path": "projects/test_voice_there_is_there_are/voice_samples/warm_male_voices/sample_algieba_warm.wav"
+    },
+    {
+      "name": "Charon",
+      "tone": "Trầm ấm (Deep), đĩnh đạc, dày dặn, vang, phong thái chuyên gia/người thầy",
+      "character": "Tông trầm ấm sâu (deep chest resonance), đĩnh đạc, thuyết phục",
+      "sample_path": "projects/test_voice_there_is_there_are/voice_samples/warm_male_voices/sample_charon_warm.wav"
+    },
+    {
+      "name": "Enceladus",
+      "tone": "Trầm khẽ (Breathy), thì thầm nhẹ nhàng, ấm áp, êm ái, rất gần gũi",
+      "character": "Tông ấm thủ thỉ, nhẹ nhàng như trò chuyện tâm sự bên tai",
+      "sample_path": "projects/test_voice_there_is_there_are/voice_samples/warm_male_voices/sample_enceladus_warm.wav"
+    },
+    {
+      "name": "Umbriel",
+      "tone": "Thư thả (Easy-going), tự nhiên, mộc mạc, ấm áp không gò bó",
+      "character": "Tông ấm mộc mạc, thoải mái, tự nhiên như trò chuyện ngoài đời",
+      "sample_path": "projects/test_voice_there_is_there_are/voice_samples/warm_male_voices/sample_umbriel_warm.wav"
+    },
+    {
+      "name": "Sadaltager",
+      "tone": "Trí tuệ (Knowledgeable), trầm tĩnh, ấm áp của người thầy thông thái",
+      "character": "Tông ấm khoan thai, điềm tĩnh, tạo sự tin cậy cao",
+      "sample_path": "projects/test_voice_there_is_there_are/voice_samples/warm_male_voices/sample_sadaltager_warm.wav"
+    },
+    {
+      "name": "Zubenelgenubi",
+      "tone": "Bình dân (Casual), gần gũi, đời thường, mộc mạc ấm áp",
+      "character": "Tông ấm chân chất, bình dị, dễ tạo thiện cảm",
+      "sample_path": "projects/test_voice_there_is_there_are/voice_samples/warm_male_voices/sample_zubenelgenubi_warm.wav"
+    },
+    {
+      "name": "Achird",
+      "tone": "Thân mật (Friendly), trẻ trung 25 tuổi, nhiệt huyết, gần gũi",
+      "character": "Tông ấm trẻ trung, gia sư hướng dẫn tận tình, năng động",
+      "sample_path": "projects/test_voice_there_is_there_are/voice_samples/sample_achird_25yo.wav"
+    }
+  ],
+  "system_instruction": "[BILINGUAL NATIVE SPEAKER PROFILE]\nBạn là một thầy giáo dạy tiếng Anh 25 tuổi, người song ngữ bản địa (Bilingual Native Speaker) hoàn hảo cả tiếng Việt và tiếng Anh Mỹ.\n\nYêu cầu về hình tượng giọng nói và phát âm:\n1. Độ tuổi & Chất giọng: Giọng nam thanh niên 25 tuổi, trẻ trung, thanh thoát, ấm áp, nhiệt huyết và tràn đầy năng lượng, như một người thầy/gia sư đang trực tiếp trò chuyện với học viên.\n2. Phát âm Tiếng Việt: Chuẩn giọng miền Bắc - Hà Nội, phát âm rõ ràng, tròn vành rõ chữ, chuẩn mọi thanh điệu, tự nhiên, không trịnh trọng già nua.\n3. Phát âm Tiếng Anh: 100% PHÁT ÂM CHUẨN ANH - MỸ BẢN XỨ (NATIVE GENERAL AMERICAN ACCENT).\n   - QUY TẮC BẮT BUỘC (ANTI-VINGLISH): Tuyệt đối KHÔNG đọc tiếng Anh bằng ngữ âm tiếng Việt (cấm tuyệt đối phát âm kiểu Vinglish). Bất cứ khi nào gặp từ, cụm từ hoặc câu tiếng Anh (ví dụ: 'There is', 'There are', 'cat', 'desk', 'books', 'table', 'students', 'milk', 'fridge'...), phải phát âm chuẩn xác như một người Mỹ bản địa với nguyên âm mở chuẩn và âm rhotic /r/ tự nhiên.\n   - RÕ CÁC ÂM CUỐI (CRISP FINAL CONSONANTS): Bật cực kỳ rõ ràng, chuẩn xác các phụ âm cuối (/t/, /d/, /s/, /z/, /k/, /p/, /ks/, /dʒ/...), ví dụ: âm /t/ trong 'cat', âm /k/ trong 'book', âm /ks/ trong 'books', âm /dʒ/ trong 'fridge'.\n   - KHÔNG NUỐT ÂM, KHÔNG NỐI ÂM QUÁ NHANH: Phát âm chuẩn sư phạm cho người mới bắt đầu (Level A1), nhả chữ rõ ràng, không lướt âm, không nuốt âm tiết để học viên nghe chuẩn từng âm vị.\n4. Ngữ điệu sống động (Dynamic Prosody): Lên giọng tự nhiên ở cuối câu hỏi (?), hào hứng ở câu cảm thán hoặc lưu ý (!), trầm ấm dứt khoát ở câu giải thích (.). Tuyệt đối không đọc đều đều một tông giọng.\n5. Nguyên tắc nguyên văn: Đọc chính xác từng từ trong kịch bản được giao, tuyệt đối không tự thêm bớt lời dẫn.\n6. Quy tắc ngắt nghỉ: Sau mỗi câu (ngăn cách bởi dòng trống), dừng lại nghỉ lấy hơi tự nhiên khoảng 0.8 đến 1.0 giây.",
+  "voices": [
+    {
+      "stt": 1,
+      "name": "Zephyr",
+      "gender": "Nữ",
+      "tone": "Tươi sáng (Bright), trong trẻo, tự nhiên",
+      "best_for": "Video giáo dục kỹ năng mềm, giải thích kiến thức thường thức, phong cách trẻ trung",
+      "category": "education"
+    },
+    {
+      "stt": 2,
+      "name": "Puck",
+      "gender": "Nam",
+      "tone": "Lạc quan (Upbeat), sôi nổi, dí dỏm",
+      "best_for": "Video giới thiệu sản phẩm, kể chuyện hài hước, startup, công nghệ sáng tạo",
+      "category": "casual_business"
+    },
+    {
+      "stt": 3,
+      "name": "Charon",
+      "gender": "Nam",
+      "tone": "Trầm ấm, điềm đạm, uy quyền (Informative/Deep)",
+      "best_for": "Video triết lý, kinh tế vĩ mô, chiến lược doanh nghiệp, OKR/KPI, quản trị cấp cao",
+      "category": "business_expert"
+    },
+    {
+      "stt": 4,
+      "name": "Kore",
+      "gender": "Nữ",
+      "tone": "Quyết đoán, đĩnh đạc, tự tin (Firm)",
+      "best_for": "Video đào tạo quản trị, phương pháp luận học tập, tài chính cá nhân, luật",
+      "category": "business_expert"
+    },
+    {
+      "stt": 5,
+      "name": "Fenrir",
+      "gender": "Nam",
+      "tone": "Sôi nổi, tràn đầy năng lượng, dồn dập (Excitable)",
+      "best_for": "Video truyền động lực mạnh mẽ, thể thao, xu hướng công nghệ nóng, tin sốt dẻo",
+      "category": "energetic"
+    },
+    {
+      "stt": 6,
+      "name": "Leda",
+      "gender": "Nữ",
+      "tone": "Trẻ trung, linh hoạt, thân thiện (Youthful)",
+      "best_for": "Video hướng dẫn mẹo vặt, học ngoại ngữ A1, tâm lý giới trẻ, đời sống",
+      "category": "education"
+    },
+    {
+      "stt": 7,
+      "name": "Orus",
+      "gender": "Nam",
+      "tone": "Mạnh mẽ, kiên định, rắn rỏi (Firm)",
+      "best_for": "Video quy trình kỹ thuật, kỷ luật bản thân, lịch sử quân sự, cẩm nang sinh tồn",
+      "category": "authoritative"
+    },
+    {
+      "stt": 8,
+      "name": "Aoede",
+      "gender": "Nữ",
+      "tone": "Nhẹ nhàng, thanh thoát, bay bổng (Breezy)",
+      "best_for": "Video chữa lành, phong cách sống (lifestyle), sức khỏe tinh thần, yoga",
+      "category": "story_healing"
+    },
+    {
+      "stt": 9,
+      "name": "Callirrhoe",
+      "gender": "Nữ",
+      "tone": "Thư thái, tự nhiên, dễ chịu (Easy-going)",
+      "best_for": "Video văn hóa, du lịch, chia sẻ trải nghiệm đời sống, ẩm thực",
+      "category": "casual"
+    },
+    {
+      "stt": 10,
+      "name": "Autonoe",
+      "gender": "Nữ",
+      "tone": "Tươi mới, lanh lợi, dứt khoát (Bright)",
+      "best_for": "Video bài giảng sinh động, phân tích tình huống ngắn, minigame tương tác",
+      "category": "education"
+    },
+    {
+      "stt": 11,
+      "name": "Enceladus",
+      "gender": "Nam",
+      "tone": "Trầm khẽ, thì thầm nhẹ, gần gũi (Breathy)",
+      "best_for": "Video tâm sự đêm muộn, tóm tắt sách tâm lý học, tư vấn nội tâm",
+      "category": "story_healing"
+    },
+    {
+      "stt": 12,
+      "name": "Iapetus",
+      "gender": "Nam",
+      "tone": "Mạch lạc, chuẩn mực, khúc chiết (Clear)",
+      "best_for": "Video lập trình, công nghệ IT, toán học, phân tích dữ liệu, kỹ thuật phần mềm",
+      "category": "tech_science"
+    },
+    {
+      "stt": 13,
+      "name": "Umbriel",
+      "gender": "Nam",
+      "tone": "Thư thả, tự nhiên, không gò bó (Easy-going)",
+      "best_for": "Video podcast vẽ tay, câu chuyện đời thường, trò chuyện mộc mạc",
+      "category": "casual"
+    },
+    {
+      "stt": 14,
+      "name": "Algieba",
+      "gender": "Nam",
+      "tone": "Mượt mà, lịch lãm, truyền cảm (Smooth)",
+      "best_for": "Video marketing, giới thiệu giải pháp dịch vụ cao cấp, bất động sản",
+      "category": "marketing"
+    },
+    {
+      "stt": 15,
+      "name": "Despina",
+      "gender": "Nữ",
+      "tone": "Êm dịu, thanh lịch, uyển chuyển (Smooth)",
+      "best_for": "Video nghệ thuật, lịch sử hội họa, văn học, thẩm mỹ thiết kế",
+      "category": "story_healing"
+    },
+    {
+      "stt": 16,
+      "name": "Erinome",
+      "gender": "Nữ",
+      "tone": "Sắc sảo, chuẩn xác, phát âm rõ từng chữ (Clear)",
+      "best_for": "Video học thuật, giáo trình khoa học song ngữ Việt - Anh, từ vựng chuẩn A1",
+      "category": "tech_science"
+    },
+    {
+      "stt": 17,
+      "name": "Algenib",
+      "gender": "Nam",
+      "tone": "Hơi khàn, dày dặn, trải đời (Gravelly)",
+      "best_for": "Video tóm tắt tiểu sử nhân vật, bài học kinh doanh xương máu, trải nghiệm khởi nghiệp",
+      "category": "story_business"
+    },
+    {
+      "stt": 18,
+      "name": "Rasalgethi",
+      "gender": "Nam",
+      "tone": "Phong thái chuyên gia, đáng tin cậy (Informative)",
+      "best_for": "Video báo cáo thị trường, kinh doanh, đào tạo chuyên sâu, phân tích tài chính",
+      "category": "business_expert"
+    },
+    {
+      "stt": 19,
+      "name": "Laomedeia",
+      "gender": "Nữ",
+      "tone": "Vui tươi, phấn khởi, lôi cuốn (Upbeat)",
+      "best_for": "Video gamification, hoạt động nhóm, ý tưởng sáng tạo, đổi mới nội dung",
+      "category": "energetic"
+    },
+    {
+      "stt": 20,
+      "name": "Achernar",
+      "gender": "Nữ",
+      "tone": "Dịu dàng, đằm thắm, êm ái (Soft)",
+      "best_for": "Video thiền định, tâm sự chia sẻ cảm xúc, chăm sóc sức khỏe tinh thần",
+      "category": "story_healing"
+    },
+    {
+      "stt": 21,
+      "name": "Alnilam",
+      "gender": "Nam",
+      "tone": "Đĩnh đạc, dứt khoát, quyền lực (Firm)",
+      "best_for": "Video định hướng chiến lược, quy tắc lãnh đạo, chính sách doanh nghiệp",
+      "category": "authoritative"
+    },
+    {
+      "stt": 22,
+      "name": "Schedar",
+      "gender": "Nam",
+      "tone": "Cân bằng, đều nhịp, trung tính (Even)",
+      "best_for": "Video tài liệu khoa học, quy trình vận hành chuẩn (SOP), sách nói khoa giáo",
+      "category": "tech_science"
+    },
+    {
+      "stt": 23,
+      "name": "Gacrux",
+      "gender": "Nữ",
+      "tone": "Chững chạc, từng trải, đáng kính (Mature)",
+      "best_for": "Video bài học làm cha mẹ, đạo lý sống, kinh nghiệm quản lý gia đình và tổ chức",
+      "category": "story_life"
+    },
+    {
+      "stt": 24,
+      "name": "Pulcherrima",
+      "gender": "Nam",
+      "tone": "Trực diện, thẳng thắn, dứt khoát (Forward)",
+      "best_for": "Video phê bình, tranh biện, giải quyết nút thắt tư duy, lập luận phản biện",
+      "category": "authoritative"
+    },
+    {
+      "stt": 25,
+      "name": "Achird",
+      "gender": "Nam",
+      "tone": "Thân mật, như một người bạn đồng hành (Friendly)",
+      "best_for": "Video Whiteboard phong cách gia sư hướng dẫn (tutor/coach), bài giảng gần gũi",
+      "category": "education"
+    },
+    {
+      "stt": 26,
+      "name": "Zubenelgenubi",
+      "gender": "Nam",
+      "tone": "Bình dân, gần gũi, đời thường (Casual)",
+      "best_for": "Video giải thích khái niệm phức tạp bằng ngôn ngữ bình dân, ví von đời sống",
+      "category": "casual"
+    },
+    {
+      "stt": 27,
+      "name": "Vindemiatrix",
+      "gender": "Nữ",
+      "tone": "Nhẹ nhàng, khiêm nhường, kiên nhẫn (Gentle)",
+      "best_for": "Video giáo dục trẻ em, bài học tiếng Anh vỡ lòng cho người mới, kiên nhẫn giải thích",
+      "category": "education"
+    },
+    {
+      "stt": 28,
+      "name": "Sadachbia",
+      "gender": "Nam",
+      "tone": "Nhanh nhẹn, hóm hỉnh, bắt tai (Lively)",
+      "best_for": "Video tin tức công nghệ, review nhanh xu hướng, tóm tắt bài viết blog",
+      "category": "energetic"
+    },
+    {
+      "stt": 29,
+      "name": "Sadaltager",
+      "gender": "Nam",
+      "tone": "Trí tuệ, học giả, am tường (Knowledgeable)",
+      "best_for": "Video nghiên cứu khoa học, lịch sử thế giới, phân tích case-study kinh điển",
+      "category": "tech_science"
+    },
+    {
+      "stt": 30,
+      "name": "Sulafat",
+      "gender": "Nữ",
+      "tone": "Ấm áp, truyền cảm hứng, giàu cảm xúc (Warm)",
+      "best_for": "Video truyền động lực, kể chuyện thành công, thông điệp nhân văn, ý nghĩa cuộc sống",
+      "category": "story_life"
+    }
+  ]
+}

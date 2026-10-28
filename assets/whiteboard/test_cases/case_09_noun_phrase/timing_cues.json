@@ -1,0 +1,61 @@
+{
+  "totalDurationMs": 56568,
+  "cues": [
+    {
+      "index": 1,
+      "startMs": 500,
+      "endMs": 6932,
+      "durationMs": 6432,
+      "text": "Chào các bạn, hôm nay chúng ta cùng học cách xây dựng một cụm danh từ: Build a noun phrase."
+    },
+    {
+      "index": 2,
+      "startMs": 7432,
+      "endMs": 13000,
+      "durationMs": 5568,
+      "text": "Cấu trúc cơ bản gồm ba thành phần: Số lượng, Tính từ và Danh từ chính."
+    },
+    {
+      "index": 3,
+      "startMs": 13500,
+      "endMs": 19284,
+      "durationMs": 5784,
+      "text": "Bắt đầu với từ three: đứng đầu chỉ số lượng, đóng vai trò là một Number."
+    },
+    {
+      "index": 4,
+      "startMs": 19784,
+      "endMs": 25856,
+      "durationMs": 6072,
+      "text": "Tiếp theo là hai tính từ Adjective: small chỉ kích thước, và red chỉ màu sắc."
+    },
+    {
+      "index": 5,
+      "startMs": 26356,
+      "endMs": 31780,
+      "durationMs": 5424,
+      "text": "Đứng cuối cùng là danh từ trung tâm: apples, giữ vai trò là Noun."
+    },
+    {
+      "index": 6,
+      "startMs": 32280,
+      "endMs": 38832,
+      "durationMs": 6552,
+      "text": "Kết hợp lại, ta có cụm từ: three small red apples, nghĩa là ba quả táo nhỏ màu đỏ."
+    },
+    {
+      "index": 7,
+      "startMs": 39332,
+      "endMs": 47276,
+      "durationMs": 7944,
+      "text": "Xem thêm hai ví dụ tương tự: chiếc ghế gỗ: a wooden chair; và chú chó vui vẻ: the happy dog."
+    },
+    {
+      "index": 8,
+      "startMs": 47776,
+      "endMs": 54568,
+      "durationMs": 6792,
+      "text": "Khi đặt vào câu: The three small apples are fresh, thì apples chính là danh từ trung tâm được nhấn mạnh."
+    }
+  ]
+}

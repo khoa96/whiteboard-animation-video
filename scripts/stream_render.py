@@ -68,7 +68,7 @@ class Config:
     # 这里描述的是真实落墨接触点，而非手部图像的外框。
     tip_anchor_x: float = 0.0
     tip_anchor_y: float = 0.0
-    canvas_hex: str = "#F6F1E3"    # 画布底色
+    canvas_hex: str = "#FFFFFF"    # 画布底色: Nền trắng thuần chuẩn mực
     match_bg: bool = True          # 把原图背景染成画布底色，使起笔/上色背景一致
     match_bg_threshold: int = 28   # 与原图背景色差异小于此值视为背景（BGR 三通道和）
     steps_per_frame: int = 4       # 每帧推进的落点数基准

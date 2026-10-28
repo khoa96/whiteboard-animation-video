@@ -1,0 +1,187 @@
+{
+  "sceneId": "scene-01-vong-tuan-hoan-nuoc",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "storyBasis": "Vòng tuần hoàn của nước: Ánh nắng làm ấm biển -> Bốc hơi -> Ngưng tụ thành mây -> Mưa rơi -> Dòng chảy hồi lưu về sông biển khép kín chu trình.",
+  "sceneDurationMs": 33500,
+  "elements": [
+    {
+      "id": "el-01-title",
+      "label": "Tiêu đề: VÒNG TUẦN HOÀN CỦA NƯỚC",
+      "sequence": 1,
+      "type": "text",
+      "colorMode": "none",
+      "narrativeRole": "Giới thiệu chủ đề bài giảng khoa học",
+      "subtitle": "Bạn có bao giờ tự hỏi: những giọt mưa từ đâu rơi xuống?",
+      "region": {
+        "x": 200,
+        "y": 30,
+        "width": 1520,
+        "height": 110
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 300,
+        "durationMs": 1800,
+        "maskPaddingPx": 10,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-02-sun",
+      "label": "Icon Mặt trời tỏa nắng ấm áp",
+      "sequence": 2,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "narrativeRole": "Nguồn nhiệt năng khởi đầu chu trình",
+      "subtitle": "Bạn có bao giờ tự hỏi: những giọt mưa từ đâu rơi xuống?",
+      "region": {
+        "x": 80,
+        "y": 150,
+        "width": 440,
+        "height": 280
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 2200,
+        "durationMs": 2200,
+        "maskPaddingPx": 10,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-03-ocean",
+      "label": "Mặt nước Sông & Đại dương",
+      "sequence": 3,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "narrativeRole": "Nguồn nước hấp thu nhiệt lượng mặt trời",
+      "subtitle": "Mọi thứ bắt đầu khi ánh nắng mặt trời làm ấm các dòng sông và đại dương.",
+      "region": {
+        "x": 80,
+        "y": 760,
+        "width": 560,
+        "height": 280
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 4900,
+        "durationMs": 4800,
+        "maskPaddingPx": 10,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-04-evaporation",
+      "label": "3 Mũi tên lượn sóng: 1. BỐC HƠI",
+      "sequence": 4,
+      "type": "arrow",
+      "colorMode": "none",
+      "narrativeRole": "Hơi nước bốc lên từ mặt biển",
+      "subtitle": "Nước ấm dần lên, biến thành hơi nước nhẹ bay vút lên bầu trời.",
+      "region": {
+        "x": 80,
+        "y": 440,
+        "width": 440,
+        "height": 300
+      },
+      "reveal": {
+        "direction": "bottom_to_top",
+        "startMs": 10400,
+        "durationMs": 4500,
+        "maskPaddingPx": 10,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-05-cloud",
+      "label": "Cụm đám mây: 2. NGƯNG TỤ",
+      "sequence": 5,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "narrativeRole": "Hơi nước ngưng tụ thành mây trắng",
+      "subtitle": "Lên cao gặp lạnh, các hạt hơi nước gom lại thành những đám mây trắng.",
+      "region": {
+        "x": 1360,
+        "y": 150,
+        "width": 480,
+        "height": 270
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 15800,
+        "durationMs": 4800,
+        "maskPaddingPx": 10,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-06-rain",
+      "label": "Mưa rơi xuống sườn núi: 3. MƯA RƠI",
+      "sequence": 6,
+      "type": "arrow",
+      "colorMode": "none",
+      "narrativeRole": "Mây nặng hạt tạo thành cơn mưa rơi xuống",
+      "subtitle": "Khi mây quá nặng, nước rơi xuống mặt đất tạo thành những cơn mưa.",
+      "region": {
+        "x": 1360,
+        "y": 440,
+        "width": 480,
+        "height": 350
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 21400,
+        "durationMs": 4700,
+        "maskPaddingPx": 10,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-07-river-flow",
+      "label": "Dòng sông hồi lưu: 4. DÒNG CHẢY HỒI LƯU",
+      "sequence": 7,
+      "type": "arrow",
+      "colorMode": "none",
+      "narrativeRole": "Dòng nước từ sườn núi chảy về biển",
+      "subtitle": "Nước mưa chảy về sông suối, tiếp tục một vòng tuần hoàn bất tận.",
+      "region": {
+        "x": 660,
+        "y": 760,
+        "width": 1180,
+        "height": 280
+      },
+      "reveal": {
+        "direction": "right_to_left",
+        "startMs": 26900,
+        "durationMs": 3800,
+        "maskPaddingPx": 10,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-08-cycle-box",
+      "label": "Khung trung tâm: CHU TRÌNH KHÉP KÍN",
+      "sequence": 8,
+      "type": "box",
+      "colorMode": "none",
+      "narrativeRole": "Đúc kết quy luật tuần hoàn bất tận của nước",
+      "subtitle": "Nước mưa chảy về sông suối, tiếp tục một vòng tuần hoàn bất tận.",
+      "region": {
+        "x": 580,
+        "y": 160,
+        "width": 720,
+        "height": 580
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 30800,
+        "durationMs": 1700,
+        "maskPaddingPx": 10,
+        "protectedRegions": []
+      }
+    }
+  ]
+}

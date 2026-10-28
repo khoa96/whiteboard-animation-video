@@ -1,0 +1,190 @@
+{
+  "sceneId": "test_case_segmentation_13_environment",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "sceneDurationMs": 22000,
+  "elements": [
+    {
+      "id": "el-01-title",
+      "label": "Tiêu đề: ENVIRONMENT AND SUSTAINABILITY",
+      "sequence": 1,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 100,
+        "y": 40,
+        "width": 1720,
+        "height": 120
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 500,
+        "durationMs": 2000,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-02-renewable-energy",
+      "label": "Mục 1: RENEWABLE ENERGY (Năng lượng tái tạo)",
+      "sequence": 2,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 100,
+        "y": 160,
+        "width": 380,
+        "height": 490
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 2600,
+        "durationMs": 2200,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-03-emissions",
+      "label": "Mục 2: EMISSIONS (Khí thải công nghiệp)",
+      "sequence": 3,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 480,
+        "y": 160,
+        "width": 480,
+        "height": 430
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 4900,
+        "durationMs": 2200,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-04-recycling",
+      "label": "Mục 3: RECYCLING (Tái chế rác thải)",
+      "sequence": 4,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 960,
+        "y": 160,
+        "width": 480,
+        "height": 430
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 7200,
+        "durationMs": 2200,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-05-landfill",
+      "label": "Mục 4: LANDFILL (Bãi chôn lấp rác)",
+      "sequence": 5,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1440,
+        "y": 160,
+        "width": 420,
+        "height": 430
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 9500,
+        "durationMs": 2200,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-06-drought",
+      "label": "Mục 5: DROUGHT (Hạn hán khô cằn)",
+      "sequence": 6,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 100,
+        "y": 650,
+        "width": 380,
+        "height": 400
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 11800,
+        "durationMs": 2200,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-07-deforestation",
+      "label": "Mục 6: DEFORESTATION (Nạn phá rừng)",
+      "sequence": 7,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 480,
+        "y": 590,
+        "width": 480,
+        "height": 460
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 14100,
+        "durationMs": 2200,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-08-conservation",
+      "label": "Mục 7: CONSERVATION (Bảo tồn thiên nhiên)",
+      "sequence": 8,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 960,
+        "y": 590,
+        "width": 480,
+        "height": 460
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 16400,
+        "durationMs": 2200,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-09-biodiversity",
+      "label": "Mục 8: BIODIVERSITY (Đa dạng sinh học)",
+      "sequence": 9,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1440,
+        "y": 590,
+        "width": 420,
+        "height": 460
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 18700,
+        "durationMs": 2200,
+        "maskPaddingPx": 6,
+        "protectedRegions": []
+      }
+    }
+  ]
+}

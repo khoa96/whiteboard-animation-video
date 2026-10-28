@@ -1,0 +1,130 @@
+{
+  "sceneId": "test_case_10_scene_06",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "sceneDurationMs": 42220,
+  "elements": [
+    {
+      "id": "el-01-title",
+      "label": "Title: SPECIAL CASES - FIRST SOUND",
+      "sequence": 1,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 690,
+        "y": 68,
+        "width": 533,
+        "height": 157
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 500,
+        "durationMs": 3800,
+        "maskPaddingPx": 10,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-02-card-hour",
+      "label": "Card 1: an hour (H IS SILENT)",
+      "sequence": 2,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 139,
+        "y": 68,
+        "width": 539,
+        "height": 424
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 5000,
+        "durationMs": 7200,
+        "maskPaddingPx": 8,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-03-card-honest",
+      "label": "Card 2: an honest man (H IS SILENT)",
+      "sequence": 3,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 1241,
+        "y": 68,
+        "width": 539,
+        "height": 424
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 13000,
+        "durationMs": 5400,
+        "maskPaddingPx": 8,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-04-card-university",
+      "label": "Card 3: a university (STARTS WITH Y SOUND)",
+      "sequence": 4,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 139,
+        "y": 504,
+        "width": 805,
+        "height": 412
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 19200,
+        "durationMs": 6500,
+        "maskPaddingPx": 8,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-05-card-european",
+      "label": "Card 4: a European country (STARTS WITH Y SOUND)",
+      "sequence": 5,
+      "type": "colored_image",
+      "colorMode": "wash",
+      "region": {
+        "x": 956,
+        "y": 504,
+        "width": 823,
+        "height": 412
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 26500,
+        "durationMs": 5600,
+        "maskPaddingPx": 8,
+        "protectedRegions": []
+      }
+    },
+    {
+      "id": "el-06-bottom-reminder",
+      "label": "Reminder: LISTEN TO THE FIRST SOUND",
+      "sequence": 6,
+      "type": "text",
+      "colorMode": "none",
+      "region": {
+        "x": 623,
+        "y": 922,
+        "width": 672,
+        "height": 36
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 33000,
+        "durationMs": 6200,
+        "maskPaddingPx": 8,
+        "protectedRegions": []
+      }
+    }
+  ]
+}

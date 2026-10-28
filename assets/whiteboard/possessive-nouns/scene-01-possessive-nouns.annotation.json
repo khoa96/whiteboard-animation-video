@@ -1,0 +1,349 @@
+{
+  "sceneId": "scene-01-possessive-nouns",
+  "canvas": {
+    "width": 1376,
+    "height": 768
+  },
+  "sceneDurationMs": 39500,
+  "storyBasis": "Infographic dạy ngữ pháp tiếng Anh A1: Danh từ sở hữu cách (Possessive Nouns) - so sánh singular (girl's) và plural (girls').",
+  "elements": [
+    {
+      "id": "title_main",
+      "label": "Tiêu đề POSSESSIVE NOUNS",
+      "type": "text",
+      "colorMode": "none",
+      "sequence": 1,
+      "narrativeRole": "Giới thiệu tiêu đề bài học",
+      "subtitle": "Chào mừng bạn đến với bài học về danh từ sở hữu cách: \"Possessive Nouns - Who owns what?\"",
+      "region": {
+        "x": 350,
+        "y": 35,
+        "width": 680,
+        "height": 80
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 400,
+        "durationMs": 2800,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [350, 75],
+        "end": [1030, 75]
+      }
+    },
+    {
+      "id": "subtitle_main",
+      "label": "Tiêu đề phụ WHO OWNS WHAT?",
+      "type": "text",
+      "colorMode": "none",
+      "sequence": 2,
+      "narrativeRole": "Khơi gợi câu hỏi bản chất sở hữu",
+      "subtitle": "Chào mừng bạn đến với bài học về danh từ sở hữu cách: \"Possessive Nouns - Who owns what?\"",
+      "region": {
+        "x": 465,
+        "y": 115,
+        "width": 445,
+        "height": 60
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 3400,
+        "durationMs": 2200,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [465, 145],
+        "end": [910, 145]
+      }
+    },
+    {
+      "id": "heading_one_girl",
+      "label": "Tiêu đề nhóm ONE GIRL",
+      "type": "text",
+      "colorMode": "none",
+      "sequence": 3,
+      "narrativeRole": "Xác định trường hợp một người sở hữu",
+      "subtitle": "Khi chỉ có một người sở hữu, như \"One girl\", chiếc cặp của cô bé được viết là \"the girl's bag\", với dấu phẩy nằm trước chữ s.",
+      "region": {
+        "x": 180,
+        "y": 152,
+        "width": 215,
+        "height": 55
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 6300,
+        "durationMs": 1800,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [180, 179],
+        "end": [395, 179]
+      }
+    },
+    {
+      "id": "illustration_one_girl",
+      "label": "Minh họa 1 cô bé và chiếc cặp",
+      "type": "colored_image",
+      "colorMode": "wash",
+      "sequence": 4,
+      "narrativeRole": "Vẽ hình tượng trực quan cô bé và chiếc cặp",
+      "subtitle": "Khi chỉ có một người sở hữu, như \"One girl\", chiếc cặp của cô bé được viết là \"the girl's bag\", với dấu phẩy nằm trước chữ s.",
+      "region": {
+        "x": 170,
+        "y": 208,
+        "width": 232,
+        "height": 245
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 8300,
+        "durationMs": 4200,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [286, 208],
+        "end": [286, 453]
+      }
+    },
+    {
+      "id": "label_one_girl",
+      "label": "Nhãn the girl's bag",
+      "type": "text",
+      "colorMode": "none",
+      "sequence": 5,
+      "narrativeRole": "Ghi chú cụm từ sở hữu cách số ít",
+      "subtitle": "Khi chỉ có một người sở hữu, như \"One girl\", chiếc cặp của cô bé được viết là \"the girl's bag\", với dấu phẩy nằm trước chữ s.",
+      "region": {
+        "x": 145,
+        "y": 436,
+        "width": 298,
+        "height": 72
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 12700,
+        "durationMs": 2100,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [145, 472],
+        "end": [443, 472]
+      }
+    },
+    {
+      "id": "arrow_compare",
+      "label": "Mũi tên so sánh sang số nhiều",
+      "type": "arrow",
+      "colorMode": "none",
+      "sequence": 6,
+      "narrativeRole": "Chuyển tiếp so sánh từ 1 người sang nhiều người",
+      "subtitle": "Còn khi có từ hai người trở lên, như \"Two girls\", những chiếc cặp của các cô bé được viết là \"the girls' bags\", với dấu phẩy nằm sau chữ s.",
+      "region": {
+        "x": 640,
+        "y": 285,
+        "width": 96,
+        "height": 68
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 15400,
+        "durationMs": 1200,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [640, 319],
+        "end": [736, 319]
+      }
+    },
+    {
+      "id": "heading_two_girls",
+      "label": "Tiêu đề nhóm TWO GIRLS",
+      "type": "text",
+      "colorMode": "none",
+      "sequence": 7,
+      "narrativeRole": "Xác định trường hợp nhiều người sở hữu",
+      "subtitle": "Còn khi có từ hai người trở lên, như \"Two girls\", những chiếc cặp của các cô bé được viết là \"the girls' bags\", với dấu phẩy nằm sau chữ s.",
+      "region": {
+        "x": 975,
+        "y": 152,
+        "width": 260,
+        "height": 55
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 16800,
+        "durationMs": 1800,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [975, 179],
+        "end": [1235, 179]
+      }
+    },
+    {
+      "id": "illustration_two_girls",
+      "label": "Minh họa 2 cô bé và 2 chiếc cặp",
+      "type": "colored_image",
+      "colorMode": "wash",
+      "sequence": 8,
+      "narrativeRole": "Vẽ hình tượng trực quan 2 cô bé và các cặp sách",
+      "subtitle": "Còn khi có từ hai người trở lên, như \"Two girls\", những chiếc cặp của các cô bé được viết là \"the girls' bags\", với dấu phẩy nằm sau chữ s.",
+      "region": {
+        "x": 910,
+        "y": 206,
+        "width": 390,
+        "height": 246
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 18800,
+        "durationMs": 4200,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [1105, 206],
+        "end": [1105, 452]
+      }
+    },
+    {
+      "id": "label_two_girls",
+      "label": "Nhãn the girls' bags",
+      "type": "text",
+      "colorMode": "none",
+      "sequence": 9,
+      "narrativeRole": "Ghi chú cụm từ sở hữu cách số nhiều",
+      "subtitle": "Còn khi có từ hai người trở lên, như \"Two girls\", những chiếc cặp của các cô bé được viết là \"the girls' bags\", với dấu phẩy nằm sau chữ s.",
+      "region": {
+        "x": 945,
+        "y": 436,
+        "width": 320,
+        "height": 72
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 23200,
+        "durationMs": 1600,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [945, 472],
+        "end": [1265, 472]
+      }
+    },
+    {
+      "id": "heading_rule",
+      "label": "Tiêu đề THE RULE",
+      "type": "text",
+      "colorMode": "none",
+      "sequence": 10,
+      "narrativeRole": "Tập trung sự chú ý vào quy tắc ngữ pháp",
+      "subtitle": "Quy tắc là: danh từ số ít thêm phẩy s, còn danh từ số nhiều có sẵn s chỉ cần thêm một dấu phẩy.",
+      "region": {
+        "x": 540,
+        "y": 500,
+        "width": 320,
+        "height": 60
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 25300,
+        "durationMs": 1600,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [540, 530],
+        "end": [860, 530]
+      }
+    },
+    {
+      "id": "rule_content",
+      "label": "Nội dung quy tắc số ít và số nhiều",
+      "type": "text",
+      "colorMode": "none",
+      "sequence": 11,
+      "narrativeRole": "Trình bày 2 dòng công thức vàng",
+      "subtitle": "Quy tắc là: danh từ số ít thêm phẩy s, còn danh từ số nhiều có sẵn s chỉ cần thêm một dấu phẩy.",
+      "region": {
+        "x": 490,
+        "y": 545,
+        "width": 445,
+        "height": 86
+      },
+      "reveal": {
+        "direction": "top_to_bottom",
+        "startMs": 27100,
+        "durationMs": 4600,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [712, 545],
+        "end": [712, 631]
+      }
+    },
+    {
+      "id": "sentence_example",
+      "label": "Câu ví dụ The girl's bag is blue.",
+      "type": "text",
+      "colorMode": "none",
+      "sequence": 12,
+      "narrativeRole": "Đưa câu ví dụ hoàn chỉnh vào ngữ cảnh thực tế",
+      "subtitle": "Ví dụ: \"The girl's bag is blue.\" Chiếc cặp của cô bé có màu xanh dương.",
+      "region": {
+        "x": 300,
+        "y": 636,
+        "width": 784,
+        "height": 75
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 32400,
+        "durationMs": 3800,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [300, 673],
+        "end": [1084, 673]
+      }
+    },
+    {
+      "id": "underline_emphasis",
+      "label": "Nét gạch chân dưới girl's",
+      "type": "underline",
+      "colorMode": "none",
+      "sequence": 13,
+      "narrativeRole": "Cử chỉ nhấn mạnh từ sở hữu then chốt",
+      "subtitle": "Ví dụ: \"The girl's bag is blue.\" Chiếc cặp của cô bé có màu xanh dương.",
+      "region": {
+        "x": 304,
+        "y": 707,
+        "width": 360,
+        "height": 42
+      },
+      "reveal": {
+        "direction": "left_to_right",
+        "startMs": 36400,
+        "durationMs": 1600,
+        "maskPaddingPx": 0,
+        "protectedRegions": []
+      },
+      "handPath": {
+        "start": [304, 728],
+        "end": [664, 728]
+      }
+    }
+  ]
+}

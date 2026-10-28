@@ -152,15 +152,20 @@ cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env
 Các giá trị chính trong `.env`:
 
 ```env
-# edge = miễn phí, vbee = trả phí theo ký tự
-TTS_PROVIDER=edge
+# gemini = Google AI Studio (chất lượng cao nhất, song ngữ A1 chuẩn, 30 giọng), edge = miễn phí, vbee = trả phí theo ký tự
+TTS_PROVIDER=gemini
 
-# Vbee: dán nguyên mã giọng copy từ giao diện Vbee
-# Edge: vi-VN-NamMinhNeural (nam) hoặc vi-VN-HoaiMyNeural (nữ)
-TTS_VOICE=vi-VN-NamMinhNeural
+# Giọng đọc:
+# - Gemini (30 giọng): Charon (nam trầm ấm uy tín), Puck (nam hào hứng), Kore (nữ đĩnh đạc), Erinome (nữ chuẩn học thuật), Sulafat (nữ ấm áp)...
+# - Edge: vi-VN-NamMinhNeural (nam) hoặc vi-VN-HoaiMyNeural (nữ)
+# - Vbee: dán nguyên mã giọng copy từ giao diện Vbee
+TTS_VOICE=Charon
 
-# Tốc độ đọc: 1.0 = bình thường, 1.1 = nhanh hơn 10%
-TTS_SPEED=1.1
+# Tốc độ đọc: 1.0 = bình thường, 1.05 = nhanh hơn 5%
+TTS_SPEED=1.0
+
+# Google AI Studio API Keys (điền 1 hoặc nhiều key cách nhau bởi dấu phẩy để tự động xoay tua)
+GEMINI_API_KEYS=your_first_key,your_second_key
 
 # Chỉ cần khi dùng Vbee
 VBEE_APP_ID=...

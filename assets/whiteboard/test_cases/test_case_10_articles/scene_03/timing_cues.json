@@ -1,0 +1,47 @@
+{
+  "totalDurationMs": 32908,
+  "cues": [
+    {
+      "index": 1,
+      "startMs": 500,
+      "endMs": 3692,
+      "durationMs": 3192,
+      "text": "A và AN được gọi là mạo từ không xác định."
+    },
+    {
+      "index": 2,
+      "startMs": 4192,
+      "endMs": 11680,
+      "durationMs": 7488,
+      "text": "Ở mức cơ bản, chúng thường đứng trước danh từ đếm được số ít khi nói đến một người hoặc vật chưa xác định cụ thể."
+    },
+    {
+      "index": 3,
+      "startMs": 12180,
+      "endMs": 15372,
+      "durationMs": 3192,
+      "text": "Ví dụ, một cuốn sách: a book."
+    },
+    {
+      "index": 4,
+      "startMs": 15872,
+      "endMs": 18584,
+      "durationMs": 2712,
+      "text": "Một quả táo: an apple."
+    },
+    {
+      "index": 5,
+      "startMs": 19084,
+      "endMs": 26380,
+      "durationMs": 7296,
+      "text": "Ta không dùng A hoặc AN trực tiếp trước danh từ số nhiều như books, hoặc danh từ không đếm được như water."
+    },
+    {
+      "index": 6,
+      "startMs": 26880,
+      "endMs": 30408,
+      "durationMs": 3528,
+      "text": "Bài học này tập trung vào danh từ đếm được số ít."
+    }
+  ]
+}

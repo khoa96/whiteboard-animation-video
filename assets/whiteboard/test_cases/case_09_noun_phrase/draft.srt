@@ -1,0 +1,31 @@
+1
+00:00:00,500 --> 00:00:05,000
+Chào các bạn, hôm nay chúng ta cùng học cách xây dựng một cụm danh từ: Build a noun phrase.
+
+2
+00:00:05,500 --> 00:00:10,000
+Cấu trúc cơ bản gồm ba thành phần: Số lượng, Tính từ và Danh từ chính.
+
+3
+00:00:10,500 --> 00:00:16,000
+Bắt đầu với từ three: đứng đầu chỉ số lượng, đóng vai trò là một NUMBER.
+
+4
+00:00:16,500 --> 00:00:23,000
+Tiếp theo là hai tính từ ADJECTIVE: small chỉ kích thước, và red chỉ màu sắc.
+
+5
+00:00:23,500 --> 00:00:29,000
+Đứng cuối cùng là danh từ trung tâm: apples, giữ vai trò là NOUN.
+
+6
+00:00:29,500 --> 00:00:36,000
+Kết hợp lại, ta có cụm từ: three small red apples, nghĩa là ba quả táo nhỏ màu đỏ.
+
+7
+00:00:36,500 --> 00:00:44,500
+Xem thêm hai ví dụ tương tự: chiếc ghế gỗ: a wooden chair; và chú chó vui vẻ: the happy dog.
+
+8
+00:00:45,000 --> 00:00:53,000
+Khi đặt vào câu: The three small apples are fresh, thì apples chính là danh từ trung tâm được nhấn mạnh.
