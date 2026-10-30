@@ -37,11 +37,16 @@ from typing import Any
 from pydub import AudioSegment
 from pydub.silence import detect_silence
 
-DEFAULT_MODEL = "gemini-2.5-flash-preview-tts"
-DEFAULT_VOICE = "Alnilam"  # Giọng nam đĩnh đạc, chuẩn ngữ âm song ngữ Việt - Anh bản xứ
+AVAILABLE_TTS_MODELS = [
+    "gemini-3.8-flash-tts",         # Tier 1: Mới nhất, chất lượng âm thanh cao nhất
+    "gemini-3.1-flash-tts-preview", # Tier 2: Rất ổn định, biểu cảm phong phú
+    "gemini-3.8-flash-lite-tts",    # Tier 3: Siêu tốc, nhẹ nhàng
+    "gemini-2.5-flash-preview-tts"  # Tier 4: Bản gốc dự phòng
+]
+DEFAULT_MODEL = "gemini-3.8-flash-tts"
+DEFAULT_VOICE = "Alnilam"
 DEFAULT_SAMPLE_RATE = 24000
 TARGET_SAMPLE_RATE = 44100
-
 
 def load_voice_config() -> dict[str, Any]:
     """Đọc cấu hình giọng nói và model từ config/tts_voices.json (nếu có)."""
@@ -62,26 +67,68 @@ SYSTEM_INSTRUCTION = (
     "1. Độ tuổi & Chất giọng: Giọng nam thanh niên 25 tuổi, trẻ trung, thanh thoát, ấm áp, nhiệt huyết và tràn đầy năng lượng, như một người thầy/gia sư đang trực tiếp trò chuyện với học viên.\n"
     "2. Phát âm Tiếng Việt: Chuẩn giọng miền Bắc - Hà Nội, phát âm rõ ràng, tròn vành rõ chữ, chuẩn mọi thanh điệu, tự nhiên, không trịnh trọng già nua.\n"
     "3. Phát âm Tiếng Anh: 100% PHÁT ÂM CHUẨN ANH - MỸ BẢN XỨ (NATIVE GENERAL AMERICAN ACCENT).\n"
-    "   - QUY TẮC BẮT BUỘC (ANTI-VINGLISH): Tuyệt đối KHÔNG đọc tiếng Anh bằng ngữ âm tiếng Việt (cấm tuyệt đối phát âm kiểu Vinglish). Bất cứ khi nào gặp từ, cụm từ hoặc câu tiếng Anh (ví dụ: 'There is', 'There are', 'cat', 'desk', 'books', 'table', 'students', 'milk', 'fridge'...), phải phát âm chuẩn xác như một người Mỹ bản địa với nguyên âm mở chuẩn và âm rhotic /r/ tự nhiên.\n"
-    "   - RÕ CÁC ÂM CUỐI (CRISP FINAL CONSONANTS): Bật cực kỳ rõ ràng, chuẩn xác các phụ âm cuối (/t/, /d/, /s/, /z/, /k/, /p/, /ks/, /dʒ/...), ví dụ: âm /t/ trong 'cat', âm /k/ trong 'book', âm /ks/ trong 'books', âm /dʒ/ trong 'fridge'.\n"
+    "   - QUY TẮC BẮT BUỘC (ANTI-VINGLISH): Tuyệt đối KHÔNG đọc tiếng Anh bằng ngữ âm tiếng Việt (cấm tuyệt đối phát âm kiểu Vinglish). Bất cứ khi nào gặp từ, cụm từ hoặc câu tiếng Anh (ví dụ: 'There is', 'There are', 'take a break', 'have a rest', 'break', 'rest', 'practice'...), phải phát âm chuẩn xác như một người Mỹ bản địa với nguyên âm mở chuẩn và âm rhotic /r/ tự nhiên.\n"
+    "   - RÕ CÁC ÂM CUỐI (CRISP FINAL CONSONANTS): Bật cực kỳ rõ ràng, chuẩn xác các phụ âm cuối (/t/, /d/, /s/, /z/, /k/, /p/, /ks/, /dʒ/...), ví dụ: âm /t/ trong 'rest', âm /k/ trong 'break', âm /s/ trong 'practice'.\n"
     "   - KHÔNG NUỐT ÂM, KHÔNG NỐI ÂM QUÁ NHANH: Phát âm chuẩn sư phạm cho người mới bắt đầu (Level A1), nhả chữ rõ ràng, không lướt âm, không nuốt âm tiết để học viên nghe chuẩn từng âm vị.\n"
     "4. Ngữ điệu sống động (Dynamic Prosody): Lên giọng tự nhiên ở cuối câu hỏi (?), hào hứng ở câu cảm thán hoặc lưu ý (!), trầm ấm dứt khoát ở câu giải thích (.). Tuyệt đối không đọc đều đều một tông giọng.\n"
     "5. Nguyên tắc nguyên văn: Đọc chính xác từng từ trong kịch bản được giao, không tự ý thêm bớt lời dẫn.\n"
     "6. Quy tắc ngắt nghỉ: Sau mỗi câu (ngăn cách bởi dòng trống), dừng lại nghỉ lấy hơi tự nhiên khoảng 0.8 đến 1.0 giây."
 )
 
+DAILY_LIMIT_ESTIMATE = 10  # Ước tính hạn mức 10 requests/ngày của Free Tier Google AI Studio
+
+
+def build_gemini_prompt(sentences: list[str], system_instruction: str | None = None) -> str:
+    """
+    Tạo văn bản kịch bản thuần túy cho Gemini TTS.
+
+    LƯU Ý CỐT LÕI:
+      Mô hình Gemini TTS không hỗ trợ developer instruction ('Developer instruction is not enabled for this model').
+      Mọi ký tự đưa vào payload đều bị mô hình đọc to thành lời nói (Audio Modality).
+      Do đó, hàm này CHỈ trả về đúng kịch bản cần đọc, ngăn cách bởi dòng trống để ngắt nghỉ tự nhiên,
+      tuyệt đối KHÔNG ghép chuỗi hướng dẫn cấu hình vào.
+    """
+    formatted_sentences = []
+    for s in sentences:
+        text = s.strip()
+        if not text:
+            continue
+        if not re.search(r"[.!?…]$", text):
+            text = text + "."
+        formatted_sentences.append(text)
+
+    return "\n\n".join(formatted_sentences)
+
 
 class GeminiKeyPool:
-    """Quản lý danh sách API Key với cơ chế xoay vòng và cooldown khi gặp 429."""
+    """Quản lý ma trận 2 chiều: (API Key x Model TTS) với cơ chế xoay tua đa tầng (Tiered Cascade)."""
 
-    def __init__(self, keys: list[str]) -> None:
+    def __init__(self, keys: list[str], models: list[str] | None = None) -> None:
         self.keys = [k.strip() for k in keys if k.strip()]
-        self.cooldowns: dict[str, float] = {}  # key -> cooldown_until_timestamp
-        self._current_index = 0
+        self.models = models or list(AVAILABLE_TTS_MODELS)
+        self.cooldowns: dict[tuple[str, str], float] = {}  # (key, model) -> cooldown_timestamp
+        self.stats: dict[tuple[str, str], dict[str, Any]] = {}
+        self._key_index = 0
+
+        for k in self.keys:
+            for m in self.models:
+                self.stats[(k, m)] = {
+                    "success": 0,
+                    "failed_429": 0,
+                    "exhausted": False,
+                    "retry_in": "",
+                    "last_error": "",
+                }
 
     @classmethod
     def from_env(cls) -> GeminiKeyPool:
-        raw = os.environ.get("GEMINI_API_KEYS") or os.environ.get("GEMINI_API_KEY") or ""
+        raw = (
+            os.environ.get("GEMINI_API_KEYS")
+            or os.environ.get("GEMINI_API_KEY")
+            or os.environ.get("GOOGLE_API_KEYS")
+            or os.environ.get("GOOGLE_API_KEY")
+            or ""
+        )
         keys = re.split(r"[,;\n\r]+", raw)
         keys_file = Path(__file__).resolve().parent.parent / "gemini_keys.txt"
         if keys_file.exists():
@@ -94,63 +141,127 @@ class GeminiKeyPool:
     def has_keys(self) -> bool:
         return len(self.keys) > 0
 
-    def get_key(self) -> str:
+    def get_remaining_quota_str(self, key: str, model: str) -> str:
+        stat = self.stats.get((key, model), {})
+        if stat.get("exhausted", False):
+            return "0 / 10 (Hết)"
+        used = stat.get("success", 0)
+        rem = max(0, DAILY_LIMIT_ESTIMATE - used)
+        return f"~{rem} / 10"
+
+    def get_candidate(self, preferred_model: str | None = None) -> tuple[str, str]:
+        """Lấy cặp (api_key, model) tối ưu nhất theo thứ tự Tiered Cascade."""
         if not self.keys:
             raise RuntimeError(
-                "Chưa cấu hình GEMINI_API_KEYS trong file .env hoặc gemini_keys.txt!\n"
-                "Vui lòng thêm: GEMINI_API_KEYS=key1,key2,key3 vào .env"
+                "Chưa cấu hình GEMINI_API_KEYS / GOOGLE_API_KEYS trong file .env hoặc gemini_keys.txt!\n"
+                "Vui lòng thêm: GOOGLE_API_KEYS=key1,key2 vào .env"
             )
 
         now = time.time()
-        for _ in range(len(self.keys)):
-            key = self.keys[self._current_index]
-            self._current_index = (self._current_index + 1) % len(self.keys)
-            cooldown_until = self.cooldowns.get(key, 0)
-            if now >= cooldown_until:
-                return key
+        # Xếp thứ tự model: preferred_model lên đầu nếu có
+        model_order = [preferred_model] if preferred_model and preferred_model in self.models else []
+        for m in self.models:
+            if m not in model_order:
+                model_order.append(m)
 
-        min_key = min(self.keys, key=lambda k: self.cooldowns.get(k, 0))
-        wait_seconds = max(0.5, self.cooldowns.get(min_key, 0) - now)
-        print(f"  [gemini-pool] Tất cả API keys đang bận, chờ {wait_seconds:.1f}s trước khi thử lại...")
-        time.sleep(wait_seconds)
-        return min_key
+        # 1. Tìm cặp (key, model) khả dụng
+        for model in model_order:
+            for i in range(len(self.keys)):
+                k_idx = (self._key_index + i) % len(self.keys)
+                key = self.keys[k_idx]
+                cd = self.cooldowns.get((key, model), 0)
+                if now >= cd:
+                    self._key_index = (k_idx + 1) % len(self.keys)
+                    return key, model
 
-    def mark_rate_limited(self, key: str, cooldown_seconds: float = 60.0) -> None:
-        self.cooldowns[key] = time.time() + cooldown_seconds
-        print(f"  [gemini-pool] Key ...{key[-6:]} đạt giới hạn quota (429), tạm khóa {cooldown_seconds:.0f}s.")
+        # 2. Nếu tất cả đều cooldown, tìm cặp có thời gian mở khóa gần nhất
+        best_pair = None
+        min_wait = float("inf")
+        for model in model_order:
+            for key in self.keys:
+                wait_sec = max(1.0, self.cooldowns.get((key, model), 0) - now)
+                if wait_sec < min_wait:
+                    min_wait = wait_sec
+                    best_pair = (key, model)
 
-    def mark_invalid(self, key: str, reason: str = "") -> None:
-        if key in self.keys:
-            self.keys.remove(key)
-            if self._current_index >= len(self.keys) and self.keys:
-                self._current_index = 0
-            print(f"  [gemini-pool] Key ...{key[-6:]} không khả dụng ({reason}), đã tạm loại khỏi pool.")
+        wait_sec = min(wait_sec, 60.0)
+        print(f"\n  [gemini-pool] ⏳ Tất cả ({len(self.keys)} keys x {len(self.models)} models) đang chờ mở khóa.", flush=True)
+        print(f"  [gemini-pool] Tự động tạm nghỉ {wait_sec:.1f}s trước khi thử lại với {best_pair[1]}...", flush=True)
+        time.sleep(wait_sec)
+        return best_pair
 
+    def mark_rate_limited(self, key: str, model: str, error_msg: str = "", cooldown_seconds: float = 60.0) -> None:
+        """Đánh dấu quota 429 và phân tích thời gian mở khóa từ Google."""
+        retry_match = re.search(r"Please retry in ([\d\w\.]+)", error_msg)
+        retry_str = retry_match.group(1) if retry_match else f"{cooldown_seconds:.0f}s"
 
-def build_gemini_prompt(sentences: list[str], system_instruction: str | None = None) -> str:
-    """Tạo văn bản kịch bản bảo toàn dấu câu biểu cảm (?, !, .) và dòng trống ngắt nghỉ."""
-    sys_inst = (
-        system_instruction
-        or load_voice_config().get("system_instruction")
-        or SYSTEM_INSTRUCTION
-    )
-    formatted_sentences = []
-    for s in sentences:
-        text = s.strip()
-        if not text:
-            continue
-        # Bảo toàn dấu câu biểu cảm (?, !, .), chỉ thêm dấu chấm nếu câu chưa có dấu kết thúc
-        if not re.search(r"[.!?…]$", text):
-            text = text + "."
-        formatted_sentences.append(text)
+        effective_cd = min(3600.0, cooldown_seconds)
+        self.cooldowns[(key, model)] = time.time() + effective_cd
 
-    body = "\n\n".join(formatted_sentences)
-    return (
-        f"{sys_inst}\n\n"
-        "--- BẮT ĐẦU KỊCH BẢN CẦN ĐỌC ---\n\n"
-        f"{body}\n\n"
-        "--- HẾT KỊCH BẢN ---"
-    )
+        stat = self.stats.setdefault((key, model), {
+            "success": 0, "failed_429": 0, "exhausted": False, "retry_in": "", "last_error": ""
+        })
+        stat["failed_429"] += 1
+        stat["exhausted"] = True
+        stat["retry_in"] = retry_str
+        stat["last_error"] = error_msg[:180]
+
+        print(flush=True)
+        print("  " + "═" * 74, flush=True)
+        print(f"  ⚠️  [QUOTA 429 RESOURCE_EXHAUSTED] ĐÃ ĐẠT HẠN MỨC TRUY CẬP GOOGLE AI STUDIO!", flush=True)
+        print(f"     🔑 API Key:     ...{key[-6:]}", flush=True)
+        print(f"     🤖 Model:       {model}", flush=True)
+        print(f"     📉 Trạng thái:  HẾT HẠN NGẠCH (Hôm nay đã dùng hết 10 requests của model này)", flush=True)
+        if retry_match:
+            print(f"     ⏳ Chờ mở lại: {retry_str} (theo thông báo từ Google API)", flush=True)
+        print("  " + "═" * 74, flush=True)
+        print(flush=True)
+
+    def mark_success(self, key: str, model: str) -> None:
+        stat = self.stats.setdefault((key, model), {
+            "success": 0, "failed_429": 0, "exhausted": False, "retry_in": "", "last_error": ""
+        })
+        stat["success"] += 1
+
+    def print_quota_dashboard(self) -> None:
+        """Hiển thị bảng ma trận trạng thái hạn mức trực quan ra terminal."""
+        now = time.time()
+        print(flush=True)
+        print("╔══════════════════════════════════════════════════════════════════════════════════╗", flush=True)
+        print("║          📊 BẢNG THEO DÕI HẠN MỨC & QUOTA CỦA CÁC API KEYS x MODELS              ║", flush=True)
+        print("╠══════╦═══════════════╦══════════════════════════════╦═════════╦════════════╦═════════════╣", flush=True)
+        print("║ STT  ║ API Key       ║ Model TTS                    ║ Đã dùng ║ Còn lại    ║ Trạng thái  ║", flush=True)
+        print("╠══════╬═══════════════╬══════════════════════════════╬═════════╬════════════╬═════════════╣", flush=True)
+        stt = 0
+        for k_idx, key in enumerate(self.keys, 1):
+            key_tag = f"Key {k_idx} (...{key[-6:]})"
+            for m in self.models:
+                stt += 1
+                cd = self.cooldowns.get((key, m), 0)
+                st = self.stats.get((key, m), {
+                    "success": 0, "failed_429": 0, "exhausted": False, "retry_in": ""
+                })
+                used = st.get("success", 0)
+                if st.get("exhausted", False) or now < cd:
+                    rem_str = "0 / 10"
+                    wait_txt = f"{st.get('retry_in')}" if st.get("retry_in") else f"{int(cd - now)}s"
+                    status = f"🔴 Hết ({wait_txt[:8]})"
+                elif used > 0:
+                    rem = max(0, DAILY_LIMIT_ESTIMATE - used)
+                    rem_str = f"~{rem} / 10"
+                    status = "🟢 Hoạt động"
+                else:
+                    rem_str = f"~{DAILY_LIMIT_ESTIMATE} / 10"
+                    status = "⚪ Sẵn sàng"
+
+                print(
+                    f"║ {stt:<4} ║ {key_tag:<13} ║ {m:<28} ║ {used:<7} ║ {rem_str:<10} ║ {status:<11} ║",
+                    flush=True
+                )
+            if k_idx < len(self.keys):
+                print("╠──────╫───────────────╫──────────────────────────────╫─────────╫────────────╫─────────────╣", flush=True)
+        print("╚══════╩═══════════════╩══════════════════════════════╩═════════╩════════════╩═════════════╝", flush=True)
+        print(flush=True)
 
 
 def call_gemini_speech_api(
@@ -158,42 +269,51 @@ def call_gemini_speech_api(
     voice_name: str,
     key_pool: GeminiKeyPool,
     model: str = DEFAULT_MODEL,
-    max_retries: int = 5,
+    max_retries: int = 10,
 ) -> bytes:
-    """Gọi Gemini generateContent với responseModalities=['AUDIO']."""
-    url_base = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-
-    payload = {
-        "contents": [
-            {
-                "parts": [
-                    {"text": prompt}
-                ]
-            }
-        ],
+    """Gọi Gemini generateContent với cơ chế Multi-Tier Rotation và hiển thị log thời gian thực chi tiết."""
+    payload_dict = {
+        "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
             "responseModalities": ["AUDIO"],
             "speechConfig": {
                 "voiceConfig": {
-                    "prebuiltVoiceConfig": {
-                        "voiceName": voice_name
-                    }
+                    "prebuiltVoiceConfig": {"voiceName": voice_name}
                 }
             }
         }
     }
-    data = json.dumps(payload).encode("utf-8")
+    data = json.dumps(payload_dict).encode("utf-8")
+
+    current_preferred_model = model
 
     for attempt in range(max_retries):
-        api_key = key_pool.get_key()
+        api_key, active_model = key_pool.get_candidate(preferred_model=current_preferred_model)
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{active_model}:generateContent?key={api_key}"
+
+        stat = key_pool.stats.get((api_key, active_model), {})
+        rem_str = key_pool.get_remaining_quota_str(api_key, active_model)
+
+        print(
+            f"  [gemini-tts] 🚀 [Lần thử {attempt + 1}/{max_retries}] Gọi API:\n"
+            f"     • Giọng:    '{voice_name}'\n"
+            f"     • Key:      ...{api_key[-6:]}\n"
+            f"     • Model:    {active_model}\n"
+            f"     • Hạn mức:  Còn lại ước tính {rem_str} (Đã dùng thành công: {stat.get('success', 0)})\n"
+            f"     • Đang chờ Google phản hồi...",
+            flush=True
+        )
+
         req = urllib.request.Request(
-            f"{url_base}?key={api_key}",
+            url,
             data=data,
-            headers={"Content-Type": "application/json", "User-Agent": "whiteboard-gemini-tts/1.0"},
+            headers={"Content-Type": "application/json", "User-Agent": "whiteboard-gemini-tts/2.0"},
             method="POST",
         )
+        t_start = time.time()
         try:
             with urllib.request.urlopen(req, timeout=120) as resp:
+                elapsed = time.time() - t_start
                 resp_json = json.loads(resp.read().decode("utf-8"))
                 candidates = resp_json.get("candidates") or []
                 if not candidates:
@@ -205,40 +325,57 @@ def call_gemini_speech_api(
                         raw_base64 = inline_data["data"]
                         mime_type = inline_data.get("mimeType", "")
                         audio_bytes = base64.b64decode(raw_base64)
+                        key_pool.mark_success(api_key, active_model)
+                        new_rem = key_pool.get_remaining_quota_str(api_key, active_model)
+                        print(
+                            f"  [gemini-tts] ✅ THÀNH CÔNG! (Thời gian gọi: {elapsed:.2f}s)\n"
+                            f"     • Giọng:    '{voice_name}'\n"
+                            f"     • Model:    {active_model} | Key: ...{api_key[-6:]}\n"
+                            f"     • Dữ liệu:  {len(audio_bytes):,} bytes ({mime_type})\n"
+                            f"     • Hạn mức còn lại của model này: {new_rem}\n",
+                            flush=True
+                        )
                         return _standardize_audio(audio_bytes, mime_type)
                 raise RuntimeError(f"Không tìm thấy audio inlineData trong phản hồi: {resp_json}")
 
         except urllib.error.HTTPError as e:
             err_body = e.read().decode("utf-8", errors="ignore")
+            print(flush=True)
+            print(f"  ❌ [LỖI HTTP {e.code}] Key: ...{api_key[-6:]} | Model: {active_model}", flush=True)
             if e.code == 429:
-                key_pool.mark_rate_limited(api_key, cooldown_seconds=60.0)
-                print(f"  [warn] Lỗi 429 trên key ...{api_key[-6:]}, tự động đổi key và thử lại (lần {attempt + 1}/{max_retries})...")
-                time.sleep(2)
+                key_pool.mark_rate_limited(api_key, active_model, error_msg=err_body, cooldown_seconds=3600.0)
+                # Tự động cập nhật và hiển thị Dashboard để user theo dõi ngay
+                key_pool.print_quota_dashboard()
+                # Chuyển sang model tiếp theo
+                current_preferred_model = None
+                print(f"  [gemini-tts] 🔄 Đang tự động chuyển sang Key/Model tiếp theo trong pool...", flush=True)
+                time.sleep(1.0)
                 continue
-            elif e.code in (400, 403):
-                key_pool.mark_invalid(api_key, reason=f"HTTP {e.code}")
-                if key_pool.has_keys():
-                    print(f"  [warn] Key ...{api_key[-6:]} bị lỗi ({e.code}), tự động chuyển sang key khác trong pool...")
-                    time.sleep(1)
-                    continue
-                else:
-                    raise RuntimeError(f"Tất cả API keys trong pool đều bị lỗi {e.code}: {err_body}")
+            elif e.code in (400, 403, 404):
+                print(f"     ⚠️ Chi tiết lỗi: {err_body[:250]}", flush=True)
+                key_pool.mark_rate_limited(api_key, active_model, error_msg=err_body, cooldown_seconds=86400.0)
+                key_pool.print_quota_dashboard()
+                current_preferred_model = None
+                time.sleep(1.0)
+                continue
             else:
+                print(f"     ⚠️ Chi tiết lỗi không lường trước: {err_body[:300]}", flush=True)
                 raise RuntimeError(f"Gemini API HTTP Error {e.code}: {err_body}")
         except Exception as e:
             if attempt == max_retries - 1:
                 raise
-            print(f"  [warn] Lỗi kết nối ({e}), đang thử lại...")
+            print(f"  [gemini-tts] ⚠️ Lỗi kết nối mạng hoặc timeout ({e}), đang thử lại...", flush=True)
             time.sleep(2)
 
-    raise RuntimeError(f"Không thể sinh âm thanh sau {max_retries} lần thử.")
+    raise RuntimeError(f"Không thể sinh âm thanh sau {max_retries} lần thử trên toàn bộ ma trận (Keys x Models).")
 
 
 def _standardize_audio(raw_bytes: bytes, mime_type: str) -> bytes:
     """Chuẩn hóa dữ liệu âm thanh trả về từ Gemini thành chuẩn WAV 44.1kHz Mono."""
-    # Nếu là PCM thô (audio/pcm)
-    if "pcm" in mime_type.lower():
-        # Trích xuất sample rate nếu có (vd: audio/pcm;rate=24000)
+    mime_lower = mime_type.lower()
+    # Nếu là PCM thô (audio/pcm hoặc audio/l16; rate=24000)
+    if "pcm" in mime_lower or "l16" in mime_lower:
+        # Trích xuất sample rate nếu có (vd: audio/pcm;rate=24000 hoặc audio/l16; rate=24000)
         rate_match = re.search(r"rate=(\d+)", mime_type)
         sample_rate = int(rate_match.group(1)) if rate_match else DEFAULT_SAMPLE_RATE
         audio = AudioSegment(

@@ -1,0 +1,17 @@
+# Environment & Secrets (Không bao giờ commit)
+.env
+.env.*
+*.env
+
+# Dependencies
+node_modules/
+
+# Audio outputs & caches
+outputs/
+*.wav
+*.mp3
+*.pcm
+
+# Build artifacts & logs
+dist/
+*.log

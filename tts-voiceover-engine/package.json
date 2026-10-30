@@ -1,0 +1,23 @@
+{
+  "name": "tts-voiceover-engine",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Google AI Studio Custom Voice-Over Engine for Whiteboard Animation",
+  "main": "dist/index.js",
+  "scripts": {
+    "init-voice": "tsx src/index.ts --init-voice",
+    "generate": "tsx src/index.ts --generate",
+    "build": "tsc"
+  },
+  "keywords": ["gemini", "tts", "voice-over", "whiteboard-animation"],
+  "author": "Antigravity",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.5"
+  }
+}

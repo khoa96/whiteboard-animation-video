@@ -5,12 +5,33 @@ __pycache__/
 .venv/
 venv/
 
-# 本地产物（成片体积大，不入库；banana 示例视频保留）
+# Node.js
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 密钥 & Biến môi trường (Tuyệt đối không commit lên git)
+.env
+.env.*
+*.env
+**/.env
+**/.env.*
+**/*.env
+
+# Thư mục nháp thử nghiệm nội bộ (chứa scripts test, logs, dumps)
+scratch/
+**/*.json.dump
+
+# File Media / Âm thanh / Video (Trừ ví dụ cần giữ)
 *.mp4
 !examples/scene-01-monkey-mountain-banana-whiteboard.mp4
 *.mp3
-# 密钥
-.env
+*.wav
+*.pcm
+outputs/
+**/outputs/
 
 # OS
 Thumbs.db
@@ -18,3 +39,5 @@ Thumbs.db
 
 # Local project assets (not committed)
 assets/whiteboard/dien-thoai-cham/
+assets/whiteboard/test_*/
+
