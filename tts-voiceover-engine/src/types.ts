@@ -2,6 +2,9 @@ export interface VoicePersonaConfig {
   voiceDesignPrompt: string;
   styleDirective: string;
   customVoiceId?: string;
+  displayName?: string;
+  gender?: string;
+  pitch?: string;
   createdAt?: string;
   expireTime?: string;
 }
@@ -34,4 +37,6 @@ export interface SynthesizeResult {
   sampleRate: number;
   channels: number;
   mimeType: string;
+  audioTokens: number;
+  estimatedCostUsd: number;
 }

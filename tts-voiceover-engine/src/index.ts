@@ -10,16 +10,32 @@ import { AudioUtils } from './audio-utils.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
+const PROJECT_ROOT = path.resolve(ROOT_DIR, '..');
 
-// Load .env
-dotenv.config({ path: path.join(ROOT_DIR, '.env') });
+// Load .env đa tầng (Ưu tiên tts-voiceover-engine/.env, nếu không có thì đọc root .env)
+const localEnv = path.join(ROOT_DIR, '.env');
+const parentEnv = path.join(PROJECT_ROOT, '.env');
+if (fs.existsSync(localEnv)) {
+  dotenv.config({ path: localEnv });
+}
+if (fs.existsSync(parentEnv)) {
+  dotenv.config({ path: parentEnv });
+}
 
-const apiKey =
+// Trích xuất API Key trả phí chuẩn xác, dọn dẹp các ký tự thừa
+const rawKey =
   process.env.GEMINI_API_KEY ||
   process.env.GOOGLE_API_KEY ||
-  (process.env.GOOGLE_API_KEYS ? process.env.GOOGLE_API_KEYS.split(',')[0].trim() : '');
+  process.env.GEMINI_API_KEYS ||
+  process.env.GOOGLE_API_KEYS ||
+  '';
 
-const modelMode = process.env.TTS_MODEL_MODE || 'gemini-3.8-flash-tts';
+const apiKey = rawKey
+  .replace(/^GEMINI_API_KEYS=/, '')
+  .split(/[,;\s]+/)[0]
+  .trim();
+
+const modelMode = process.env.GEMINI_MODEL || process.env.TTS_MODEL_MODE || 'gemini-3.8-flash-tts';
 const customVoiceId = process.env.CUSTOM_VOICE_ID;
 const fallbackVoice = process.env.PREBUILT_FALLBACK_VOICE || 'Achird';
 
@@ -30,6 +46,7 @@ async function main() {
 
   if (!apiKey) {
     console.error('❌ [ERROR] Chưa cấu hình GEMINI_API_KEY trong file .env!');
+    console.error('👉 Vui lòng điền GEMINI_API_KEY=your_paid_api_key vào file .env');
     process.exit(1);
   }
 
@@ -38,7 +55,7 @@ async function main() {
   // 1. Chế độ khởi tạo Custom Voice ID
   if (isInitVoice) {
     console.log('═'.repeat(70));
-    console.log('🎙️ KHỞI TẠO CUSTOM VOICE ID QUA GOOGLE VOICE DESIGN API');
+    console.log('🎙️ KHỞI TẠO CUSTOM VOICE ID QUA GOOGLE VOICE DESIGN API (PAID TIER)');
     console.log('═'.repeat(70));
     try {
       const voiceId = await voiceManager.ensureVoiceId(true);
@@ -57,18 +74,20 @@ async function main() {
     console.log('🎙️ HỆ THỐNG TẠO VOICE-OVER ĐẶC TRƯNG CHO KÊNH (GOOGLE AI STUDIO TTS)');
     console.log('═'.repeat(70));
 
-    // Đảm bảo có Voice ID hoặc fallback
-    let activeVoiceId = customVoiceId;
-    if (!activeVoiceId || !activeVoiceId.startsWith('voice_')) {
-      try {
-        const config = voiceManager.loadConfig();
-        if (config.customVoiceId) {
-          activeVoiceId = config.customVoiceId;
-        }
-      } catch (_) {}
+    // Đảm bảo có Voice ID hoặc fallback (Ưu tiên config/voice-persona.json, sau đó tới .env)
+    let activeVoiceId: string | undefined;
+    try {
+      const config = voiceManager.loadConfig();
+      if (config.customVoiceId && config.customVoiceId.startsWith('voice_')) {
+        activeVoiceId = config.customVoiceId;
+      }
+    } catch (_) {}
+
+    if (!activeVoiceId && customVoiceId && customVoiceId.startsWith('voice_')) {
+      activeVoiceId = customVoiceId;
     }
 
-    console.log(`[Config] Model Mode:     ${modelMode}`);
+    console.log(`[Config] Model Mode:     ${modelMode} (Khóa cố định, không trôi âm sắc)`);
     console.log(`[Config] Custom Voice ID: ${activeVoiceId || '(Chưa có - Dùng prebuilt fallback)'}`);
     console.log(`[Config] Fallback Voice:  ${fallbackVoice}`);
 
@@ -105,13 +124,17 @@ async function main() {
 
     const audioChunks: Buffer[] = [];
     let totalSec = 0;
+    let totalTokens = 0;
+    let totalCostUsd = 0;
 
     for (let i = 0; i < chunks.length; i++) {
       console.log(`  -> Đang sinh mẻ ${i + 1}/${chunks.length} (${chunks[i].length} ký tự)...`);
       const result = await ttsClient.synthesizeSpeech(chunks[i]);
       audioChunks.push(result.audioBuffer);
       totalSec += result.durationSec;
-      console.log(`     ✓ Xong mẻ ${i + 1} (${result.durationSec.toFixed(2)}s)`);
+      totalTokens += result.audioTokens;
+      totalCostUsd += result.estimatedCostUsd;
+      console.log(`     ✓ Xong mẻ ${i + 1} (${result.durationSec.toFixed(2)}s | ${result.audioTokens} tokens)`);
     }
 
     // Đóng gói và lưu file WAV
@@ -127,11 +150,16 @@ async function main() {
     const outputFile = path.join(outputsDir, `voiceover_${timestamp}.wav`);
     fs.writeFileSync(outputFile, finalWavBuffer);
 
+    const totalCostVnd = Math.round(totalCostUsd * 25400);
+
     console.log('═'.repeat(70));
     console.log(`🎉 [XUẤT SẮC] ĐÃ SINH FILE VOICE-OVER HOÀN TẤT!`);
     console.log(`📁 Đường dẫn file xuất: ${outputFile}`);
-    console.log(`⏱️ Thời lượng audio:    ${totalSec.toFixed(2)} giây`);
+    console.log(`⏱️ Thời lượng audio:    ${totalSec.toFixed(2)} giây (~${(totalSec / 60).toFixed(1)} phút)`);
     console.log(`📦 Kích thước file:      ${(finalWavBuffer.length / 1024).toFixed(1)} KB`);
+    console.log(`🎙️ Model sử dụng:       ${ttsClient.getModelName()}`);
+    console.log(`🪙 Audio Tokens:        ${totalTokens.toLocaleString()} tokens`);
+    console.log(`💵 Chi phí ước tính:    $${totalCostUsd.toFixed(4)} USD (~ ${totalCostVnd.toLocaleString('vi-VN')} VNĐ)`);
     console.log('═'.repeat(70));
   }
 }

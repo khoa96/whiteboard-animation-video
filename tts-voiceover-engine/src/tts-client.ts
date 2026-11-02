@@ -1,31 +1,25 @@
 import { TTSClientOptions, SynthesizeResult } from './types.js';
 import { AudioUtils } from './audio-utils.js';
 
-const AVAILABLE_TTS_MODELS = [
-  'gemini-3.8-flash-tts',
-  'gemini-3.8-flash-lite-tts',
-  'gemini-3.1-flash-tts-preview',
-  'gemini-2.5-flash-preview-tts',
-];
-
 export class GoogleTTSClient {
   private apiKey: string;
   private modelMode: string;
   private customVoiceId?: string;
   private fallbackVoice: string;
-  private currentModelIndex: number = 0;
 
   constructor(options: TTSClientOptions) {
     this.apiKey = options.apiKey;
     this.modelMode = options.modelMode || 'gemini-3.8-flash-tts';
     this.customVoiceId = options.customVoiceId;
     this.fallbackVoice = options.fallbackVoice || 'Achird';
-    const initIdx = AVAILABLE_TTS_MODELS.indexOf(this.modelMode);
-    this.currentModelIndex = initIdx >= 0 ? initIdx : 0;
   }
 
-  public async synthesizeSpeech(text: string, maxRetries: number = 6): Promise<SynthesizeResult> {
-    // Cấu hình voice: ưu tiên Custom Voice ID nếu có, nếu không thì dùng prebuiltVoiceConfig
+  public getModelName(): string {
+    return this.modelMode;
+  }
+
+  public async synthesizeSpeech(text: string, maxRetries: number = 5): Promise<SynthesizeResult> {
+    // Cấu hình voice: Ưu tiên Custom Voice ID nếu có, nếu không thì dùng fallback prebuiltVoiceConfig
     let voiceConfig: Record<string, any>;
     if (this.customVoiceId && this.customVoiceId.startsWith('voice_')) {
       voiceConfig = {
@@ -53,12 +47,11 @@ export class GoogleTTSClient {
       },
     };
 
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.modelMode}:generateContent?key=${this.apiKey}`;
+
     let attempt = 0;
     while (attempt < maxRetries) {
       attempt++;
-      const currentModel = AVAILABLE_TTS_MODELS[this.currentModelIndex % AVAILABLE_TTS_MODELS.length];
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${this.apiKey}`;
-
       try {
         const response = await fetch(url, {
           method: 'POST',
@@ -71,18 +64,17 @@ export class GoogleTTSClient {
 
         if (!response.ok) {
           const errBody = await response.text();
-          if (response.status === 429) {
-            console.warn(`[GoogleTTSClient] ⚠️ Model ${currentModel} đạt hạn mức (429). Tự động xoay sang model tiếp theo...`);
-            this.currentModelIndex++;
-            await new Promise((r) => setTimeout(r, 1000));
-            continue;
-          }
-          if (response.status === 503) {
-            const backoffMs = Math.pow(2, attempt) * 1500;
-            console.warn(`[GoogleTTSClient] ⚠️ Gặp lỗi HTTP 503. Chờ ${backoffMs}ms...`);
+
+          // Xử lý lỗi tạm thời (429 micro-spike hoặc 503 Server Busy): Thử lại trên CÙNG MODEL với Exponential Backoff & Jitter
+          if (response.status === 429 || response.status === 503) {
+            const backoffMs = Math.min(10000, Math.pow(2, attempt) * 1000 + Math.floor(Math.random() * 500));
+            console.warn(
+              `[GoogleTTSClient] ⚠️ Model ${this.modelMode} phản hồi HTTP ${response.status}. Thử lại sau ${backoffMs}ms (Lần ${attempt}/${maxRetries})...`
+            );
             await new Promise((r) => setTimeout(r, backoffMs));
             continue;
           }
+
           throw new Error(`Google TTS API Error (${response.status}): ${errBody}`);
         }
 
@@ -103,12 +95,19 @@ export class GoogleTTSClient {
             const wavBuffer = AudioUtils.standardizeToWav(rawBytes, 24000, 1, 16);
             const durationSec = AudioUtils.getDurationSec(wavBuffer, 24000, 1, 16);
 
+            // Tính toán số lượng audio token (25 tokens/giây) và ước tính chi phí
+            const audioTokens = Math.round(durationSec * 25);
+            const pricePerMillion = this.modelMode.toLowerCase().includes('lite') ? 6.0 : 9.0;
+            const estimatedCostUsd = (audioTokens / 1_000_000) * pricePerMillion;
+
             return {
               audioBuffer: wavBuffer,
               durationSec: durationSec,
               sampleRate: 24000,
               channels: 1,
               mimeType: mimeType,
+              audioTokens: audioTokens,
+              estimatedCostUsd: estimatedCostUsd,
             };
           }
         }
@@ -118,11 +117,12 @@ export class GoogleTTSClient {
         if (attempt >= maxRetries) {
           throw err;
         }
-        console.warn(`[GoogleTTSClient] Lỗi kết nối (${err.message}), đang thử lại...`);
-        await new Promise((r) => setTimeout(r, 2000));
+        const waitMs = 2000 + attempt * 500;
+        console.warn(`[GoogleTTSClient] Lỗi kết nối (${err.message}). Đang thử lại sau ${waitMs}ms...`);
+        await new Promise((r) => setTimeout(r, waitMs));
       }
     }
 
-    throw new Error(`Không thể sinh giọng nói sau ${maxRetries} lần thử.`);
+    throw new Error(`Không thể sinh giọng nói sau ${maxRetries} lần thử với model ${this.modelMode}.`);
   }
 }
