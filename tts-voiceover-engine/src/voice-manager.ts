@@ -6,8 +6,8 @@ import { VoicePersonaConfig, VoiceCreationResponse } from './types.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const CONFIG_PATH = path.resolve(__dirname, '../config/voice-persona.json');
-const LOCAL_ENV_PATH = path.resolve(__dirname, '../.env');
 const ROOT_ENV_PATH = path.resolve(__dirname, '../../.env');
+
 
 export class VoiceManager {
   private apiKey: string;
@@ -77,20 +77,18 @@ export class VoiceManager {
     }
     fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8');
 
-    // Cập nhật .env (cả root và local nếu có)
-    const envPathsToUpdate = [ROOT_ENV_PATH, LOCAL_ENV_PATH];
-    for (const envFile of envPathsToUpdate) {
-      if (fs.existsSync(envFile)) {
-        let envContent = fs.readFileSync(envFile, 'utf-8');
-        if (envContent.includes('CUSTOM_VOICE_ID=')) {
-          envContent = envContent.replace(/CUSTOM_VOICE_ID=.*/, `CUSTOM_VOICE_ID=${newVoiceId}`);
-        } else {
-          envContent += `\nCUSTOM_VOICE_ID=${newVoiceId}\n`;
-        }
-        fs.writeFileSync(envFile, envContent, 'utf-8');
+    // Cập nhật file .env ở thư mục gốc dự án
+    if (fs.existsSync(ROOT_ENV_PATH)) {
+      let envContent = fs.readFileSync(ROOT_ENV_PATH, 'utf-8');
+      if (envContent.includes('CUSTOM_VOICE_ID=')) {
+        envContent = envContent.replace(/CUSTOM_VOICE_ID=.*/, `CUSTOM_VOICE_ID=${newVoiceId}`);
+      } else {
+        envContent += `\nCUSTOM_VOICE_ID=${newVoiceId}\n`;
       }
+      fs.writeFileSync(ROOT_ENV_PATH, envContent, 'utf-8');
     }
 
     return newVoiceId;
   }
 }
+

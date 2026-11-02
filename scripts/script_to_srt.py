@@ -3,7 +3,8 @@
 剧本 → 草稿 SRT：把一段旁白剧本（.txt / .md）按句切成字幕条，写出带估算时间的 SRT。
 
 用途：从「主题/剧本」起步时的第一步。草稿 SRT 只用于切句，真实时间轴随后由
-  tts_narration.py --retime-out 按语音实长重排（配音驱动节奏）。
+  tts-voiceover-engine 按语音实长重排（配音驱动节奏）。
+
 
 切句规则：
   - 按句末标点（. ! ? … 以及中文 。！？）断句，引号跟随所在句子；
@@ -14,8 +15,9 @@
 
 用法：
   python script_to_srt.py <剧本.txt> --output draft.srt [--max-chars 80] [--min-chars 12] [--cps 14]
-末行输出 PAUSES=<序号=秒,...>（段落末尾字幕），可直接展开为 tts_narration.py 的 --pause 参数。
+末行输出 PAUSES=<序号=秒,...>（段落末尾字幕），可作为 tts-voiceover-engine 的停顿参考。
 """
+
 from __future__ import annotations
 
 import argparse

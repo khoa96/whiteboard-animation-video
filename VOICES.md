@@ -8,33 +8,26 @@ Tài liệu này tổng hợp đầy đủ 30 giọng nói chuẩn phòng thu c�
 
 ## 🛠️ Cách thay đổi giọng đọc
 
-Bạn có thể thay đổi giọng đọc bằng 1 trong 3 cách sau:
+Toàn bộ dự án sử dụng `tts-voiceover-engine`. Bạn có thể thay đổi giọng đọc bằng 1 trong các cách sau:
 
-### Cách 1: Thay đổi trong file `.env` (Khuyên dùng)
-
-Mở file `.env` và sửa dòng `TTS_VOICE`:
-
+### Cách 1: Sử dụng Custom Voice ID độc quyền của kênh (Khuyên dùng)
+Kênh sử dụng giọng đọc thương hiệu cố định trong file `.env`:
 ```env
-TTS_VOICE=Charon       # Đổi tên thành bất kỳ giọng nào trong bảng dưới (ví dụ: Kore, Erinome, Puck...)
+CUSTOM_VOICE_ID=voice_xnxd3uit2744
 ```
 
-### Cách 2: Thay đổi trong file cấu hình JSON
-
-Mở file [config/tts_voices.json](file:///Users/nguyendangkhoa/Documents/whiteboard-animation-video/config/tts_voices.json) và sửa:
-
-```json
-{
-  "active_voice": "Charon"
-}
+### Cách 2: Sử dụng giọng Prebuilt dự phòng trong `.env`
+Nếu chưa tạo Custom Voice hoặc muốn đổi nhanh giọng dự phòng:
+```env
+PREBUILT_FALLBACK_VOICE=Achird   # Hoặc: Charon, Puck, Kore, Erinome, Aoede...
 ```
 
-### Cách 3: Truyền trực tiếp qua dòng lệnh
-
-Khi chạy lệnh tạo giọng đọc:
-
+### Cách 3: Chạy trực tiếp qua lệnh của `tts-voiceover-engine`
 ```bash
-.venv/bin/python scripts/tts_narration.py input.srt --output narration.m4a --voice Erinome
+cd tts-voiceover-engine
+npm run generate -- --file inputs/sample-script.txt --output outputs/my_audio.wav
 ```
+
 
 ---
 

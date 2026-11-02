@@ -210,18 +210,18 @@ assets/whiteboard/<tên-dự-án>/
 
 Không dùng agent? Chạy trực tiếp các script theo thứ tự dưới đây.
 
-**0. (Nếu bắt đầu từ kịch bản) Kịch bản → SRT theo giọng đọc**
+**0. (Nếu bắt đầu từ kịch bản) Kịch bản → SRT & Âm thanh theo giọng đọc**
 
 ```bash
-# Cắt kịch bản thành câu, ra SRT nháp; dòng cuối in PAUSES=1=0.8,8=0.8,... (câu cuối mỗi đoạn)
+# Cắt kịch bản thành câu, ra SRT nháp (nếu cần):
 python scripts/script_to_srt.py script.md --output draft.srt
 
-# Tạo giọng, sinh input.srt theo độ dài giọng thật (thêm một --pause cho mỗi mục trong PAUSES)
-<ENV_PY> scripts/tts_narration.py draft.srt --output narration.m4a --provider edge \
-  --retime-out input.srt --pause 1=0.8 --pause 8=0.8
+# Tạo giọng đọc chuẩn phòng thu, xuất âm thanh và phụ đề mốc thời gian qua tts-voiceover-engine:
+npm --prefix tts-voiceover-engine run generate -- \
+  --file script.md --output narration.wav --srt input.srt --cues timing_cues.json
 ```
 
-Từ đây dùng `input.srt` cho các bước bên dưới; ở bước 7 giọng đọc được lấy lại từ cache.
+Từ đây dùng `input.srt` và `timing_cues.json` cho các bước phân vùng bên dưới.
 
 **1. Đọc phụ đề, gợi ý chia cảnh**
 
@@ -253,36 +253,17 @@ python scripts/parse_srt.py input.srt --target-sec 30 --min-sec 25 --max-sec 35
 <ENV_PY> scripts/merge_scenes.py --inputs canh1.mp4 canh2.mp4 --output final.mp4
 ```
 
-**6. Gắn phụ đề vào video** (chữ xám trên nền màu giấy)
+**6. Ghép âm thanh & Phụ đề vào video**
 
 ```bash
-ffmpeg -i final.mp4 -vf "subtitles=input.srt:force_style='FontName=Arial,FontSize=15,PrimaryColour=&H00303030,OutlineColour=&H10D7EBF5,BorderStyle=3,Outline=6,Shadow=0,MarginV=14'" \
-  -c:v libx264 -crf 20 -pix_fmt yuv420p final-sub.mp4
+# a) Ghép âm thanh narration vào video
+ffmpeg -y -i final.mp4 -i narration.wav -c:v copy -c:a aac -b:a 192k final-voice.mp4
+
+# b) Gắn phụ đề thông minh sát đáy (MarginV=4)
+ffmpeg -y -i final-voice.mp4 -vf "subtitles=input.srt:force_style='FontSize=13,PrimaryColour=&H00FFFFFF,BackColour=&H80000000,BorderStyle=3,MarginV=4'" \
+  -c:a copy final-sub.mp4
 ```
 
-**7. Thêm giọng đọc**
-
-```bash
-# Edge TTS (miễn phí)
-<ENV_PY> scripts/tts_narration.py input.srt --output narration.m4a --video final-sub.mp4 --provider edge
-
-# Vbee (dán mã giọng copy từ Vbee)
-<ENV_PY> scripts/tts_narration.py input.srt --output narration.m4a --video final-sub.mp4 \
-  --provider vbee --voice n_hanoi_male_protrainer_education_vc
-```
-
-Kết quả: `final-sub-voice.mp4`. Mỗi câu được đặt đúng mốc phụ đề; câu nào đọc dài hơn khung thời gian sẽ được tăng tốc nhẹ và có cảnh báo. Khoảng lặng đầu/cuối của mỗi câu được cắt tự động (tắt bằng `--no-trim`).
-
-**8. Nhịp gọn — bỏ khoảng lặng thừa**
-
-Khi phụ đề chia đều (ví dụ 5 giây/câu) nhưng giọng đọc ngắn hơn, video sẽ có nhiều chỗ im lặng. Cách xử lý: lấy độ dài giọng thật làm chuẩn, rồi co thời gian vẽ theo.
-
-```bash
-# a) Tạo giọng + SRT mới theo độ dài giọng thật
-<ENV_PY> scripts/tts_narration.py input.srt --output narration.m4a --provider edge \
-  --retime-out input.tight.srt --gap 0.3 --pause 6=0.8 --tail 1.0
-
-# b) Co thời gian vẽ trong các file annotation (file gốc giữ nguyên, ra file *.tight.annotation.json)
 <ENV_PY> scripts/retime_annotations.py --old-srt input.srt --new-srt input.tight.srt \
   --annotations scene-01-a.annotation.json scene-02-b.annotation.json
 
@@ -359,21 +340,27 @@ Mẹo: vùng vẽ sau luôn được tự động trừ ra khỏi vùng vẽ tr�
 
 ```text
 whiteboard-video/
+├── .env                              # Cấu hình API Key và Voice ID DUY NHẤT
 ├── SKILL.md                          # quy trình đầy đủ cho AI agent
-├── vbee.md                           # hướng dẫn API Vbee
+├── VOICE_OVER_GUIDE.md               # hướng dẫn toàn diện về động cơ voice-over
+├── VOICES.md                         # danh mục 30 giọng đọc prebuilt
+├── tts-voiceover-engine/             # ĐỘNG CƠ VOICE-OVER DUY NHẤT CỦA TOÀN DỰ ÁN
+│   ├── src/                          # TypeScript source: Google AI Studio TTS
+│   ├── config/voice-persona.json     # Custom Voice ID độc quyền của kênh
+│   └── outputs/                      # File âm thanh xuất ra
 ├── assets/
 │   ├── drawing-hand.png              # ảnh bàn tay cầm bút
 │   └── preview.html                  # trang xem trước / chỉnh sửa
-├── examples/                         # ví dụ minh hoạ
+├── workflow/                         # quy trình chuẩn 6 bước và template
 ├── scripts/
 │   ├── script_to_srt.py              # cắt kịch bản thành câu → SRT nháp
 │   ├── parse_srt.py                  # đọc phụ đề, gợi ý chia cảnh
 │   ├── render_annotation_preview.py  # ảnh kiểm tra vùng
-│   ├── render_stream_whiteboard.py   # render video vẽ tay
+│   ├── render_stream_whiteboard.py   # render video vẽ tay 60fps
 │   ├── merge_scenes.py               # ghép các cảnh
-│   ├── tts_narration.py              # giọng đọc Vbee / Edge TTS
 │   ├── retime_annotations.py         # co thời gian vẽ theo giọng đọc
-│   └── prepare_env.py                # cài môi trường
+│   ├── init_project.py               # khởi tạo dự án nhanh
+│   └── prepare_env.py                # cài môi trường Python
 └── agents/openai.yaml
 ```
 
@@ -381,9 +368,11 @@ whiteboard-video/
 
 | Lỗi | Cách xử lý |
 |---|---|
-| `You have exceeded the API TTS quota` | Tài khoản Vbee hết quota API → nạp thêm hoặc dùng `--provider edge` |
-| `缺少 VBEE_APP_ID / VBEE_ACCESS_TOKEN` | Chưa khai báo key Vbee trong `.env` |
-| `需要系统 ffmpeg / ffprobe` | Cài ffmpeg và thêm vào PATH |
+| `Chưa cấu hình GEMINI_API_KEY` | Khai báo API Key trong file `.env` tại thư mục gốc dự án |
+| `Google TTS API Error 429` | Engine tự động backoff & retry; có thể thêm nhiều key trong `GEMINI_API_KEYS` |
+| `Cần cài đặt dependencies TypeScript` | Chạy `cd tts-voiceover-engine && npm install` |
+| `Cần hệ thống ffmpeg / ffprobe` | Cài đặt ffmpeg và thêm vào biến môi trường PATH |
+
 | Phụ đề bị đè lên nét vẽ | Dùng lệnh gắn phụ đề ở trên (có nền màu giấy sau chữ) |
 | Nhân vật lộ ra trước lượt | Thêm `protectedRegions` hoặc sửa `region` cho khớp hơn |
 

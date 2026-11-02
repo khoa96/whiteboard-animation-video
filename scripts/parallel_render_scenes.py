@@ -14,9 +14,8 @@ def run_scene_pipeline(scene_num: int):
     scene_dir = REPO_ROOT / f"assets/whiteboard/test_cases/test_case_10_articles/scene_{scene_num:02d}"
     png_path = scene_dir / f"scene_{scene_num:02d}.png"
     anno_path = scene_dir / f"scene_{scene_num:02d}.annotation.json"
-    raw_mp4 = scene_dir / f"scene_{scene_num:02d}.mp4"
-    audio_path = scene_dir / "narration.m4a"
-    srt_path = scene_dir / "input.srt"
+    audio_path = (scene_dir / "narration.m4a") if (scene_dir / "narration.m4a").exists() else (scene_dir / "narration.wav")
+
     voice_mp4 = scene_dir / f"scene_{scene_num:02d}_voice.mp4"
     final_sub_mp4 = scene_dir / f"scene_{scene_num:02d}_sub.mp4"
     hand_path = REPO_ROOT / "assets/drawing-hand.png"

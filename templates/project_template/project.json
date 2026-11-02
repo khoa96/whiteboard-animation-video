@@ -11,11 +11,11 @@
     "production_fps": 60,
     "draft_fps": 30,
     "voice": {
-      "engine": "edge-tts",
-      "model": "en-US-AndrewMultilingualNeural",
-      "rate": "+0%",
-      "volume": "+0%"
+      "engine": "tts-voiceover-engine",
+      "custom_voice_id": "voice_xnxd3uit2744",
+      "model": "gemini-3.8-flash-tts"
     },
+
     "subtitles": {
       "font_size": 13,
       "margin_v": 4,

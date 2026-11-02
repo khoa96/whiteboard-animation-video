@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 880" width="100%" height="100%" style="background:#0b0f19; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0b0f19" stop-opacity="1"/>
+    </linearGradient>
+    
+    <linearGradient id="step0Grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0369a1"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <linearGradient id="step1Grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4338ca"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+
+    <linearGradient id="step2Grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7e22ce"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+
+    <linearGradient id="step3Grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#be185d"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+
+    <linearGradient id="step4Grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b45309"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+
+    <linearGradient id="step5Grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+
+    <!-- Filters for Glow & Shadow -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#818cf8"/>
+    </marker>
+    <marker id="arrowGold" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981"/>
+    </marker>
+  </defs>
+
+  <!-- Title Header -->
+  <text x="500" y="45" text-anchor="middle" font-size="24" font-weight="800" fill="#ffffff" letter-spacing="0.5">SƠ ĐỒ MASTER WORKFLOW WHITEBOARD ANIMATION</text>
+  <text x="500" y="70" text-anchor="middle" font-size="13" fill="#94a3b8">Quy trình tự động hóa 6 bước khép kín với tts-voiceover-engine (Audio Master Clock)</text>
+
+  <!-- STAGE 0 -->
+  <g filter="url(#cardShadow)">
+    <rect x="60" y="100" width="410" height="100" rx="12" fill="#111827" stroke="#0284c7" stroke-width="1.5"/>
+    <rect x="60" y="100" width="410" height="28" rx="12" fill="url(#step0Grad)"/>
+    <rect x="60" y="116" width="410" height="12" fill="url(#step0Grad)"/>
+    <text x="75" y="120" font-size="12" font-weight="700" fill="#ffffff">📋 BƯỚC 0: CREATIVE BRIEF &amp; KỊCH BẢN KHUNG</text>
+    <text x="80" y="152" font-size="12" fill="#e2e8f0">• Đầu vào: Chủ đề bài giảng, đối tượng người học A1-A2</text>
+    <text x="80" y="172" font-size="12" fill="#94a3b8">• Tệp tạo ra: <tspan fill="#38bdf8" font-weight="600">brief.md</tspan> &amp; <tspan fill="#38bdf8" font-weight="600">subtitle_draft.srt</tspan> (qua init_project.py)</text>
+  </g>
+
+  <!-- Down Arrow 0 -> 1 -->
+  <line x1="265" y1="200" x2="265" y2="225" stroke="#818cf8" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- STAGE 1 -->
+  <g filter="url(#cardShadow)">
+    <rect x="60" y="230" width="410" height="100" rx="12" fill="#111827" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="60" y="230" width="410" height="28" rx="12" fill="url(#step1Grad)"/>
+    <rect x="60" y="246" width="410" height="12" fill="url(#step1Grad)"/>
+    <text x="75" y="250" font-size="12" font-weight="700" fill="#ffffff">🎨 BƯỚC 1: AI PROMPT &amp; CANVAS STANDARDIZATION</text>
+    <text x="80" y="282" font-size="12" fill="#e2e8f0">• Thiết kế AI Prompt 4-Zone (Không chữ thừa, nét 2D marker)</text>
+    <text x="80" y="302" font-size="12" fill="#94a3b8">• Chuẩn hóa Canvas: <tspan fill="#818cf8" font-weight="600">scene_XX.png</tspan> (1920x1080 px, nền #FFFFFF)</text>
+  </g>
+
+  <!-- Connect 1 -> 2 -->
+  <path d="M 470 280 L 530 280 L 530 150 L 525 150" fill="none" stroke="#818cf8" stroke-width="2"/>
+  
+  <!-- STAGE 2 (MASTER CLOCK - Highlighted) -->
+  <g filter="url(#cardShadow)">
+    <rect x="530" y="100" width="410" height="230" rx="14" fill="#18113c" stroke="#a855f7" stroke-width="2.5"/>
+    <rect x="530" y="100" width="410" height="32" rx="14" fill="url(#step2Grad)"/>
+    <rect x="530" y="120" width="410" height="12" fill="url(#step2Grad)"/>
+    <text x="545" y="122" font-size="13" font-weight="800" fill="#ffffff">🎙️ BƯỚC 2: AUDIO MASTER CLOCK (ĐỘNG CƠ DUY NHẤT)</text>
+    
+    <rect x="545" y="142" width="380" height="42" rx="8" fill="rgba(168, 85, 247, 0.15)" stroke="#a855f7" stroke-dasharray="3 3"/>
+    <text x="555" y="160" font-size="11" font-weight="700" fill="#d8b4fe">tts-voiceover-engine (Google AI Studio)</text>
+    <text x="555" y="176" font-size="11" fill="#c084fc">Custom Voice ID: voice_xnxd3uit2744 (Khóa âm sắc, chuẩn A1)</text>
+
+    <text x="550" y="205" font-size="11" font-weight="600" fill="#e2e8f0">• Đầu vào: Kịch bản thẻ [NATURAL], [DRILL], micro-pauses</text>
+    <text x="550" y="225" font-size="11" fill="#e2e8f0">• Đóng gói Audio: <tspan fill="#a855f7" font-weight="700">narration.wav / narration.m4a</tspan></text>
+    <text x="550" y="245" font-size="11" fill="#e2e8f0">• Master Clock: <tspan fill="#38bdf8" font-weight="700">timing_cues.json</tspan> (startMs, durationMs)</text>
+    <text x="550" y="265" font-size="11" fill="#e2e8f0">• Phụ đề chính thức: <tspan fill="#34d399" font-weight="700">input.srt</tspan> (khớp từng mili-giây)</text>
+    <text x="550" y="295" font-size="10" font-style="italic" fill="#94a3b8">⚠️ Thước đo tuyệt đối điều khiển timeline vẽ ở Bước 3 &amp; 4</text>
+  </g>
+
+  <!-- Connect 1 & 2 to Stage 3 -->
+  <path d="M 265 330 L 265 365 L 500 365 L 500 395" fill="none" stroke="#818cf8" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 735 330 L 735 365 L 500 365" fill="none" stroke="#a855f7" stroke-width="2"/>
+
+  <!-- STAGE 3 -->
+  <g filter="url(#cardShadow)">
+    <rect x="200" y="400" width="600" height="105" rx="12" fill="#111827" stroke="#ec4899" stroke-width="1.5"/>
+    <rect x="200" y="400" width="600" height="28" rx="12" fill="url(#step3Grad)"/>
+    <rect x="200" y="416" width="600" height="12" fill="url(#step3Grad)"/>
+    <text x="215" y="420" font-size="12" font-weight="700" fill="#ffffff">🧩 BƯỚC 3: ATOMIC SEGMENTATION &amp; AUDIO-VISUAL BINDING</text>
+    <text x="220" y="452" font-size="12" fill="#e2e8f0">• Zero-Overlap (0% chồng lấn): Phân tách từng card, header, icon, chữ độc lập</text>
+    <text x="220" y="472" font-size="12" fill="#e2e8f0">• Gắn mốc thời gian: Gán <tspan fill="#f43f5e" font-weight="700">startMs &amp; durationMs</tspan> từ Master Clock sang <tspan fill="#38bdf8" font-weight="600">scene_XX.annotation.json</tspan></text>
+    <text x="220" y="492" font-size="11" fill="#94a3b8">• Xuất ảnh kiểm định vùng: <tspan fill="#cbd5e1">scene_XX-regions.png</tspan> (qua render_annotation_preview.py)</text>
+  </g>
+
+  <!-- Down Arrow 3 -> 4 -->
+  <line x1="500" y1="505" x2="500" y2="535" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowGold)"/>
+
+  <!-- STAGE 4 -->
+  <g filter="url(#cardShadow)">
+    <rect x="200" y="540" width="600" height="100" rx="12" fill="#111827" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="200" y="540" width="600" height="28" rx="12" fill="url(#step4Grad)"/>
+    <rect x="200" y="556" width="600" height="12" fill="url(#step4Grad)"/>
+    <text x="215" y="560" font-size="12" font-weight="700" fill="#ffffff">🎬 BƯỚC 4: WHITEBOARD STREAM ANIMATION RENDERING (60 FPS)</text>
+    <text x="220" y="592" font-size="12" fill="#e2e8f0">• Thuật toán: <tspan fill="#fbbf24" font-weight="600">Skeleton ink-path</tspan> (90% thời gian) + <tspan fill="#fbbf24" font-weight="600">Contour-wipe color</tspan> (10% thời gian)</text>
+    <text x="220" y="612" font-size="12" fill="#e2e8f0">• Bàn tay vẽ: Nét bút tự nhiên, không giật lag, xuất video không tiếng: <tspan fill="#f59e0b" font-weight="700">scene_XX.mp4</tspan></text>
+  </g>
+
+  <!-- Down Arrow 4 -> 5 -->
+  <line x1="500" y1="640" x2="500" y2="670" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+  <!-- STAGE 5 -->
+  <g filter="url(#cardShadow)">
+    <rect x="140" y="675" width="720" height="120" rx="14" fill="#062e22" stroke="#10b981" stroke-width="2"/>
+    <rect x="140" y="675" width="720" height="30" rx="14" fill="url(#step5Grad)"/>
+    <rect x="140" y="693" width="720" height="12" fill="url(#step5Grad)"/>
+    <text x="155" y="696" font-size="13" font-weight="800" fill="#ffffff">🚀 BƯỚC 5: AUDIO-VISUAL COMPOSITING, HARDSUB &amp; NGHIỆM THU</text>
+    
+    <text x="160" y="730" font-size="12" fill="#e2e8f0">• <tspan font-weight="700" fill="#34d399">1. Muxing:</tspan> Ghép <tspan fill="#a855f7">narration.wav/m4a</tspan> vào <tspan fill="#f59e0b">scene_XX.mp4</tspan> → <tspan fill="#6ee7b7" font-weight="600">scene_XX_voice.mp4</tspan></text>
+    <text x="160" y="750" font-size="12" fill="#e2e8f0">• <tspan font-weight="700" fill="#34d399">2. Hardsub:</tspan> Burn <tspan fill="#38bdf8">input.srt</tspan> thông minh sát đáy (MarginV=4) → <tspan fill="#6ee7b7" font-weight="600">scene_XX_sub.mp4</tspan></text>
+    <text x="160" y="770" font-size="12" fill="#e2e8f0">• <tspan font-weight="700" fill="#34d399">3. Ghép toàn bài:</tspan> Chạy merge_scenes.py nối mọi scene thành <tspan fill="#10b981" font-weight="800">final.mp4</tspan> hoàn chỉnh</text>
+  </g>
+
+  <!-- Bottom Badges / Highlights -->
+  <text x="500" y="830" text-anchor="middle" font-size="12" fill="#64748b">✨ Thống nhất 100% TTS về tts-voiceover-engine • Nền canvas trắng tuyệt đối #FFFFFF • Tốc độ chuẩn 60 fps</text>
+</svg>

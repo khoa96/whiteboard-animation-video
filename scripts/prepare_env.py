@@ -28,11 +28,10 @@ VENV_ROOT = SKILL_ROOT / ".venv"
 DEPS: dict[str, str] = {
     "cv2": "opencv-python",
     "numpy": "numpy",
-    "av": "av",  # PyAV：纯 pip 安装的 H.264 编码，无需系统 ffmpeg
-    "PIL": "Pillow",  # render_annotation_preview.py 画区域编号预览图（含中文标签）
-    "edge_tts": "edge-tts",  # tts_narration.py --provider edge（免费旁白）
-    "pydub": "pydub",  # tts_gemini.py 锚点静音切割算法
+    "av": "av",  # PyAV：H.264 编码
+    "PIL": "Pillow",  # render_annotation_preview.py 画区域编号预览图
 }
+
 
 
 def interpreter_path() -> Path:

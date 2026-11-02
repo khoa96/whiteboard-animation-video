@@ -84,19 +84,19 @@ flowchart TD
   - Hướng dẫn giọng đọc (Nam miền Bắc trầm ấm, điềm tĩnh, ngắt nghỉ rõ ràng).
 * **Các hoạt động chính**:
   1. Viết kịch bản phân cảnh **Audio-Visual Storyboard**: Đối chiếu từng câu thoại với hành động vẽ tương ứng trên bảng.
-  2. Tổng hợp giọng đọc TTS song ngữ bằng Python (`edge-tts` với voice `en-US-AndrewMultilingualNeural`):
-     - Xử lý mượt mà chuyển ngữ giữa tiếng Việt tự nhiên và tiếng Anh Mỹ bản ngữ.
-     - Chèn khoảng nghỉ kỹ thuật giữa các câu: `0.5s` cho câu thông thường, `3.0s` cho câu hỏi suy nghĩ.
-  3. Đo thời lượng thực tế của từng tệp âm thanh qua `ffprobe`:
-     - Xuất file âm thanh hoàn chỉnh: `narration.m4a` (AAC 192k/24kHz).
+  2. Tổng hợp giọng đọc TTS song ngữ bằng `tts-voiceover-engine` (Google AI Studio với Custom Voice ID độc quyền `voice_xnxd3uit2744`):
+     - Xử lý mượt mà chuyển ngữ giữa tiếng Việt tự nhiên và tiếng Anh Mỹ bản ngữ chuẩn A1 (Anti-Vinglish, nhả rõ âm cuối).
+     - Tự động chèn lead-in `0.5s`, khoảng nghỉ kỹ thuật giữa các câu `0.5s` và giữ tĩnh cuối cảnh (Tail freeze) `2.0s`.
+  3. Đo thời lượng thực tế và dập Audio Master Clock:
+     - Xuất file âm thanh hoàn chỉnh: `narration.wav` hoặc `narration.m4a` (24kHz Mono).
      - Xuất file mốc thời gian chính xác: `timing_cues.json` (ghi nhận `startMs`, `endMs`, `durationMs`).
      - Xuất file phụ đề chuẩn xác: `input.srt`.
-     - Giữ nhịp tĩnh cuối cảnh (Tail freeze) từ `2.0s` đến `2.5s`.
 * **Đầu ra (Output)**:
-  - File âm thanh: `narration.m4a`.
+  - File âm thanh: `narration.wav` / `narration.m4a`.
   - File mốc thời gian: `timing_cues.json`.
   - File phụ đề: `input.srt`.
   - Tài liệu chi tiết: `step_2_audio_clock_output.md`.
+
 
 ---
 
@@ -183,7 +183,7 @@ flowchart TD
 | **Kiến trúc phân vùng** | Định nghĩa cả Card thành 1 box to bao bọc các icon bên trong. Khi render, box to "nuốt" nét của icon, khiến icon không có mực để vẽ. | **Atomic Decomposition**: Phân rã Card thành Header, Cột Trái, Cột Phải theo khe hở tự nhiên. 0% overlap. |
 | **Hiện tượng thị giác** | Đang vẽ thì tay đứng khựng lại (freeze), sau một lúc hình đột ngột bật sáng toàn bộ (pop-up glitch). | Tay vẽ liên tục, mềm mại từ chi tiết này sang chi tiết khác, không có điểm dừng chết. |
 | **Đồng bộ Âm - Hình** | Làm hoạt họa trước rồi ghép tiếng sau, dẫn tới hiện tượng "tiếng một đằng hình một nẻo", câu nói kết thúc mà tay vẫn còn đang vẽ. | **Audio Master Clock**: Thu voice và đo thời lượng trước. Thời gian vẽ của từng nét khớp chính xác từng mili-giây với câu thoại. |
-| **Giọng đọc TTS** | Giọng tiếng Việt đọc chèn tiếng Anh bị lỗi phát âm ngô nghê hoặc lỗi `NoAudioReceived`. | Dùng TTS đa ngữ thông minh `en-US-AndrewMultilingualNeural`, đọc tiếng Việt chuẩn giọng Bắc và phát âm tiếng Anh chuẩn Mỹ bản ngữ. |
+| **Giọng đọc TTS** | Giọng tiếng Việt đọc chèn tiếng Anh bị lỗi phát âm ngô nghê hoặc lỗi `NoAudioReceived`. | Dùng `tts-voiceover-engine` với Custom Voice ID độc quyền (`voice_xnxd3uit2744`), chuẩn giọng Bắc và phát âm tiếng Anh chuẩn Mỹ bản ngữ A1. |
 | **Vị trí phụ đề** | Dùng box đen to bản đặt ở giữa đáy màn hình, che mất nội dung và khung nhấn mạnh bài học. | Tinh chỉnh phụ đề thanh mảnh, `MarginV=4`, chữ rõ ràng và chừa trọn vẹn không gian cho hình vẽ. |
 
 ---
@@ -203,22 +203,23 @@ Mỗi bước đều có một tệp mẫu đính kèm trong thư mục `workflo
 
 ## VI. QUY CHUẨN ĐỒNG NHẤT DANH MỤC TỆP TRONG MỖI SCENE (STANDARD SCENE DIRECTORY)
 
-Để đảm bảo tính nhất quán tuyệt đối giữa tất cả các scene từ Scene 01 đến Scene cuối cùng, **mỗi thư mục `scene_XX/` bắt buộc phải chứa đúng 11 tệp dữ liệu chuẩn và 1 thư mục con `snapshots/`** (lấy Scene 01 và Scene 02 làm thước đo chuẩn):
+Để đảm bảo tính nhất quán tuyệt đối giữa tất cả các scene từ Scene 01 đến Scene cuối cùng, **mỗi thư mục `scene_XX/` bắt buộc phải chứa đúng 10 tệp dữ liệu chuẩn và 1 thư mục con `snapshots/`**:
 
 ```text
 scene_XX/
 ├── scene_XX.png                  # 1. Ảnh canvas gốc chuẩn hóa 1920x1080 #FFFFFF
 ├── scene_XX-regions.png          # 2. Ảnh trực quan hóa phân vùng (do render_annotation_preview.py sinh ra)
-├── create_scene_XX_audio.py      # 3. Mã nguồn sinh audio & đo Master Clock (tự động xóa line_*.mp3 nháp)
-├── create_scene_XX_annotation.py # 4. Mã nguồn sinh annotation & tự động gọi tạo regions.png
-├── input.srt                     # 5. Phụ đề chuẩn thời gian mili-giây
-├── narration.m4a                 # 6. Âm thanh lời giảng hoàn chỉnh (Edge-TTS)
-├── timing_cues.json              # 7. Metadata mốc thời gian từng câu
-├── scene_XX.annotation.json      # 8. File đặc tả vùng vẽ nguyên tử 0% Overlap
-├── scene_XX.mp4                  # 9. Video vẽ nét & loang màu không tiếng (60 fps)
-├── scene_XX_voice.mp4            # 10. Video đã ghép âm thanh narration
-├── scene_XX_sub.mp4              # 11. Video xuất bản cuối cùng đã burn phụ đề MarginV=4
+├── create_scene_XX_annotation.py # 3. Mã nguồn sinh annotation & tự động gọi tạo regions.png
+├── input.srt                     # 4. Phụ đề chuẩn thời gian mili-giây (do tts-voiceover-engine sinh ra)
+├── narration.wav                 # 5. Âm thanh lời giảng hoàn chỉnh (hoặc narration.m4a)
+├── timing_cues.json              # 6. Metadata mốc thời gian từng câu (Audio Master Clock)
+├── scene_XX.annotation.json      # 7. File đặc tả vùng vẽ nguyên tử 0% Overlap
+├── scene_XX.mp4                  # 8. Video vẽ nét & loang màu không tiếng (60 fps)
+├── scene_XX_voice.mp4            # 9. Video đã ghép âm thanh narration
+├── scene_XX_sub.mp4              # 10. Video xuất bản cuối cùng đã burn phụ đề MarginV=4
 └── snapshots/                    # Thư mục chứa các ảnh chụp nghiệm thu từng mốc giây
+```
+
     ├── snapshot_02s.png
     ├── snapshot_06s.png
     ├── snapshot_10s.png

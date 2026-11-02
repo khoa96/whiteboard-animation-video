@@ -33,7 +33,7 @@ def init_project(target_path_str: str, title: str = None, voice: str = None, for
 
     project_name = target_dir.name
     project_title = title if title else project_name.replace("_", " ").title()
-    selected_voice = voice if voice else "en-US-AndrewMultilingualNeural"
+    selected_voice = voice if voice else "voice_xnxd3uit2744"
 
     print("=" * 65)
     print(f"🎬 KHỞI TẠO DỰ ÁN WHITEBOARD ANIMATION: {project_name}")
@@ -84,10 +84,9 @@ def init_project(target_path_str: str, title: str = None, voice: str = None, for
             "production_fps": 60,
             "draft_fps": 30,
             "voice": {
-                "engine": "edge-tts",
-                "model": selected_voice,
-                "rate": "+0%",
-                "volume": "+0%"
+                "engine": "tts-voiceover-engine",
+                "custom_voice_id": selected_voice,
+                "model": "gemini-3.8-flash-tts"
             },
             "subtitles": {
                 "font_size": 13,
@@ -113,11 +112,12 @@ def main():
     parser = argparse.ArgumentParser(description="Khởi tạo dự án Whiteboard Animation mới từ template chuẩn.")
     parser.add_argument("project_path", help="Tên dự án hoặc đường dẫn thư mục muốn tạo (VD: project_tenses hoặc assets/whiteboard/test_cases/case_11)")
     parser.add_argument("--title", help="Tiêu đề bài học hiển thị trong brief (VD: 'Thì Quá Khứ Đơn')")
-    parser.add_argument("--voice", default="en-US-AndrewMultilingualNeural", help="Tên model giọng đọc Edge-TTS (mặc định: en-US-AndrewMultilingualNeural)")
+    parser.add_argument("--voice", default="voice_xnxd3uit2744", help="Mã Custom Voice ID (mặc định: voice_xnxd3uit2744)")
     parser.add_argument("-f", "--force", action="store_true", help="Ghi đè nếu thư mục đã tồn tại")
 
     args = parser.parse_args()
     init_project(args.project_path, title=args.title, voice=args.voice, force=args.force)
+
 
 if __name__ == "__main__":
     main()

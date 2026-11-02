@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sơ Đồ Master Workflow - Whiteboard Video Animation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(18, 24, 38, 0.85);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.25);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at top, #1e1b4b 0%, #0b0f19 60%, #030712 100%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .header {
+      text-align: center;
+      max-width: 800px;
+      margin-bottom: 30px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+    p.subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px var(--accent-glow);
+    }
+    .mermaid {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    .footer-notes {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 1100px;
+    }
+    .note-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .note-card h4 {
+      font-size: 15px;
+      margin-bottom: 8px;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .note-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="badge">WHITEBOARD ANIMATION PIPELINE</div>
+    <h1>Quy Trình 6 Bước Master Workflow</h1>
+    <p class="subtitle">Trực quan hóa luồng dữ liệu tự động từ Kịch bản lời thoại, tích hợp tts-voiceover-engine (Audio Master Clock) đến Video 60 fps hoàn thiện.</p>
+  </div>
+
+  <div class="container">
+    <div class="mermaid">
+      flowchart TD
+        classDef step0 fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+        classDef step1 fill:#0f172a,stroke:#818cf8,stroke-width:2px,color:#f8fafc;
+        classDef step2 fill:#1e1b4b,stroke:#a855f7,stroke-width:2.5px,color:#f8fafc;
+        classDef step3 fill:#0f172a,stroke:#ec4899,stroke-width:2px,color:#f8fafc;
+        classDef step4 fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#f8fafc;
+        classDef step5 fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f8fafc;
+
+        subgraph STAGE_0 ["📋 BƯỚC 0: Khởi tạo & Kịch bản Sư phạm"]
+            B0_1["brief.md / subtitle_draft.srt<br/><i>(Tóm tắt nội dung & kịch bản)</i>"]:::step0
+            B0_2["scripts/init_project.py<br/><i>(Khởi tạo cấu trúc thư mục tự động)</i>"]:::step0
+            B0_1 --> B0_2
+        end
+
+        subgraph STAGE_1 ["🎨 BƯỚC 1: Visual Prompting & Canvas"]
+            B1_1["AI Image Prompt (Midjourney / DALL-E)<br/><i>(Prompt 4-Zone, phong cách 2D marker)</i>"]:::step1
+            B1_2["scene_XX.png<br/><i>(Chuẩn 1920x1080 px, nền trắng #FFFFFF)</i>"]:::step1
+            B1_1 --> B1_2
+        end
+
+        subgraph STAGE_2 ["🎙️ BƯỚC 2: Audio Master Clock (Trọng Tâm Sư Phạm)"]
+            B2_1["Kịch bản lời thoại đã duyệt<br/><i>(Hỗ trợ tag [NATURAL], [DRILL], chuẩn A1)</i>"]:::step2
+            B2_2["tts-voiceover-engine<br/><i>(Google AI Studio - Custom Voice ID độc quyền)</i>"]:::step2
+            B2_3["narration.wav / narration.m4a<br/><i>(Âm thanh chuẩn phòng thu 24kHz)</i>"]:::step2
+            B2_4["timing_cues.json<br/><i>(Mốc startMs, durationMs từng câu)</i>"]:::step2
+            B2_5["input.srt<br/><i>(Phụ đề chuẩn mili-giây)</i>"]:::step2
+
+            B2_1 --> B2_2
+            B2_2 --> B2_3
+            B2_2 --> B2_4
+            B2_2 --> B2_5
+        end
+
+        subgraph STAGE_3 ["🧩 BƯỚC 3: Phân Vùng Nguyên Tử & Khớp Đồng Hồ"]
+            B3_1["scene_XX.annotation.json<br/><i>(Zero-Overlap 0%, gán sequence, startMs, durationMs)</i>"]:::step3
+            B3_2["render_annotation_preview.py<br/><i>(Xuất ảnh kiểm tra scene_XX-regions.png)</i>"]:::step3
+            B3_1 --> B3_2
+        end
+
+        subgraph STAGE_4 ["🎬 BƯỚC 4: Whiteboard Stream Animation Rendering"]
+            B4_1["render_stream_whiteboard.py (60 fps)<br/><i>(Skeleton ink-path 90% + Contour-wipe color 10%)</i>"]:::step4
+            B4_2["scene_XX.mp4<br/><i>(Video hoạt họa vẽ tay không tiếng)</i>"]:::step4
+            B4_1 --> B4_2
+        end
+
+        subgraph STAGE_5 ["🚀 BƯỚC 5: Compositing, Hardsub & Nghiệm Thu"]
+            B5_1["FFmpeg Audio Muxing<br/><i>(Ghép narration vào video hoạt họa)</i>"]:::step5
+            B5_2["scene_XX_voice.mp4<br/><i>(Video đã có tiếng khớp từng nét vẽ)</i>"]:::step5
+            B5_3["Burn Subtitles Hardsub<br/><i>(Font hiện đại, MarginV=4 sát đáy)</i>"]:::step5
+            B5_4["scene_XX_sub.mp4<br/><i>(Video hoàn chỉnh từng cảnh)</i>"]:::step5
+            B5_5["merge_scenes.py<br/><i>(Nối tất cả các cảnh thành final.mp4)</i>"]:::step5
+
+            B5_1 --> B5_2
+            B5_2 --> B5_3
+            B5_3 --> B5_4
+            B5_4 --> B5_5
+        end
+
+        STAGE_0 ==> STAGE_1
+        STAGE_1 ==> STAGE_2
+        B1_2 -.->|"Canvas 1920x1080"| B3_1
+        B2_4 ==>|"Audio Clock (startMs, durationMs)"| B3_1
+        STAGE_2 ==> STAGE_3
+        STAGE_3 ==> STAGE_4
+        B4_2 --> B5_1
+        B2_3 --> B5_1
+        B2_5 --> B5_3
+        STAGE_4 ==> STAGE_5
+    </div>
+  </div>
+
+  <div class="footer-notes">
+    <div class="note-card">
+      <h4>⏱️ Audio Master Clock</h4>
+      <p>Giọng nói thu âm trước và đo đạc chính xác từng mili-giây. Thời gian vẽ của từng phần tử được gán cứng theo nhịp lời giảng, chống hiện tượng lệch khẩu hình.</p>
+    </div>
+    <div class="note-card">
+      <h4>🎯 Zero Overlap</h4>
+      <p>Mỗi phần tử đồ họa là một vùng nguyên tử độc lập (A<sub>i</sub> ∩ A<sub>j</sub> = ∅). Bàn tay vẽ liên tục, không bao giờ bị khựng nét hay nuốt hình.</p>
+    </div>
+    <div class="note-card">
+      <h4>🎙️ Single Voice Engine</h4>
+      <p>Chỉ dùng tts-voiceover-engine (Google Voice Design API) để giữ trọn vẹn chất giọng độc quyền của kênh xuyên suốt mọi video.</p>
+    </div>
+  </div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: 'transparent',
+        primaryColor: '#6366f1',
+        primaryTextColor: '#f8fafc',
+        primaryBorderColor: '#818cf8',
+        lineColor: '#60a5fa',
+        secondaryColor: '#1e293b',
+        tertiaryColor: '#0f172a'
+      }
+    });
+  </script>
+</body>
+</html>

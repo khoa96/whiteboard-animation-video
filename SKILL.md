@@ -89,15 +89,18 @@ Khi bắt đầu từ chủ đề hoặc kịch bản, dùng **giọng đọc d�
     - **Tự phản biện kịch bản:** Đảm bảo mỗi câu đều có hành động vẽ cụ thể tương ứng, thời lượng câu đủ cho nét vẽ hoàn thành.
     **Xong thì dừng, chờ người dùng duyệt kịch bản & phương án thị giác.**
 
-0b. **Tạo giọng đọc, sinh SRT (đầu vào chủ đề/kịch bản).** Chỉ làm sau khi kịch bản được duyệt:
+0b. **Tạo giọng đọc, sinh SRT & Audio Master Clock (đầu vào chủ đề/kịch bản).** Chỉ làm sau khi kịch bản được duyệt:
 
 ```bash
-   python scripts/script_to_srt.py script.md --output draft.srt        # cắt câu; dòng cuối PAUSES=…
-   <ENV_PY> scripts/tts_narration.py draft.srt --output narration.m4a \
-       --retime-out input.srt --pause <từng mục trong PAUSES>            # độ dài giọng thật → mốc chính thức
+   # Cắt kịch bản thành câu nháp (nếu cần):
+   python scripts/script_to_srt.py script.md --output draft.srt
+
+   # Gọi tts-voiceover-engine tạo giọng độc quyền của kênh, xuất audio, SRT và timing cues:
+   npm --prefix tts-voiceover-engine run generate -- \
+       --file script.md --output narration.wav --srt input.srt --cues timing_cues.json
 ```
 
-   `input.srt` là phụ đề cho mọi bước sau; `narration.m4a` là giọng đọc cuối cùng (bước 8 dùng lại cache). Báo cho người dùng: cách cắt câu, tổng thời lượng, giọng đã dùng, và mời nghe thử `narration.m4a`. Giọng/tốc độ/engine lấy theo `.env` (`TTS_PROVIDER` / `TTS_VOICE` / `TTS_SPEED`); người dùng chỉ định thì dùng `--provider` / `--voice` / `--speed`. **Xong thì dừng, chờ người dùng duyệt giọng đọc và cách cắt câu.**
+   `input.srt` là phụ đề cho mọi bước sau; `timing_cues.json` là mốc thời gian chuẩn mili-giây điều khiển vẽ ở Bước 3; `narration.wav` là giọng đọc cuối cùng. Báo cho người dùng: tổng thời lượng, giọng đã dùng (Custom Voice ID độc quyền `voice_xnxd3uit2744`), và mời nghe thử `narration.wav`. **Xong thì dừng, chờ người dùng duyệt giọng đọc và cách cắt câu.**
 
 1. **Đọc phụ đề, lên phương án hình & chọn layout (chưa tạo ảnh).** Dùng `scripts/parse_srt.py` tách SRT thành từng câu và gợi ý chia cảnh 20–35 giây/cảnh theo từng Khối Tri thức. Từ đó đưa ra phương án: mỗi cảnh có số thứ tự, ý chính, dạng layout (So sánh, Chu trình, Mindmap, Quiz...), các đối tượng/từ khóa/câu ví dụ trong hình, khoảng phụ đề tương ứng và `sceneDurationMs`. Mỗi cảnh chỉ một ý chính trọn vẹn. **Xong thì dừng, chờ duyệt phương án.**
 2. **Tạo ảnh nét vẽ.** Chỉ làm sau khi phương án được duyệt. Theo "Quy chuẩn Thiết kế Thị giác & Chữ viết", tạo từng ảnh 16:9 nền trắng thuần `#FFFFFF`. Bố cục thông thoáng, các đối tượng và từ khóa/công thức/câu ví dụ cách nhau đủ rộng để dễ chia vùng; nét vẽ tối giản Notion, chữ sắc nét rõ ràng, không có yếu tố trái quy chuẩn. Nếu không tự tạo ảnh được, ghi prompt từng cảnh vào `IMAGE_PROMPTS.md` và nhờ người dùng tạo, lưu đúng tên `scene-XX-<tên>.png`. **Xong thì dừng, cho xem ảnh và chờ duyệt.**
@@ -106,7 +109,15 @@ Khi bắt đầu từ chủ đề hoặc kịch bản, dùng **giọng đọc d�
 5. **Chỉnh và lưu trên trang xem trước.** Chỉ làm sau khi ảnh kiểm tra được duyệt, trên trang xem trước đã mở và nạp đúng thư mục. Mặc định (chưa phát) hiện ảnh đầy đủ và các khung vùng. Canvas là **bản mô phỏng bằng hình chữ nhật**: kéo cạnh/góc để sửa `region`; khung bên phải sửa tên, hướng, **bắt đầu (ms) / kết thúc (ms)** (thời lượng = kết thúc − bắt đầu, chỉ đọc) và **phụ đề**; kéo danh sách để **đổi thứ tự** (tự đánh lại `sequence`); chọn vùng nào thì phụ đề tương ứng được tô sáng; kéo thanh thời gian hoặc bấm phát để xem (vùng chưa tới lượt không hiện); `direction` chỉ ảnh hưởng bản mô phỏng. Sửa xong bấm "Lưu cảnh này / Lưu tất cả" để ghi lại `.annotation.json` gốc (kèm `subtitle` của từng vùng, và đặt `sceneDurationMs` = thời điểm vùng cuối kết thúc + 0,5 giây). **Lưu xong thì dừng, chờ duyệt annotation và thời gian cuối cùng.**
 6. **Render bằng dòng lệnh.** Chỉ làm sau khi annotation và thời gian được duyệt. Dùng `render_stream_whiteboard.py` render từng cảnh ra MP4 (nền trắng `#FFFFFF`, tỉ lệ `ink:color = 90:10`), kiểm tra ba thời điểm: mở đầu, giữa một vùng có chồng lấn, và cuối cảnh. **Xong thì dừng, chờ duyệt video từng cảnh.**
 7. **Ghép các cảnh (khi có nhiều cảnh).** Chỉ làm sau khi mọi cảnh được duyệt. Dùng `merge_scenes.py` ghép theo thứ tự thành một video. **Xong thì dừng, chờ duyệt video ghép.**
-8. **Gắn phụ đề + ghép giọng đọc (mặc định với đầu vào chủ đề/kịch bản; với đầu vào SRT thì làm khi người dùng yêu cầu).** Chỉ làm sau khi video ghép được duyệt. Trước hết dùng filter `subtitles` của ffmpeg gắn `input.srt` vào hình (chữ xám đậm viền trắng sắc nét, nổi bật trên nền bảng trắng, xem mục "Lệnh" bước 8), sau đó chạy `tts_narration.py input.srt --video <video có phụ đề>` để ghép giọng (lấy từ cache, không gọi lại API). Kiểm tra khung đầu/giữa/cuối và phân bố khoảng lặng (`silencedetect`), bảo đảm giọng, phụ đề và hình khớp nhau. **Xong thì dừng, bàn giao video cuối.**
+8. **Gắn phụ đề + ghép giọng đọc.** Chỉ làm sau khi video ghép được duyệt:
+   ```bash
+   # Mux âm thanh narration vào video
+   ffmpeg -y -i final.mp4 -i narration.wav -c:v copy -c:a aac -b:a 192k final-voice.mp4
+   # Burn phụ đề chuẩn sát đáy
+   ffmpeg -y -i final-voice.mp4 -vf "subtitles=input.srt:force_style='FontSize=13,PrimaryColour=&H00FFFFFF,BackColour=&H80000000,BorderStyle=3,MarginV=4'" -c:a copy final-sub.mp4
+   ```
+   Kiểm tra khung đầu/giữa/cuối, bảo đảm giọng, phụ đề và hình khớp nhau 100%. **Xong thì dừng, bàn giao video cuối.**
+
 
 ## Thư mục dự án
 
@@ -221,11 +232,12 @@ Mọi script render chạy bằng Python trong `.venv` của skill (cô lập th
 1. **Chuẩn bị môi trường** (lần đầu hoặc khi thiếu thư viện):
    ```bash
    python scripts/prepare_env.py --check   # chỉ kiểm tra; thành công thì dòng cuối in ENV_PY=<đường dẫn>
-   python scripts/prepare_env.py           # thiếu thì tạo .venv và cài opencv-python/numpy/av/Pillow/edge-tts
+   python scripts/prepare_env.py           # thiếu thì tạo .venv và cài opencv-python/numpy/av/Pillow
    ```
-2. **Kịch bản → SRT nháp** (đầu vào chủ đề/kịch bản): cắt theo câu (lời thoại trong ngoặc kép không bị tách, câu quá dài cắt ở dấu phẩy, câu quá ngắn gộp với câu sau); dòng tiêu đề `#` và dòng trống không được đọc; dòng trống chia đoạn, dòng cuối `PAUSES=` liệt kê số thứ tự câu cuối mỗi đoạn, dùng làm các tham số `tts_narration.py --pause`.
+2. **Kịch bản → SRT nháp** (đầu vào chủ đề/kịch bản): cắt theo câu (lời thoại trong ngoặc kép không bị tách, câu quá dài cắt ở dấu phẩy, câu quá ngắn gộp với câu sau); dòng tiêu đề `#` và dòng trống không được đọc; dòng trống chia đoạn, dòng cuối `PAUSES=` liệt kê số thứ tự câu cuối mỗi đoạn, dùng làm gợi ý ngắt câu cho `tts-voiceover-engine`.
    ```bash
    python scripts/script_to_srt.py script.md --output draft.srt [--max-chars 80] [--min-chars 12]
+
    ```
 3. **Đọc phụ đề + gợi ý chia cảnh:**
    ```bash
@@ -254,22 +266,17 @@ Mọi script render chạy bằng Python trong `.venv` của skill (cô lập th
    ```
 
    Trên Windows, đường dẫn trong `subtitles=` nên là đường dẫn tương đối (tránh dấu hai chấm của ổ đĩa bị hiểu nhầm là cú pháp filter).
-9. **Giọng đọc:** tạo giọng từng câu theo SRT, khớp mốc thời gian rồi ghép vào video (không render lại hình). Engine `--provider vbee|edge` (mặc định theo `TTS_PROVIDER` trong `.env`): `vbee` cần `VBEE_APP_ID` / `VBEE_ACCESS_TOKEN`, tính phí theo ký tự, `--voice` là **mã giọng đầy đủ** copy từ giao diện Vbee (gửi nguyên văn cho API); `edge` dùng [rany2/edge-tts](https://github.com/rany2/edge-tts), miễn phí, mặc định `vi-VN-NamMinhNeural` (nữ: `vi-VN-HoaiMyNeural`). Tốc độ `--speed` (1.0 = bình thường; với Edge, 1.1 → `+10%`). Giọng từng câu được lưu ở `<thư-mục-srt>/tts-cache/`, chạy lại không gọi API lần nữa.
+9. **Tạo giọng đọc & Audio Master Clock:** Sử dụng `tts-voiceover-engine` (Google AI Studio) với Custom Voice ID độc quyền (`voice_xnxd3uit2744`) để xuất audio và subtitle:
    ```bash
-   <ENV_PY> scripts/tts_narration.py <phụ-đề.srt> --output narration.m4a --video final-sub.mp4 \
-       [--provider vbee|edge] [--voice <mã-giọng>] [--speed 1.1]
+   npm --prefix tts-voiceover-engine run generate -- \
+       --file <kịch_bản_hoặc_srt> --output narration.wav --srt input.srt --cues timing_cues.json
    ```
 
-   Dòng cuối in `OUTPUT=<video có giọng>` (mặc định `<video>-voice.mp4`). Câu nào dài hơn khung thời gian thì tự tăng tốc và cảnh báo. Mặc định cắt khoảng lặng đầu/cuối mỗi câu (tắt bằng `--no-trim`).
-10. **Nhịp gọn (tuỳ chọn, cho đầu vào SRT có nhiều khoảng lặng):** sắp lại phụ đề theo độ dài giọng thật, rồi co giãn thời gian vẽ trong annotation theo từng đoạn tuyến tính; render lại thì hình và giọng khớp nhau, gần như không có khoảng trống:
-    ```bash
-    <ENV_PY> scripts/tts_narration.py input.srt --output narration.m4a --provider edge \
-        --retime-out input.tight.srt --gap 0.3 --pause 6=0.8 --tail 1.0
-    <ENV_PY> scripts/retime_annotations.py --old-srt input.srt --new-srt input.tight.srt \
-        --annotations canh1.annotation.json canh2.annotation.json   # ra <tên>.tight.annotation.json, file gốc giữ nguyên
-    ```
+   Sau đó ghép âm thanh vào video thành phẩm:
+   ```bash
+   ffmpeg -y -i final-sub.mp4 -i narration.wav -c:v copy -c:a aac -b:a 192k final-complete.mp4
+   ```
 
-    Sau đó render các cảnh bằng `.tight.annotation.json`, ghép, gắn phụ đề `input.tight.srt`, rồi chạy bước 9 với `input.tight.srt` (giọng lấy từ cache).
 
 ## Kiểm tra chất lượng
 

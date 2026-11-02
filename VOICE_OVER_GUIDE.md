@@ -1,176 +1,159 @@
-# 🎙️ HƯỚNG DẪN TOÀN DIỆN VỀ HỆ THỐNG VOICE-OVER (TEXT-TO-SPEECH)
-> **Dành cho thành viên mới bắt đầu dự án Whiteboard Animation Video**
+# 🎙️ HƯỚNG DẪN TOÀN DIỆN VỀ ĐỘNG CƠ VOICE-OVER (TTS-VOICEOVER-ENGINE)
+> **Động cơ tạo giọng nói thống nhất duy nhất cho toàn bộ dự án Whiteboard Animation**
 
 ---
 
 ## 📌 MỤC LỤC
 1. [Giới thiệu tổng quan kiến trúc](#1-giới-thiệu-tổng-quan-kiến-trúc)
 2. [Luồng hoạt động End-to-End (Workflow)](#2-luồng-hoạt-động-end-to-end-workflow)
-3. [Hướng dẫn cấu hình 1 hoặc nhiều giọng nói](#3-hướng-dẫn-cấu-hình-1-hoặc-nhiều-giọng-nói)
+3. [Cấu hình giọng nói & Bản sắc kênh](#3-cấu-hình-giọng-nói--bản-sắc-kênh)
    - [Chế độ A: Giọng đặc trưng độc quyền kênh (Custom Voice ID)](#chế-độ-a-giọng-đặc-trưng-độc-quyền-kênh-custom-voice-id)
-   - [Chế độ B: Sử dụng 30 giọng Prebuilt chuẩn của Google](#chế-độ-b-sử-dụng-30-giọng-prebuilt-chuẩn-của-google)
-   - [Chế độ C: Kịch bản đa giọng (Multi-voice / Đối thoại phân vai)](#chế-độ-c-kịch-bản-đa-giọng-multi-voice--đối-thoại-phân-vai)
-4. [Cơ chế xoay tua API Key & Quản lý hạn mức (Rate Limits)](#4-cơ-chế-xoay-tua-api-key--quản-lý-hạn-mức-rate-limits)
-5. [Hướng dẫn thao tác nhanh từng bước (Quickstart)](#5-hướng-dẫn-thao-tác-nhanh-từng-bước-quickstart)
-6. [Quy tắc viết kịch bản tối ưu ngữ điệu A1-A2 (Best Practices)](#6-quy-tắc-viết-kịch-bản-tối-ưu-ngữ-điệu-a1-a2-best-practices)
+   - [Chế độ B: Giọng Prebuilt chuẩn Google AI Studio (Dự phòng)](#chế-độ-b-giọng-prebuilt-chuẩn-google-ai-studio-dự-phòng)
+4. [Tích hợp Audio Master Clock cho Whiteboard Video](#4-tích-hợp-audio-master-clock-cho-whiteboard-video)
+5. [Cơ chế xoay tua API Key & Quản lý hạn mức (Rate Limits)](#5-cơ-chế-xoay-tua-api-key--quản-lý-hạn-mức-rate-limits)
+6. [Hướng dẫn thao tác nhanh (Quickstart)](#6-hướng-dẫn-thao-tác-nhanh-quickstart)
+7. [Quy tắc viết kịch bản tối ưu ngữ điệu A1-A2 (Best Practices)](#7-quy-tắc-viết-kịch-bản-tối-ưu-ngữ-điệu-a1-a2-best-practices)
 
 ---
 
 ## 1. Giới thiệu tổng quan kiến trúc
 
-Dự án cung cấp 2 phân hệ Voice-Over chuyên sâu:
+Toàn bộ dự án sử dụng **một động cơ Text-to-Speech duy nhất** đặt tại:
 
-```
+```text
 whiteboard-video-main/
 │
-├── tts-voiceover-engine/       # 🚀 PHÂN HỆ 1: Engine độc lập tạo Voice-Over đặc trưng kênh
-│   ├── src/                    # Mã nguồn TypeScript: Tiền xử lý, gọi API, ghép audio
-│   ├── config/voice-persona.json # Bản sắc giọng độc quyền (Custom Voice Persona)
-│   ├── inputs/sample-script.txt  # Kịch bản đầu vào
-│   └── outputs/                # Thư mục xuất file âm thanh WAV hoàn chỉnh
+├── .env                        # File cấu hình biến môi trường DUY NHẤT toàn repo
 │
-└── scripts/tts_gemini.py       # 🎬 PHÂN HỆ 2: Engine Python tích hợp render video Whiteboard
-    └── Tự động gọi TTS từng phân cảnh và căn khớp Audio Clock cho animation
+└── tts-voiceover-engine/       # 🚀 ĐỘNG CƠ VOICE-OVER DUY NHẤT CỦA DỰ ÁN
+    ├── src/
+    │   ├── voice-manager.ts    # Google AI Studio Voice Design API (Quản lý Custom Voice ID)
+    │   ├── tts-client.ts       # Gemini TTS Client (Exponential Backoff & Jitter)
+    │   ├── script-preprocessor.ts # Tiền xử lý kịch bản: Thought groups, [NATURAL], [DRILL]
+    │   ├── audio-utils.ts      # PCM L16 24kHz -> WAV 44-byte Header, tính mili-giây
+    │   └── index.ts            # CLI Entrypoint hỗ trợ xuất Audio, SRT và Timing Cues
+    ├── config/
+    │   └── voice-persona.json  # Bản thiết kế chân dung giọng đọc độc quyền của kênh
+    └── outputs/                # Thư mục xuất file âm thanh mặc định
 ```
 
 ---
 
 ## 2. Luồng hoạt động End-to-End (Workflow)
 
-Quy trình biến một đoạn văn bản thô thành một file âm thanh chất lượng phòng thu:
-
-```
+```text
 ┌────────────────────────┐
-│  Kịch bản văn bản thô  │ (Hỗ trợ thẻ [NATURAL: ...] và [DRILL: ...])
+│  Kịch bản văn bản thô  │ (Hỗ trợ định dạng .txt, .md, .srt, tag [NATURAL] và [DRILL])
 └───────────┬────────────┘
             │
             ▼
 ┌────────────────────────┐
-│   ScriptPreprocessor   │ • Tự động phân tách từng câu / mệnh đề độc lập
-│   (Tiền xử lý nhịp điệu)│ • Chèn micro-pauses (~300ms) tạo khoảng lấy hơi tự nhiên
-└───────────┬────────────┘ • Chia mẻ (Chunking) an toàn < 1800 ký tự
+│   ScriptPreprocessor   │ • Phân tách từng câu độc lập
+│   (Tiền xử lý nhịp điệu)│ • Tự động loại bỏ tiêu đề markdown, xử lý tag phát âm
+└───────────┬────────────┘ • Chèn micro-pauses (~300ms) tạo khoảng lấy hơi tự nhiên
             │
             ▼
 ┌────────────────────────┐
-│    Google TTS Client   │ • Gửi yêu cầu đến Google AI Studio (Gemini TTS API)
-│  (Xoay tua chống lỗi)  │ • Tự động chuyển model dự phòng nếu gặp lỗi 429
-└───────────┬────────────┘
+│    Google TTS Client   │ • Gửi yêu cầu đến Google AI Studio (gemini-3.8-flash-tts)
+│  (Xoay tua chống lỗi)  │ • Tự động xử lý 429/503 bằng Exponential Backoff & Jitter
+└───────────┬────────────┘ • Giữ vững tông giọng qua Custom Voice ID cố định
             │
             ▼
 ┌────────────────────────┐
 │       AudioUtils       │ • Tiếp nhận dữ liệu PCM L16 (24.000 Hz Mono)
-│   (Đóng gói âm thanh)  │ • Ghép nối các mẻ liền mạch, dập Header WAV chuẩn 44-byte
-└───────────┬────────────┘
+│   (Đóng gói âm thanh)  │ • Ghép nối chèn lead-in (0.5s), gap (0.5s), tail (2.0s)
+└───────────┬────────────┘ • Dập Header WAV chuẩn 44-byte hoặc encode AAC (.m4a)
             │
             ▼
-┌────────────────────────┐
-│ File xuất thành phẩm   │ • outputs/voiceover_YYYY-MM-DD.wav
-└────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                  BỘ BA DỮ LIỆU ĐẦU RA                        │
+│ 1. narration.wav / .m4a   : Âm thanh lời giảng hoàn chỉnh     │
+│ 2. timing_cues.json       : Mốc startMs, durationMs từng câu │
+│ 3. input.srt              : Phụ đề chuẩn thời gian mili-giây │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 3. Hướng dẫn cấu hình 1 hoặc nhiều giọng nói
+## 3. Cấu hình giọng nói & Bản sắc kênh
 
-### Chế độ A: Giọng đặc trưng độc quyền kênh (Custom Voice ID)
-Đây là tính năng độc quyền sử dụng **Google AI Studio Voice Design API**. Kênh của bạn sẽ sở hữu một giọng đọc nhất quán, không đụng hàng với bất kỳ kênh nào khác.
+### Chế độ A: Giọng đặc trưng độc quyền kênh (Custom Voice ID - Mặc định)
+Kênh sở hữu một giọng đọc nhất quán, không đụng hàng nhờ tính năng **Google AI Studio Voice Design API**.
 
-File cấu hình tại: `tts-voiceover-engine/config/voice-persona.json`
-
-```json
-{
-  "voiceDesignPrompt": "A 22-year-old charismatic bilingual male language teacher. Warm, engaging, and resonant voice timbre. Speaks Vietnamese with an authentic Northern Hanoi accent. Speaks English with a clear, measured General American accent: expressive intonation, articulate pronunciation, and a calm, deliberate teaching cadence.",
-  "styleDirective": "Warm, inspiring, and patient educational tone. Speak Vietnamese in a natural Northern Hanoi accent. For English speech, tailor specifically to A1-A2 beginner learners: maintain a calm, measured pace (around 110-120 words per minute), speak in clear, well-connected thought groups rather than isolated words, distinctly enunciate key stressed syllables and final consonants, and insert gentle, natural micro-pauses between sentence clauses to allow effortless listening comprehension without sounding robotic.",
-  "customVoiceId": "voice_qm5tk2dpfj15"
-}
-```
-
-* **Khởi tạo giọng độc quyền mới:**
-  Chỉ cần chỉnh sửa mô tả trong `voiceDesignPrompt` rồi chạy lệnh:
+* File cấu hình chân dung: `tts-voiceover-engine/config/voice-persona.json`
+* Mã giọng hiện tại: `voice_xnxd3uit2744` (Nam 25 tuổi, chuẩn giọng Bắc hiện đại, phát âm tiếng Anh chuẩn Mỹ A1).
+* **Khởi tạo lại hoặc tạo mới giọng đọc**:
   ```bash
   cd tts-voiceover-engine
   npm run init-voice
   ```
-  Hệ thống sẽ tự động gọi Google Voice Design API, nhận `voice_id` mới và lưu đè vào cấu hình.
+  Lệnh sẽ tự động gọi API, nhận mã `voice_xxxx` mới và ghi thẳng vào `.env` gốc và `voice-persona.json`.
 
 ---
 
-### Chế độ B: Sử dụng 30 giọng Prebuilt chuẩn của Google
-Nếu không dùng Custom Voice, bạn có thể chọn bất kỳ giọng nào trong 30 giọng đọc sẵn có của Google AI Studio bằng cách đổi biến `TTS_VOICE` trong file `.env`:
+### Chế độ B: Giọng Prebuilt chuẩn Google AI Studio (Dự phòng)
+Nếu muốn dùng các giọng đọc có sẵn của Google, bạn cấu hình biến `PREBUILT_FALLBACK_VOICE` trong file `.env` ở thư mục gốc:
 
 ```env
-TTS_PROVIDER=google
-TTS_VOICE=Alnilam
+PREBUILT_FALLBACK_VOICE=Achird
 ```
 
-#### Bảng tra cứu các giọng tiêu biểu:
-| Tên giọng | Giới tính | Phong cách đặc trưng | Phù hợp nhất cho |
-| :--- | :---: | :--- | :--- |
-| **Alnilam** | Nam | Điềm đạm, ấm áp, nhịp điệu tự nhiên | Bài giảng tiếng Anh, kể chuyện, podcast |
-| **Achird** | Nam | Sáng, năng động, thân thiện | Giới thiệu bài học, hội thoại đời thường |
-| **Puck** | Nam | Hoạt bát, hào hứng, biểu cảm đa dạng | Nhân vật hoạt hình, đối thoại vui nhộn |
-| **Charon** | Nam | Uy tín, trầm ấm, dõng dạc | Phim tài liệu, kiến thức khoa học, triết lý |
-| **Aoede** | Nữ | Dịu dàng, sâu lắng, truyền cảm | Đọc truyện, thiền, ngữ văn |
-| **Erinome** | Nữ | Chuẩn mực, rõ ràng, sư phạm | Hướng dẫn ngữ pháp, phát âm từ vựng |
-| **Kore** | Nữ | Trẻ trung, tự tin, phát âm tách bạch | Thuyết trình, bản tin giáo dục |
+| Tên giọng | Giới tính | Phong cách đặc trưng |
+| :--- | :---: | :--- |
+| **Achird** | Nam | Tươi sáng, nhiệt huyết, trẻ trung 25 tuổi (Khuyên dùng) |
+| **Charon** | Nam | Trầm ấm, đĩnh đạc, dày dặn, uy tín |
+| **Puck** | Nam | Hoạt bát, sôi nổi, dí dỏm |
+| **Erinome** | Nữ | Rõ ràng, mô phạm, chuẩn mực |
+| **Aoede** | Nữ | Dịu dàng, truyền cảm, sâu lắng |
+| **Kore** | Nữ | Tự tin, đĩnh đạc, hiện đại |
 
 ---
 
-### Chế độ C: Kịch bản đa giọng (Multi-voice / Đối thoại phân vai)
-Khi làm video có đối thoại giữa 2 nhân vật (Ví dụ: Thầy giáo David và Học sinh Nam), bạn thiết lập trong kịch bản phân cảnh của whiteboard video (`project.json`):
+## 4. Tích hợp Audio Master Clock cho Whiteboard Video
 
-```json
-{
-  "scenes": [
-    {
-      "id": "scene_01",
-      "voice": "Alnilam",
-      "narration": "Hello Nam! How are you doing today?"
-    },
-    {
-      "id": "scene_02",
-      "voice": "Puck",
-      "narration": "I am doing great, teacher David! Today I want to learn English."
-    }
-  ]
-}
+Để phục vụ nguyên tắc **Audio Master Clock (Âm thanh là đồng hồ chủ)** điều khiển các nét vẽ ở Bước 3 và Bước 4, `tts-voiceover-engine` hỗ trợ xuất trực tiếp mốc thời gian và phụ đề:
+
+```bash
+# Cú pháp tạo âm thanh cho 1 scene cụ thể:
+npm --prefix tts-voiceover-engine run generate -- \
+  --file path/to/script.txt \
+  --output path/to/scene_01/narration.wav \
+  --srt path/to/scene_01/input.srt \
+  --cues path/to/scene_01/timing_cues.json
 ```
-Engine `scripts/tts_gemini.py` sẽ tự động chuyển đổi voice tương ứng cho từng phân cảnh khi render!
+
+Kết quả:
+1. `narration.wav` (hoặc `.m4a`): Âm thanh liền mạch.
+2. `timing_cues.json`: Chứa `startMs`, `durationMs` của từng câu để file `scene_01.annotation.json` gán thời gian vẽ.
+3. `input.srt`: File phụ đề chuẩn dùng để burn hardsub ở Bước 5.
 
 ---
 
-## 4. Cơ chế xoay tua API Key & Quản lý hạn mức (Rate Limits)
+## 5. Cơ chế xoay tua API Key & Quản lý hạn mức (Rate Limits)
 
 Google AI Studio Free Tier áp dụng hạn mức:
-* **Flash Models (`gemini-3.8-flash-tts`):** 15 RPM (yêu cầu/phút), **250 lượt tạo / ngày / key**.
-* **Pro Models (`gemini-2.5-pro-preview-tts`):** 2 RPM, **50 lượt tạo / ngày / key**.
+* **Flash Models (`gemini-3.8-flash-tts`):** 15 RPM, 250 lượt gọi / ngày / key.
 
-### Cách khai báo nhiều Key để xoay tua liên tục:
-Trong file `.env`, bạn điền các key từ nhiều tài khoản Google khác nhau, ngăn cách bằng dấu phẩy:
+Trong file `.env` gốc, bạn có thể điền 1 hoặc nhiều API Key cách nhau bởi dấu phẩy:
 ```env
-GOOGLE_API_KEYS=key_gmail_1,key_gmail_2,key_gmail_3,key_gmail_4
+GEMINI_API_KEYS=key_gmail_1,key_gmail_2,key_gmail_3
 ```
-* **Engine tự động:** Khi một key hoặc model chạm lỗi `429 (Too Many Requests)`, engine sẽ lập tức chuyển sang key hoặc model Flash tiếp theo mà không làm gián đoạn quá trình sinh giọng.
-* **Bảo vệ an toàn:** File `.env` đã được chặn hoàn toàn trong `.gitignore` và có Git Pre-commit Hook tự động hủy lệnh commit nếu vô tình chứa API Key.
 
 ---
 
-## 5. Hướng dẫn thao tác nhanh từng bước (Quickstart)
+## 6. Hướng dẫn thao tác nhanh (Quickstart)
 
 ### Bước 1: Cài đặt thư viện (Chỉ làm 1 lần)
 ```bash
-# Cài đặt cho Engine Voice-over TypeScript
 cd tts-voiceover-engine
 npm install
-
-# Quay lại thư mục gốc dự án
 cd ..
 ```
 
-### Bước 2: Chuẩn bị file cấu hình môi trường
-Sao chép `.env.example` thành `.env` và điền ít nhất 1 Google API Key:
-```bash
-cp .env.example .env
+### Bước 2: Thiết lập file môi trường
+Điền API key vào file `.env` tại thư mục gốc dự án:
+```env
+GEMINI_API_KEY=your_google_ai_studio_api_key_here
 ```
 
 ### Bước 3: Tạo Voice-Over từ kịch bản mẫu
@@ -178,33 +161,20 @@ cp .env.example .env
 cd tts-voiceover-engine
 npm run generate
 ```
-File âm thanh hoàn chỉnh sẽ xuất hiện tại thư mục `tts-voiceover-engine/outputs/voiceover_YYYY-MM-DD.wav`.
 
-### Bước 4: Tạo Voice-Over từ một file kịch bản bất kỳ của bạn
+### Bước 4: Tạo Voice-Over từ file kịch bản bất kỳ
 ```bash
-npm run generate -- --file inputs/duong_dan_file_kich_ban.txt
+cd tts-voiceover-engine
+npm run generate -- --file inputs/sample-script.txt
 ```
 
 ---
 
-## 6. Quy tắc viết kịch bản tối ưu ngữ điệu A1-A2 (Best Practices)
+## 7. Quy tắc viết kịch bản tối ưu ngữ điệu A1-A2 (Best Practices)
 
-Để người học trình độ mới bắt đầu (Beginner A1-A2) nghe rõ ràng, dễ hiểu mà không bị giật cục hay máy móc, hãy áp dụng 3 quy tắc sau:
-
-### Quy tắc 1: Sử dụng kỹ thuật ngắt nhịp nhóm nghĩa (Thought Groups)
-Thay vì viết một câu quá dài, hãy dùng dấu phẩy `,` để tạo nhịp nghỉ tự nhiên:
-* ❌ *Khó nghe:* `Every single day my morning begins at six o'clock and I wake up and drink a full glass of warm water.`
-* ✅ *Dễ nghe A1-A2:* `Every single day, my morning begins at six o'clock. When the alarm rings, I wake up, and drink a full glass of warm water.`
-
-### Quy tắc 2: Dùng thẻ `[NATURAL: ...]` cho câu giao tiếp trôi chảy
-Khi muốn đọc một câu thành ngữ hoặc câu hội thoại với ngữ điệu nối âm bản xứ mượt mà:
-```text
-Các bạn hãy lắng nghe câu sau: [NATURAL: I would love to grab a cup of coffee].
-```
-
-### Quy tắc 3: Dùng thẻ `[DRILL: ...]` cho đoạn luyện phát âm bật âm cuối
-Khi muốn học viên tập trung nghe rõ từng từ khóa và bật rõ âm đuôi (Ending Sounds):
-```text
-Bây giờ hãy cùng phát âm các từ sau: [DRILL: cat... book... street... desk].
-```
-*(Hệ thống sẽ tự động chèn khoảng dừng đủ lớn để học viên nhại theo sau từng từ).*
+1. **Ngắt nhịp Thought Groups**: Dùng dấu phẩy `,` để tạo nhịp nghỉ tự nhiên giữa các vế câu.
+2. **Thẻ `[NATURAL: ...]`**: Dành cho câu giao tiếp trôi chảy, ngữ điệu nối âm bản xứ.
+3. **Thẻ `[DRILL: ...]`**: Dành cho từ vựng cần bật cực rõ âm cuối:
+   ```text
+   Hãy cùng phát âm: [DRILL: book... cat... desk].
+   ```

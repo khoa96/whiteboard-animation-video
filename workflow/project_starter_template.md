@@ -1,4 +1,5 @@
 # CẤU TRÚC ĐẦU VÀO CHUẨN KHI KHỞI TẠO MỘT DỰ ÁN MỚI
+
 ## (Standard Project Onboarding Structure & Input Specification)
 
 Tài liệu này quy định cấu trúc thư mục và các tệp dữ liệu cần cung cấp khi bắt đầu bất kỳ một dự án video Whiteboard Animation mới. Việc chuẩn bị đúng cấu trúc này giúp AI hoặc đội ngũ kỹ thuật có thể kích hoạt quy trình sản xuất tự động ngay lập tức mà không cần hỏi lại yêu cầu.
@@ -31,12 +32,7 @@ Sau khi chạy câu lệnh trên, dự án sẽ có đầy đủ cấu trúc chu
 
 ```text
 ten_du_an/
-├── brief.md              # 1. Tóm tắt sáng tạo & yêu cầu dự án (đã điền sẵn form mẫu)
-├── subtitle_draft.srt    # 2. Toàn bộ lời thoại phân theo cảnh (kèm mốc thời gian mẫu)
-├── project.json          # 3. Cấu hình kỹ thuật (1920x1080, #FFFFFF, 60fps, giọng đọc Edge-TTS)
-├── images/               # 4. Thư mục chứa các ảnh tĩnh 16:9 sinh từ AI
-│   └── README.md         #    (Hướng dẫn độ phân giải, nền trắng và đặt tên file)
-└── scenes/               # 5. Thư mục làm việc cho từng scene kết xuất
+├── brief.md               
 ```
 
 ---
@@ -46,6 +42,7 @@ ten_du_an/
 ---
 
 ### 1. Tệp `brief.md` (Tóm tắt yêu cầu sư phạm & phong cách)
+
 * **Mục đích**: Cung cấp thông tin nền tảng để thiết lập các tham số AI và kiểm soát chất lượng.
 * **Mẫu nội dung cần điền (Copy & Paste)**:
 
@@ -59,8 +56,9 @@ ten_du_an/
 - **Tổng số scene**: [Ví dụ: 8 scenes]
 
 ## 2. Yêu cầu âm thanh (Voice Direction)
-- **Giọng thuyết minh**: [Ví dụ: Nam miền Bắc, điềm tĩnh, truyền cảm (Edge-TTS: en-US-AndrewMultilingualNeural)]
+- **Giọng thuyết minh**: [tts-voiceover-engine: Custom Voice ID độc quyền voice_xnxd3uit2744 (Nam miền Bắc 25 tuổi, truyền cảm, nhả rõ âm cuối chuẩn A1)]
 - **Phát âm tiếng Anh**: [American English (Mỹ) chuẩn bản ngữ]
+
 
 ## 3. Quy chuẩn thị giác (Visual Direction)
 - **Phong cách**: 2D Hand-drawn Whiteboard, nét vẽ bút dạ tự nhiên, không 3D, không người thật.
@@ -75,6 +73,7 @@ ten_du_an/
 ---
 
 ### 2. Tệp `script_draft.srt` (Kịch bản lời thoại chia theo cảnh)
+
 * **Mục đích**: Cung cấp lời thuyết minh hoàn chỉnh. Hệ thống sẽ dựa vào các mốc thời gian này để cắt lời cho từng scene và đưa vào bộ tổng hợp giọng nói đa ngữ.
 * **Quy tắc định dạng**:
   - Dùng định dạng SRT chuẩn (hoặc file Markdown đánh số từng Scene).
@@ -101,6 +100,7 @@ Có ba điểm cốt lõi bạn cần ghi nhớ...
 ---
 
 ### 3. Thư mục `images/` (Ảnh nguồn tĩnh 16:9)
+
 * **Mục đích**: Là nguồn dữ liệu hình ảnh gốc để trích xuất nét vẽ và màu sắc.
 * **Quy chuẩn ảnh**:
   - **Tỷ lệ**: Bắt buộc là `16:9` (ngang).
@@ -117,6 +117,7 @@ Có ba điểm cốt lõi bạn cần ghi nhớ...
 ## IV. SAU KHI CUNG CẤP ĐỦ 3 NGUYÊN LIỆU TRÊN
 
 Ngay khi bạn cung cấp thư mục dự án với 3 thành phần trên, hệ thống sẽ tự động triển khai quy trình:
+
 1. Tự động đọc `brief.md` để xác lập phong cách.
 2. Tự động đọc `images/scene_XX` $\rightarrow$ chuẩn hóa canvas 1920x1080 `#FFFFFF`.
 3. Tự động cắt lời thoại trong `script_draft.srt` cho Scene XX $\rightarrow$ tạo `narration.m4a` và mốc thời gian chuẩn mili-giây.

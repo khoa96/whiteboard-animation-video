@@ -40,3 +40,17 @@ export interface SynthesizeResult {
   audioTokens: number;
   estimatedCostUsd: number;
 }
+
+export interface TimingCue {
+  index: number;
+  startMs: number;
+  endMs: number;
+  durationMs: number;
+  text: string;
+}
+
+export interface TimingMasterData {
+  totalDurationMs: number;
+  cues: TimingCue[];
+}
+

@@ -1,8 +1,9 @@
 {
-  "selected_model": "gemini-2.5-flash-preview-tts",
-  "active_voice": "Alnilam",
-  "speed": 1.0,
-  "description": "Cấu hình 30 giọng nói Google AI Studio (Gemini Audio) cho Whiteboard Animation Video",
+  "engine": "tts-voiceover-engine",
+  "selected_model": "gemini-3.8-flash-tts",
+  "active_voice": "voice_xnxd3uit2744",
+  "fallback_voice": "Achird",
+  "description": "Thư viện 30 giọng nói Prebuilt của Google AI Studio (Dự phòng khi không dùng Custom Voice ID)",
   "voice_profile": {
     "age_and_gender": "Nam thanh niên 25 tuổi, trẻ trung, thanh thoát, ấm áp, nhiệt huyết",
     "accent_vietnamese": "Giọng miền Bắc - Hà Nội chuẩn hiện đại, tự nhiên, rõ ràng, không trịnh trọng già nua",
