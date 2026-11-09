@@ -983,6 +983,128 @@ def _orient_stroke_natural(pts: list[tuple[float, float]]) -> list[tuple[float, 
     return pts
 
 
+def order_smart_strokes(strokes: list[list[tuple[float, float]]], direction: str = "left_to_right") -> list[list[tuple[float, float]]]:
+    """
+    Thuật toán sắp xếp nét thông minh toàn diện (Universal Semantic Component Flow):
+      1. Phân thành các dòng/băng ngang từ trên xuống dưới.
+      2. Trong từng dòng, gom nét thành từng THỰC THỂ ĐỘC LẬP (Semantic Components):
+         - Mỗi chữ cái đơn lẻ là 1 Component.
+         - Mỗi biểu tượng/doodle là 1 Component.
+      3. Sắp xếp các Component nghiêm ngặt từ trái sang phải theo luồng vẽ tự nhiên.
+      4. KHÓA DỨT ĐIỂM (Component Completion Lock): Vẽ xong 100% tất cả các nét của
+         Component hiện tại mới được nhấc bút chuyển sang Component tiếp theo!
+         Tuyệt đối không bao giờ nhảy nét dở dang giữa các chữ cái.
+    """
+    if not strokes:
+        return []
+
+    stroke_metas = []
+    for s in strokes:
+        if not s:
+            continue
+        xs = [p[0] for p in s]
+        ys = [p[1] for p in s]
+        stroke_metas.append({
+            "stroke": s,
+            "min_x": min(xs),
+            "max_x": max(xs),
+            "min_y": min(ys),
+            "max_y": max(ys),
+            "center_x": (min(xs) + max(xs)) / 2.0,
+            "center_y": (min(ys) + max(ys)) / 2.0,
+            "width": max(xs) - min(xs),
+            "height": max(ys) - min(ys),
+        })
+
+    if not stroke_metas:
+        return []
+
+    # 1. Phân dòng theo trục Y
+    stroke_metas.sort(key=lambda m: (m["min_y"], m["min_x"]))
+    lines: list[list[dict]] = []
+    for m in stroke_metas:
+        assigned = False
+        for line in lines:
+            l_min_y = min(item["min_y"] for item in line)
+            l_max_y = max(item["max_y"] for item in line)
+            # Hai nét thuộc cùng dòng nếu giao khoảng Y hoặc cách nhau <= 16px
+            if not (m["min_y"] > l_max_y + 16 or m["max_y"] < l_min_y - 16):
+                line.append(m)
+                assigned = True
+                break
+        if not assigned:
+            lines.append([m])
+
+    lines.sort(key=lambda l: min(item["min_y"] for item in l))
+
+    final_strokes: list[list[tuple[float, float]]] = []
+    for line in lines:
+        line.sort(key=lambda m: (m["min_x"], m["min_y"]))
+
+        # 2. Gom cụm các nét thành từng thực thể / con chữ độc lập (Spatial Component Clustering)
+        components: list[list[dict]] = []
+        for m in line:
+            assigned = False
+            for comp in components:
+                c_min_x = min(item["min_x"] for item in comp)
+                c_max_x = max(item["max_x"] for item in comp)
+                c_min_y = min(item["min_y"] for item in comp)
+                c_max_y = max(item["max_y"] for item in comp)
+
+                dx = max(0, m["min_x"] - c_max_x, c_min_x - m["max_x"])
+                dy = max(0, m["min_y"] - c_max_y, c_min_y - m["max_y"])
+                new_w = max(c_max_x, m["max_x"]) - min(c_min_x, m["min_x"])
+                new_h = max(c_max_y, m["max_y"]) - min(c_min_y, m["min_y"])
+
+                # Với các con chữ (chiều cao <= 80px), không gộp nếu làm độ rộng cụm vượt quá 65px
+                is_char_scale = (new_h <= 80)
+                if dx <= 8 and dy <= 8:
+                    if is_char_scale and new_w > 65:
+                        pass  # Hai con chữ đứng sát nhau -> giữ tách biệt, không gộp chùm
+                    else:
+                        comp.append(m)
+                        assigned = True
+                        break
+            if not assigned:
+                components.append([m])
+
+        # Sắp xếp các Component nghiêm ngặt từ trái sang phải
+        components.sort(key=lambda c: min(item["min_x"] for item in c))
+
+        # 3. Đi nét dứt điểm từng Component trước khi nhấc bút sang Component kế tiếp
+        for comp in components:
+            c_min_y = min(m["min_y"] for m in comp)
+            c_max_y = max(m["max_y"] for m in comp)
+            c_h = c_max_y - c_min_y
+
+            def stroke_role(m):
+                # 0: Thanh ngang đỉnh (Top bar - chữ T): vẽ trước
+                is_top_bar = (c_h >= 20 and m["min_y"] <= c_min_y + 5 and m["height"] <= 10 and m["width"] >= 12)
+                if is_top_bar:
+                    return (0, m["min_x"], m["min_y"])
+                # 3: Dấu tiếng Việt (^, ~, ', `, ?, ., móc, râu): vẽ sau thân chữ
+                is_viet_accent = (c_h >= 20 and m["height"] < c_h * 0.40 and (m["max_y"] < c_min_y + c_h * 0.35 or m["min_y"] > c_min_y + c_h * 0.80))
+                if is_viet_accent:
+                    return (3, m["min_x"], m["min_y"])
+                # 2: Thanh ngang giữa (Crossbar - chữ H, A, E, F): vẽ sau thân chính
+                is_crossbar = (c_h >= 20 and m["height"] <= 8 and m["width"] >= 8 and m["min_y"] > c_min_y + 5)
+                if is_crossbar:
+                    return (2, m["min_x"], m["min_y"])
+                # 1: Thân chữ chính hoặc nét vẽ doodle: từ trái qua phải, từ trên xuống dưới
+                return (1, m["min_x"], m["min_y"])
+
+            sorted_comp = sorted(comp, key=stroke_role)
+            for m in sorted_comp:
+                final_strokes.append(_orient_stroke_natural(m["stroke"]))
+
+    return final_strokes
+
+
+def _order_skeleton_strokes(strokes: list[list[tuple[float, float]]]) -> list[list[tuple[float, float]]]:
+    """Cập nhật tự động chuyển sang thuật toán Smart Entity Flow."""
+    return order_smart_strokes(strokes)
+
+
 def _order_text_strokes(strokes: list[list[tuple[float, float]]]) -> list[list[tuple[float, float]]]:
     """
     Sắp xếp các nét chữ theo quy chuẩn viết tự nhiên của con người:
@@ -1046,16 +1168,38 @@ def _order_text_strokes(strokes: list[list[tuple[float, float]]]) -> list[list[t
     final_strokes: list[list[tuple[float, float]]] = []
     for line in lines:
         line.sort(key=lambda m: (m["min_x"], m["min_y"]))
-        line_h = max(item["max_y"] for item in line) - min(item["min_y"] for item in line)
+        line_min_y = min(item["min_y"] for item in line)
+        line_max_y = max(item["max_y"] for item in line)
+        line_h = line_max_y - line_min_y
+
+        # Tách các nét đồ họa khung / ruy băng / gạch chân dài (> 80px) để không làm vỡ phân cụm chữ cái
+        char_metas: list[dict] = []
+        top_decoratives: list[dict] = []
+        bottom_decoratives: list[dict] = []
+
+        for meta in line:
+            if meta["width"] > 80 and meta["width"] > 2.5 * max(1, meta["height"]):
+                if meta["center_y"] > line_min_y + line_h * 0.75:
+                    bottom_decoratives.append(meta)
+                else:
+                    top_decoratives.append(meta)
+            else:
+                char_metas.append(meta)
+
+        # Vẽ nét đồ họa đỉnh/khung trước nếu có
+        for dm in sorted(top_decoratives, key=lambda m: (m["min_x"], m["min_y"])):
+            final_strokes.append(_orient_stroke_natural(dm["stroke"]))
 
         char_clusters: list[list[dict]] = []
-        for meta in line:
+        for meta in char_metas:
             assigned = False
             for cluster in char_clusters:
                 c_min_x = min(item["min_x"] for item in cluster)
                 c_max_x = max(item["max_x"] for item in cluster)
+                new_width = max(c_max_x, meta["max_x"]) - min(c_min_x, meta["min_x"])
                 # Hai nét thuộc cùng một chữ cái nếu khoảng X giao nhau hoặc cách nhau <= 6px
-                if not (meta["min_x"] > c_max_x + 6 or meta["max_x"] < c_min_x - 6):
+                # VÀ độ rộng cụm không vượt quá 65px (tránh gộp 2 chữ cái đứng sát nhau)
+                if not (meta["min_x"] > c_max_x + 6 or meta["max_x"] < c_min_x - 6) and new_width <= 65:
                     cluster.append(meta)
                     assigned = True
                     break
@@ -1065,22 +1209,41 @@ def _order_text_strokes(strokes: list[list[tuple[float, float]]]) -> list[list[t
         # Sắp xếp các cụm chữ cái nghiêm ngặt từ trái sang phải
         char_clusters.sort(key=lambda c: min(item["min_x"] for item in c))
 
-        # ── 3. Trong mỗi cụm chữ cái: thân chữ vẽ trước, dấu vẽ ngay sau đó ──
-        for cluster in char_clusters:
-            c_min_y = min(item["min_y"] for item in cluster)
-            c_max_y = max(item["max_y"] for item in cluster)
+        # ── 3. Trong mỗi cụm chữ cái: đi nét tự nhiên, dứt điểm 100% từng chữ cái ──
+        def _sort_single_char(cluster: list[dict]) -> list[dict]:
+            if len(cluster) <= 1:
+                return cluster
+            c_min_y = min(m["min_y"] for m in cluster)
+            c_max_y = max(m["max_y"] for m in cluster)
             c_h = c_max_y - c_min_y
 
-            for m in cluster:
-                # Dấu tiếng Việt là nét nhỏ (chiều cao < 45% chiều cao chữ) nằm ở phần trên/dưới
-                is_accent = (c_h > 20 and m["height"] < c_h * 0.45 and (m["max_y"] < c_min_y + c_h * 0.5 or m["min_y"] > c_min_y + c_h * 0.75))
-                m["is_accent"] = is_accent
+            def stroke_role(m):
+                # 0: Thanh ngang đỉnh (Top bar - chữ T in hoa): ưu tiên viết trước
+                is_top_bar = (c_h >= 20 and m["min_y"] <= c_min_y + 5 and m["height"] <= 10 and m["width"] >= 12)
+                if is_top_bar:
+                    return (0, m["min_x"], m["min_y"])
+                # 3: Dấu tiếng Việt (^, ~, ', `, ?, ., móc, râu): viết sau thân chữ
+                is_viet_accent = (c_h >= 20 and m["height"] < c_h * 0.40 and (m["max_y"] < c_min_y + c_h * 0.35 or m["min_y"] > c_min_y + c_h * 0.80))
+                if is_viet_accent:
+                    return (3, m["min_x"], m["min_y"])
+                # 2: Thanh ngang giữa (Crossbar - chữ H, A, E, F): vẽ sau thân chính của chữ
+                is_crossbar = (c_h >= 20 and m["height"] <= 8 and m["width"] >= 8 and m["min_y"] > c_min_y + 5)
+                if is_crossbar:
+                    return (2, m["min_x"], m["min_y"])
+                # 1: Thân chữ chính: vẽ từ trái sang phải, từ trên xuống dưới
+                return (1, m["min_x"], m["min_y"])
 
-            # Thân chữ viết trước (is_accent = False), sau đó viết dấu (is_accent = True)
-            cluster.sort(key=lambda m: (1 if m.get("is_accent") else 0, m["min_x"], m["min_y"]))
-            for m in cluster:
+            return sorted(cluster, key=stroke_role)
+
+        for cluster in char_clusters:
+            sorted_cluster = _sort_single_char(cluster)
+            for m in sorted_cluster:
                 oriented = _orient_stroke_natural(m["stroke"])
                 final_strokes.append(oriented)
+
+        # Vẽ nét gạch chân dưới cùng nếu có
+        for dm in sorted(bottom_decoratives, key=lambda m: (m["min_x"], m["min_y"])):
+            final_strokes.append(_orient_stroke_natural(dm["stroke"]))
 
     return final_strokes
 

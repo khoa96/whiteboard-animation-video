@@ -9,6 +9,8 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
+import subtitle_styler
 
 def run_scene_pipeline(scene_num: int):
     scene_dir = REPO_ROOT / f"assets/whiteboard/test_cases/test_case_10_articles/scene_{scene_num:02d}"
@@ -16,6 +18,8 @@ def run_scene_pipeline(scene_num: int):
     anno_path = scene_dir / f"scene_{scene_num:02d}.annotation.json"
     audio_path = (scene_dir / "narration.m4a") if (scene_dir / "narration.m4a").exists() else (scene_dir / "narration.wav")
 
+    raw_mp4 = scene_dir / f"scene_{scene_num:02d}.mp4"
+    srt_path = scene_dir / f"scene_{scene_num:02d}.srt"
     voice_mp4 = scene_dir / f"scene_{scene_num:02d}_voice.mp4"
     final_sub_mp4 = scene_dir / f"scene_{scene_num:02d}_sub.mp4"
     hand_path = REPO_ROOT / "assets/drawing-hand.png"
@@ -50,17 +54,15 @@ def run_scene_pipeline(scene_num: int):
     if p_mux.returncode != 0:
         return False, f"Audio muxing failed: {p_mux.stderr[-300:]}"
 
-    # Step 3: Burn subtitle MarginV=4
-    cmd_sub = [
-        "ffmpeg", "-y",
-        "-i", str(voice_mp4),
-        "-vf", f"subtitles={srt_path}:force_style='FontSize=13,PrimaryColour=&H00FFFFFF,BackColour=&H80000000,BorderStyle=3,MarginV=4'",
-        "-c:a", "copy",
-        str(final_sub_mp4)
-    ]
-    p_sub = subprocess.run(cmd_sub, capture_output=True, text=True)
-    if p_sub.returncode != 0:
-        return False, f"Subtitle burning failed: {p_sub.stderr[-300:]}"
+    # Step 3: Burn subtitle với Subtitle Styler (Preset whiteboard_modern, 28pt, outline=2.5)
+    ok_sub = subtitle_styler.burn_subtitles_to_video(
+        input_video=voice_mp4,
+        srt_or_ass=srt_path,
+        output_video=final_sub_mp4,
+        project_dir=scene_dir.parent.parent.parent
+    )
+    if not ok_sub:
+        return False, "Subtitle burning failed via subtitle_styler"
 
     # Step 4: Auto-extract QA snapshots into scene_dir/snapshots/
     snap_dir = scene_dir / "snapshots"

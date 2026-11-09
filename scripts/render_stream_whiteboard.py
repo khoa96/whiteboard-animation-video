@@ -62,6 +62,23 @@ def _frame_progress_indices(n_steps: int, target_frames: int) -> list[int]:
     return [round(f * (n_steps - 1) / (target_frames - 1)) for f in range(target_frames)]
 
 
+def _has_solid_color_fill(crop_bgr: np.ndarray, min_area: int = 500) -> bool:
+    """Kiểm tra xem vùng cắt có chứa khối màu nền (solid fill) đáng kể hay không.
+    Nét vẽ đường đơn (đường viền/text) có diện tích/độ dày màu nhỏ nên trả về False.
+    Chỉ khi có mảng màu diện tích lớn và khoảng cách từ tâm vùng màu tới biên > 7px thì mới trả về True.
+    """
+    if crop_bgr is None or crop_bgr.size == 0:
+        return False
+    hsv = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2HSV)
+    sat = hsv[:, :, 1]
+    colored = sat > 40
+    if not colored.any():
+        return False
+    dist = cv2.distanceTransform(colored.astype(np.uint8), cv2.DIST_L2, 5)
+    thick_colored = dist > 7.0
+    return int(np.count_nonzero(thick_colored)) > 60 and int(np.count_nonzero(colored)) > min_area
+
+
 # ──────────────────────────────────────────────────────────────
 # 每区域的 stream 笔迹渲染，写入共享持久画布
 # ──────────────────────────────────────────────────────────────
@@ -93,9 +110,17 @@ class RegionStreamRenderer:
         self.thresh_map = cv2.adaptiveThreshold(
             gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 10
         )
+        # Tự động phát hiện mực chính xác tuyệt đối: kết hợp adaptive threshold và global darkness
+        # để không làm rỗng ruột (hollow) các nét chữ/hình vẽ dày
+        ink_adaptive = self.thresh_map < cfg.ink_threshold
+        ink_darkness = gray < 225
+        ink_combined = ink_adaptive | ink_darkness
+        k_close = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+        self.ink_pixels = cv2.morphologyEx(ink_combined.astype(np.uint8), cv2.MORPH_CLOSE, k_close).astype(bool)
+        self.thresh_map[self.ink_pixels] = 0
+
         self.grid_blocks = sr._to_grid_blocks(self.thresh_map, cfg.grid_edge)
         self.active_all = sr._active_mask(self.thresh_map, cfg.grid_edge, cfg.ink_threshold)
-        self.ink_pixels = self.thresh_map < cfg.ink_threshold
         self.ink_paint = np.repeat(self.thresh_map[:, :, None], 3, axis=2).astype(np.float32)
 
         # 背景染成画布底色，让上色阶段背景与起笔一致（不碰墨迹）
@@ -157,6 +182,7 @@ class RegionStreamRenderer:
             m[y0:y1, x0:x1] = True
             self.element_rect_masks.append(m)
 
+        self.element_areas = [max(1, (r[2] - r[0]) * (r[3] - r[1])) for r in self.element_rects]
         self.element_ink_mask = [np.zeros((self.out_h, self.out_w), dtype=bool) for _ in range(n_elems)]
         self.element_safe_mask = [m.copy() for m in self.element_rect_masks]
 
@@ -170,18 +196,22 @@ class RegionStreamRenderer:
                 continue
             cc_mask = (labels == cc_id)
 
-            # Tìm element có diện tích giao nhau lớn nhất với CC này
+            # Tìm element có diện tích giao nhau lớn nhất với CC này.
+            # Nếu overlap bằng hoặc gần bằng nhau (ví dụ chữ nằm trong khung ruy băng hoặc card),
+            # ưu tiên element có bounding box nhỏ hơn (vùng khu trú đặc hiệu hơn).
             best_elem = -1
-            max_overlap = 0
+            best_score = (-1, 0)
             for e_idx in range(n_elems):
                 overlap = np.count_nonzero(cc_mask & self.element_rect_masks[e_idx])
-                if overlap > max_overlap:
-                    max_overlap = overlap
-                    best_elem = e_idx
+                if overlap > 0:
+                    score = (overlap, -self.element_areas[e_idx])
+                    if score > best_score:
+                        best_score = score
+                        best_elem = e_idx
 
             # Nếu CC nằm ngoài mép các bounding box (ví dụ dấu tiếng Việt, dấu chấm, chóp mũi tên)
             # gán cho element có khoảng cách gần nhất
-            if best_elem == -1 or max_overlap == 0:
+            if best_elem == -1 or best_score[0] <= 0:
                 cx, cy = centroids[cc_id]
                 best_dist = float('inf')
                 for e_idx in range(n_elems):
@@ -238,7 +268,7 @@ class RegionStreamRenderer:
     def _region_skeleton_strokes(self, allowed: np.ndarray, element: dict | None = None) -> list[list[tuple[int, int]]]:
         """骨架模式：支持 vector gesture 自动生成，以及文本自然书写排序。"""
         cfg = self.cfg
-        el_type = element.get("type", "object") if element else "object"
+        el_type = (element.get("elementType") or element.get("type") or element.get("role") or "object").lower() if element else "object"
 
         # 1. Nếu là các cử chỉ hình học vector giảng dạy
         if element and el_type in ["underline", "circle", "arrow", "box"]:
@@ -275,10 +305,9 @@ class RegionStreamRenderer:
             if len(pts) >= 1:
                 out.append([(int(round(x)), int(round(y))) for x, y in pts])
 
-        # Nếu là text: dùng thuật toán Character Clustering viết trọn vẹn từng chữ cái kèm dấu
-        if el_type == "text":
-            return sr._order_text_strokes(out)
-        return sr._order_skeleton_strokes(out)
+        # Luôn dùng thuật toán Smart Component Flow hoàn thiện dứt điểm 100% từng chữ cái và hình vẽ từ trái sang phải
+        direction = element.get("reveal", {}).get("direction", "left_to_right") if element else "left_to_right"
+        return sr.order_smart_strokes(out, direction=direction)
 
     # ── 落墨（限制在 allowed 内）──
     def _reveal_ink_segment(self, a: tuple[int, int], b: tuple[int, int], allowed: np.ndarray, radius: int | None = None) -> None:
@@ -495,11 +524,10 @@ class RegionStreamRenderer:
                 allowed = self._allowed_mask(idx, element, elements[idx + 1:])
 
                 # Quyết định pha tô màu thông minh
-                el_type = element.get("type", "object")
+                el_type = (element.get("elementType") or element.get("type") or element.get("role") or "object").lower()
                 el_color_mode = element.get("colorMode", "auto")
                 x0, y0, x1, y1 = _scaled_rect(element["region"], self.sx, self.sy, self.out_w, self.out_h)
                 crop = self.color_img[y0:y1, x0:x1]
-                is_colorful = sr.is_region_colorful(crop)
 
                 color_mode_opt = getattr(cfg, "color_mode", "auto")
                 if color_mode_opt == "never":
@@ -511,10 +539,10 @@ class RegionStreamRenderer:
                         needs_color_wash = False
                     elif el_color_mode == "wash":
                         needs_color_wash = True
-                    elif el_type in ["box", "text", "underline", "circle", "arrow", "icon", "line_art"]:
+                    elif el_type in ["text", "title", "container", "connector", "accent", "item_row", "box", "underline", "circle", "arrow", "icon", "line_art"]:
                         needs_color_wash = False
                     else:
-                        needs_color_wash = is_colorful
+                        needs_color_wash = _has_solid_color_fill(crop)
 
                 total_element_frames = max(1, round(dur_ms * cfg.fps / 1000))
                 if needs_color_wash:
@@ -528,7 +556,14 @@ class RegionStreamRenderer:
                 label_name = element.get("label", f"region_{idx+1}")
                 print(f"  [{label_name}] type={el_type} ink={ink_frames}f color={color_frames}f")
 
-                reveal_radius = 7 if el_type == "text" else self.cfg.ink_reveal_radius
+                elem_ink = self.element_ink_mask[idx]
+                if elem_ink.any():
+                    sub_ink = elem_ink[y0:y1, x0:x1].astype(np.uint8)
+                    dist = cv2.distanceTransform(sub_ink, cv2.DIST_L2, 5)
+                    max_half_stroke = float(dist.max()) if dist.size > 0 else 5.0
+                    reveal_radius = int(np.clip(np.ceil(max_half_stroke) + 3, 8, 22))
+                else:
+                    reveal_radius = 14 if el_type in ["text", "title"] else self.cfg.ink_reveal_radius
                 if cfg.ink_path_mode == "skeleton":
                     strokes = self._region_skeleton_strokes(allowed, element)
                     if strokes:

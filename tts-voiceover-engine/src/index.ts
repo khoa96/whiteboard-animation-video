@@ -8,6 +8,7 @@ import { ScriptPreprocessor } from './script-preprocessor.js';
 import { GoogleTTSClient } from './tts-client.js';
 import { AudioUtils } from './audio-utils.js';
 import { TimingCue, TimingMasterData } from './types.js';
+import { MultimodalAligner } from './multimodal-aligner.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -138,7 +139,8 @@ async function main() {
     const cuesArg = getArgValue(args, ['--cues']);
     const forceSentenceMode = hasArg(args, ['--sentence', '--per-sentence', '--line']);
     const forceChunkMode = hasArg(args, ['--chunk', '--chunk-mode', '--continuous', '--single']);
-    const gapSec = parseFloat(getArgValue(args, ['--gap']) || '0.5');
+    const gapSec = parseFloat(getArgValue(args, ['--gap', '--para-gap']) || '0.6');
+    const intraGapSec = parseFloat(getArgValue(args, ['--intra-gap', '--micro-gap']) || '0.25');
     const leadInSec = parseFloat(getArgValue(args, ['--lead-in']) || '0.5');
     const tailSec = parseFloat(getArgValue(args, ['--tail']) || '2.0');
 
@@ -172,21 +174,75 @@ async function main() {
       fallbackVoice: selectedVoiceName,
     });
 
-    // Trích xuất các đơn vị câu/dòng theo cấu trúc kịch bản
-    const speechUnits = ScriptPreprocessor.extractSentences(rawScript);
+    // Trích xuất các đơn vị câu ngắn (Sentence-level Micro-segmentation)
+    const speechUnits = ScriptPreprocessor.extractSpeechUnits(rawScript);
 
     // Quyết định chế độ xử lý:
-    // Mặc định luôn chạy Master Clock (từng dòng/câu) để căn chuẩn mili-giây cho hoạt ảnh whiteboard, bất kể kịch bản dài bao nhiêu câu.
-    // Chỉ chuyển sang Chunk Mode khi người dùng chủ động truyền cờ --chunk hoặc --continuous.
-    const useSentenceMode = !forceChunkMode;
+    // 1. Chế độ Single-Request Multimodal Align (--single-request, --align, --batch): Gom 1 Scene = 1 Request TTS + 1 Gemini Flash Align
+    // 2. Chế độ Master Clock từng câu (--sentence): Gọi API từng câu (độ chính xác cơ học tuyệt đối nhưng tốn request)
+    // 3. Chế độ Chunk Mode (--chunk): Gom đoạn lớn không trích xuất cues
+    const isSingleRequestMode = hasArg(args, ['--single-request', '--align', '--batch', '--scene-mode']);
+    const useSentenceMode = !forceChunkMode && !isSingleRequestMode;
 
     let finalWavBuffer: Buffer;
     let totalSec = 0;
     let totalTokens = 0;
     let totalCostUsd = 0;
 
-    if (useSentenceMode && speechUnits.length > 0) {
-      console.log(`\n[CHẾ ĐỘ] Audio Master Clock - Sinh từng đơn vị thoại (${speechUnits.length} đoạn/dòng)...`);
+    if (isSingleRequestMode && speechUnits.length > 0) {
+      console.log(`\n[CHẾ ĐỘ TIẾT KIỆM QUOTA] Single-Request Audio + Multimodal Alignment...`);
+      console.log(`  -> Số câu thoại cần đồng bộ: ${speechUnits.length} câu`);
+
+      // Ghép nối các câu thoại thành đoạn văn bản đọc tự nhiên
+      const speechSentences: string[] = [];
+      for (const unit of speechUnits) {
+        if (!unit.isTechnicalPause) {
+          const clean = ScriptPreprocessor.cleanTextForTts(unit.text);
+          if (clean) speechSentences.push(clean);
+        }
+      }
+      const fullSpokenText = speechSentences.join('\n\n');
+
+      console.log(`  -> [Bước 1/2] Gọi Gemini TTS sinh toàn bộ âm thanh trong 1 request duy nhất...`);
+      const ttsResult = await ttsClient.synthesizeSpeech(fullSpokenText);
+      console.log(`     ✓ Đã nhận âm thanh hoàn chỉnh (${ttsResult.durationSec.toFixed(2)}s, ${ttsResult.audioTokens} audio tokens)`);
+
+      finalWavBuffer = ttsResult.audioBuffer;
+      totalSec = ttsResult.durationSec;
+      totalTokens += ttsResult.audioTokens;
+      totalCostUsd += ttsResult.estimatedCostUsd;
+
+      console.log(`  -> [Bước 2/2] Dùng Gemini 3.8 Flash Multimodal nghe và gắn nhãn mili-giây từng câu...`);
+      const aligner = new MultimodalAligner(apiKey, 'gemini-3.8-flash');
+      const alignResult = await aligner.alignAudio(finalWavBuffer, speechUnits);
+      console.log(`     ✓ Đã trích xuất chính xác ${alignResult.cues.length} mốc thời gian phụ đề!`);
+
+      for (const cue of alignResult.cues) {
+        console.log(`       [#${cue.index}] ${cue.startMs}ms -> ${cue.endMs}ms (${(cue.durationMs/1000).toFixed(2)}s): "${cue.text.slice(0, 45)}..."`);
+      }
+
+      // Xuất file SRT nếu có đường dẫn
+      if (targetSrtPath) {
+        const srtContent = alignResult.cues
+          .map((cue) => {
+            return `${cue.index}\n${AudioUtils.formatSrtTime(cue.startMs)} --> ${AudioUtils.formatSrtTime(cue.endMs)}\n${cue.text}\n`;
+          })
+          .join('\n');
+        fs.writeFileSync(targetSrtPath, srtContent, 'utf-8');
+        console.log(`  ✓ Đã xuất phụ đề: ${targetSrtPath}`);
+      }
+
+      // Xuất file timing_cues.json nếu có đường dẫn
+      if (targetCuesPath) {
+        const cuesData: TimingMasterData = {
+          totalDurationMs: Math.round(totalSec * 1000),
+          cues: alignResult.cues,
+        };
+        fs.writeFileSync(targetCuesPath, JSON.stringify(cuesData, null, 2), 'utf-8');
+        console.log(`  ✓ Đã xuất mốc thời gian: ${targetCuesPath}`);
+      }
+    } else if (useSentenceMode && speechUnits.length > 0) {
+      console.log(`\n[CHẾ ĐỘ] Audio Master Clock - Sinh từng câu phụ đề vi mô (${speechUnits.length} câu ngắn)...`);
       const audioBuffers: Buffer[] = [];
       const timingCues: TimingCue[] = [];
 
@@ -195,21 +251,35 @@ async function main() {
         audioBuffers.push(AudioUtils.createSilenceBuffer(leadInSec, 24000, 1, 16));
       }
 
+      let cueIndex = 1;
       for (let i = 0; i < speechUnits.length; i++) {
-        const unitText = speechUnits[i];
-        console.log(`  -> [Đoạn ${i + 1}/${speechUnits.length}] "${unitText.slice(0, 60)}..."`);
-        const result = await ttsClient.synthesizeSpeech(unitText);
+        const unit = speechUnits[i];
+
+        // Hỗ trợ nhịp dừng kỹ thuật [PAUSE X SECONDS] hoặc [SILENCE: X]
+        if (unit.isTechnicalPause) {
+          const pauseDurationSec = unit.pauseDurationSec || 3.0;
+          console.log(`  -> [Mục ${i + 1}/${speechUnits.length}] ⏸️ [TẠM DỪNG SUY NGHĨ ${pauseDurationSec}s - KHÔNG PHÁT ÂM]`);
+          audioBuffers.push(AudioUtils.createSilenceBuffer(pauseDurationSec, 24000, 1, 16));
+          currentTimeSec += pauseDurationSec;
+          continue;
+        }
+
+        const cleanText = ScriptPreprocessor.cleanTextForTts(unit.text);
+        if (!cleanText) continue;
+
+        console.log(`  -> [Câu ${cueIndex}/${speechUnits.length}] "${cleanText.slice(0, 60)}..."`);
+        const result = await ttsClient.synthesizeSpeech(cleanText);
 
         const startMs = Math.round(currentTimeSec * 1000);
         const durMs = Math.round(result.durationSec * 1000);
         const endMs = startMs + durMs;
 
         timingCues.push({
-          index: i + 1,
+          index: cueIndex++,
           startMs,
           endMs,
           durationMs: durMs,
-          text: unitText,
+          text: cleanText,
         });
 
         audioBuffers.push(result.audioBuffer);
@@ -217,12 +287,20 @@ async function main() {
         totalCostUsd += result.estimatedCostUsd;
 
         const isLast = i + 1 === speechUnits.length;
-        const currentPauseSec = isLast ? tailSec : gapSec;
+        let currentPauseSec = 0;
+        if (isLast) {
+          currentPauseSec = tailSec;
+        } else if (unit.isParagraphEnd) {
+          currentPauseSec = gapSec;
+        } else {
+          currentPauseSec = intraGapSec;
+        }
+
         if (currentPauseSec > 0) {
           audioBuffers.push(AudioUtils.createSilenceBuffer(currentPauseSec, 24000, 1, 16));
         }
         currentTimeSec = (endMs / 1000) + currentPauseSec;
-        console.log(`     ✓ Xong đoạn ${i + 1} (${result.durationSec.toFixed(2)}s) -> Mốc: [${startMs}ms - ${endMs}ms]`);
+        console.log(`     ✓ Xong câu ${cueIndex - 1} (${result.durationSec.toFixed(2)}s) -> Mốc: [${startMs}ms - ${endMs}ms] (Nghỉ sau câu: ${currentPauseSec.toFixed(2)}s)`);
       }
 
       finalWavBuffer = AudioUtils.concatenateWavBuffers(audioBuffers, 24000, 1, 16);

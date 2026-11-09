@@ -7,6 +7,7 @@
   "scripts": {
     "init-voice": "tsx src/index.ts --init-voice",
     "generate": "tsx src/index.ts --generate",
+    "generate:single": "tsx src/index.ts --generate --single-request",
     "build": "tsc"
   },
   "keywords": ["gemini", "tts", "voice-over", "whiteboard-animation"],

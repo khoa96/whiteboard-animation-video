@@ -12,12 +12,18 @@ import http.server
 import json
 import os
 import socketserver
+import subprocess
 import sys
 import urllib.parse
 import webbrowser
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
+try:
+    import subtitle_styler
+except ImportError:
+    subtitle_styler = None
 
 
 class WhiteboardPreviewHandler(http.server.SimpleHTTPRequestHandler):
@@ -53,25 +59,54 @@ class WhiteboardPreviewHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404, "Endpoint không tồn tại")
 
     def handle_get_projects(self):
-        """Liệt kê các thư mục dự án trong assets/whiteboard/"""
-        wb_dir = REPO_ROOT / "assets" / "whiteboard"
+        """Liệt kê các thư mục dự án trong projects/ và assets/whiteboard/"""
         projects = []
+        img_exts = {".png", ".jpg", ".jpeg"}
+
+        def is_valid_scene_img(path: Path) -> bool:
+            name = path.name.lower()
+            if path.suffix.lower() not in img_exts:
+                return False
+            if name.endswith("-regions.png") or name.endswith("_regions.png"):
+                return False
+            if name.endswith("-regions.jpg") or name.endswith("_regions.jpg"):
+                return False
+            if name.startswith("crop_") or name.startswith("snap_"):
+                return False
+            return True
+
+        # 1. Quét projects/
+        proj_dir = REPO_ROOT / "projects"
+        if proj_dir.exists():
+            for p in sorted(proj_dir.iterdir()):
+                if p.is_dir() and not p.name.startswith("."):
+                    img_folder = p / "images" if (p / "images").exists() else p
+                    scene_imgs = [f for f in img_folder.iterdir() if is_valid_scene_img(f)]
+                    projects.append({
+                        "name": f"📁 {p.name}",
+                        "relPath": str(img_folder.relative_to(REPO_ROOT)),
+                        "sceneCount": len(scene_imgs)
+                    })
+
+        # 2. Quét assets/whiteboard/ (legacy)
+        wb_dir = REPO_ROOT / "assets" / "whiteboard"
         if wb_dir.exists():
             for p in sorted(wb_dir.iterdir()):
                 if p.is_dir() and not p.name.startswith("."):
-                    # Đếm số cảnh
-                    pngs = list(p.glob("*.png"))
+                    scene_imgs = [f for f in p.iterdir() if is_valid_scene_img(f)]
                     projects.append({
-                        "name": p.name,
+                        "name": f"🎨 {p.name}",
                         "relPath": str(p.relative_to(REPO_ROOT)),
-                        "sceneCount": len(pngs)
+                        "sceneCount": len(scene_imgs)
                     })
+
         self.send_json({"ok": True, "projects": projects})
 
     def handle_get_scenes(self, query_str):
         """Liệt kê tất cả cặp ảnh & annotation trong một thư mục dự án"""
         params = urllib.parse.parse_qs(query_str)
-        rel_dir = params.get("dir", ["assets/whiteboard/thi-hien-tai-don"])[0]
+        default_dir = "projects/WB-TEST-CASE-01/images" if (REPO_ROOT / "projects/WB-TEST-CASE-01/images").exists() else "assets/whiteboard/thi-hien-tai-don"
+        rel_dir = params.get("dir", [default_dir])[0]
         target_dir = (REPO_ROOT / rel_dir).resolve()
 
         if not str(target_dir).startswith(str(REPO_ROOT)) or not target_dir.exists():
@@ -81,7 +116,15 @@ class WhiteboardPreviewHandler(http.server.SimpleHTTPRequestHandler):
         img_exts = {".png", ".jpg", ".jpeg"}
         scenes = []
         for f in sorted(target_dir.iterdir()):
-            if f.suffix.lower() in img_exts and not f.name.endswith("-regions.png"):
+            name_lower = f.name.lower()
+            if f.suffix.lower() in img_exts:
+                if name_lower.endswith("-regions.png") or name_lower.endswith("_regions.png"):
+                    continue
+                if name_lower.endswith("-regions.jpg") or name_lower.endswith("_regions.jpg"):
+                    continue
+                if name_lower.startswith("crop_") or name_lower.startswith("snap_"):
+                    continue
+
                 base = f.stem
                 cfg_path = target_dir / f"{base}.annotation.json"
                 cfg_data = None
@@ -126,10 +169,74 @@ class WhiteboardPreviewHandler(http.server.SimpleHTTPRequestHandler):
             target_file.write_text(text, encoding="utf-8")
 
             print(f"  ✓ [Lưu thành công]: {target_file.relative_to(REPO_ROOT)} ({len(data.get('elements', []))} elements)")
-            self.send_json({"ok": True, "message": f"Đã lưu thành công: {target_file.name}"})
+
+            # Tự động đồng bộ các file liên quan (Auto-Sync Pipeline)
+            synced_files = self.auto_sync_artifacts(target_file, data)
+
+            msg = f"Đã lưu thành công: {target_file.name}"
+            if synced_files:
+                msg += f" (Đã tự động đồng bộ: {', '.join(synced_files)})"
+
+            self.send_json({
+                "ok": True,
+                "message": msg,
+                "synced": synced_files
+            })
         except Exception as e:
             print(f"  ✗ [Lỗi lưu file]: {e}")
             self.send_json({"ok": False, "error": str(e)}, status=500)
+
+    def auto_sync_artifacts(self, target_file: Path, data: dict) -> list[str]:
+        """Tự động đồng bộ các tệp liên quan khi annotation được cập nhật."""
+        synced = []
+        stem = target_file.name
+        for sfx in [".annotation.json", ".json"]:
+            if stem.endswith(sfx):
+                stem = stem[:-len(sfx)]
+                break
+
+        parent_dir = target_file.parent
+
+        # 1. Tự động vẽ lại ảnh preview regions overlay (<scene>_regions.png)
+        possible_imgs = [parent_dir / f"{stem}.png", parent_dir / f"{stem}.jpg", parent_dir / f"{stem}.jpeg"]
+        img_path = next((p for p in possible_imgs if p.exists()), None)
+        if img_path:
+            out_regions = parent_dir / f"{stem}_regions.png"
+            venv_py = REPO_ROOT / ".venv/bin/python"
+            py_bin = str(venv_py) if venv_py.exists() else sys.executable
+            res = subprocess.run([
+                py_bin,
+                str(REPO_ROOT / "scripts/render_annotation_preview.py"),
+                str(img_path),
+                str(target_file),
+                str(out_regions)
+            ], capture_output=True, text=True)
+            if res.returncode == 0:
+                synced.append(out_regions.name)
+                print(f"    ↳ [Auto-Sync Overlay]: Đã làm mới {out_regions.name}")
+            else:
+                print(f"    ✗ [Auto-Sync Overlay Thất bại]: {res.stderr[:200]}")
+
+        # 2. Tự động đồng bộ phụ đề ASS chuẩn thẩm mỹ
+        project_dir = parent_dir.parent if parent_dir.name == "images" else parent_dir
+        srt_candidates = [
+            parent_dir / f"{stem}.srt",
+            project_dir / "input.srt",
+            project_dir / "subtitle_draft.srt"
+        ]
+        for srt_f in srt_candidates:
+            if srt_f.exists() and subtitle_styler is not None:
+                ass_f = srt_f.with_suffix(".ass")
+                try:
+                    cfg = subtitle_styler.load_subtitle_config(project_dir)
+                    subtitle_styler.compile_srt_to_ass(srt_f, ass_f, config=cfg)
+                    synced.append(ass_f.name)
+                    print(f"    ↳ [Auto-Sync Subtitle]: Đã biên dịch lại {ass_f.name}")
+                except Exception as ex:
+                    print(f"    ✗ [Auto-Sync Subtitle Thất bại]: {ex}")
+                break
+
+        return synced
 
     def send_json(self, data: dict, status: int = 200):
         body = json.dumps(data, ensure_ascii=False).encode("utf-8")

@@ -89,11 +89,37 @@ def init_project(target_path_str: str, title: str = None, voice: str = None, for
                 "model": "gemini-3.8-flash-tts"
             },
             "subtitles": {
-                "font_size": 13,
-                "margin_v": 4,
-                "border_style": 3,
+                "enabled": True,
+                "preset": "dark_slate_obsidian",
+                "font_name": "Be Vietnam Pro Bold",
+                "font_size": 60,
+                "font_size_min": 50,
+                "font_size_max": 60,
+                "font_weight": 700,
+                "italic": False,
                 "primary_color": "&H00FFFFFF",
-                "back_color": "&H80000000"
+                "accent_color": "#F5A623",
+                "secondary_color": "&H0023A6F5",
+                "letter_spacing": 0.2,
+                "line_height": 1.18,
+                "background_mode": "rounded_rect",
+                "background_color": "#14171F",
+                "background_opacity": 0.75,
+                "background_radius": 22,
+                "background_padding_x": 48,
+                "background_padding_y": 16,
+                "border_color": "#334155",
+                "border_width": 2.0,
+                "shadow": 2.0,
+                "alignment": 5,
+                "anchor_x": 960,
+                "anchor_y": 980,
+                "dock_mode": "dynamic_fit",
+                "max_width": 1760,
+                "max_lines": 2,
+                "margin_l": 80,
+                "margin_r": 80,
+                "max_chars_per_line": 75
             }
         }
     }

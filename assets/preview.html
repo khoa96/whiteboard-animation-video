@@ -504,7 +504,7 @@ async function saveScene(i) {
       if (!res.ok) throw new Error(res.error || 'Lỗi lưu file');
       S.dirty.delete(i); if (i === S.idx) $('dirtyFlag').textContent = '';
       updateSaveBtns();
-      toast(`✓ Đã lưu trực tiếp: ${sc.cfgName}`);
+      toast(res.message || `✓ Đã lưu trực tiếp: ${sc.cfgName}`);
       return;
     } catch (e) {
       toast(`Lưu thất bại: ${e.message}`, true);

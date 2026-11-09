@@ -54,3 +54,11 @@ export interface TimingMasterData {
   cues: TimingCue[];
 }
 
+export interface SpeechUnit {
+  text: string;
+  isParagraphEnd: boolean;
+  isTechnicalPause?: boolean;
+  pauseDurationSec?: number;
+}
+
+
