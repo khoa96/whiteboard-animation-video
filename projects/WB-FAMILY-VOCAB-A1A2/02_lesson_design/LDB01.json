@@ -1,0 +1,254 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "WB-FAMILY-VOCAB-A1A2",
+  "artifact_id": "LDB01",
+  "version": "1.0",
+  "source_cb_version": "1.0",
+  "status": "in_review",
+  "learning_objectives": [
+    {
+      "lo_id": "LO_01",
+      "statement": "Identify and correctly name 16 core immediate and extended family members in spoken and written English when presented with a 3-generation family tree.",
+      "bloom_level": "Understand",
+      "cefr_level": "A1"
+    },
+    {
+      "lo_id": "LO_02",
+      "statement": "Accurately apply collective plural terms (parents, grandparents, siblings, children, relatives) to group family members in natural sentence frames.",
+      "bloom_level": "Apply",
+      "cefr_level": "A2"
+    },
+    {
+      "lo_id": "LO_03",
+      "statement": "Differentiate relational kinship pairs (uncle vs aunt, nephew vs niece, cousin) without transferring Vietnamese age/lineage over-specifications, solving family logic riddles within 3 seconds.",
+      "bloom_level": "Analyze",
+      "cefr_level": "A2"
+    }
+  ],
+  "knowledge_scope": {
+    "core_concepts": [
+      "Nuclear Family vs Extended Family",
+      "Generational Tiers (Gen 1: Grandparents -> Gen 2: Parents/Uncles/Aunts -> Gen 3: Self/Siblings/Cousins)",
+      "Collective Plural Nouns",
+      "Gender-specific vs Gender-neutral Kinship Terms"
+    ],
+    "target_linguistic_structures": [
+      "This is my [singular noun]. / These are my [plural noun].",
+      "He is [Name]'s [noun]. / She is [Name]'s [noun].",
+      "Who is [pronoun/Name]? -> [Pronoun] is [possessive] [noun]."
+    ],
+    "key_terminology": [
+      {"term": "grandfather", "definition_for_learner": "The father of your father or mother.", "ipa": "/ˈɡræn.fɑː.ðər/"},
+      {"term": "grandmother", "definition_for_learner": "The mother of your father or mother.", "ipa": "/ˈɡrænˌmʌð.ər/"},
+      {"term": "grandparents", "definition_for_learner": "The parents of your parents (both grandfather and grandmother together).", "ipa": "/ˈɡrænˌpeə.rənts/"},
+      {"term": "father", "definition_for_learner": "A male parent.", "ipa": "/ˈfɑː.ðər/"},
+      {"term": "mother", "definition_for_learner": "A female parent.", "ipa": "/ˈmʌð.ər/"},
+      {"term": "parents", "definition_for_learner": "Your mother and father together.", "ipa": "/ˈpeə.rənts/"},
+      {"term": "brother", "definition_for_learner": "A boy or man who has the same parents as you.", "ipa": "/ˈbrʌð.ər/"},
+      {"term": "sister", "definition_for_learner": "A girl or woman who has the same parents as you.", "ipa": "/ˈsɪs.tər/"},
+      {"term": "siblings", "definition_for_learner": "Brothers and sisters who share the same parents.", "ipa": "/ˈsɪb.lɪŋz/"},
+      {"term": "son", "definition_for_learner": "A male child of parents.", "ipa": "/sʌn/"},
+      {"term": "daughter", "definition_for_learner": "A female child of parents.", "ipa": "/ˈdɔː.tər/"},
+      {"term": "children", "definition_for_learner": "Sons and daughters of parents.", "ipa": "/ˈtʃɪl.drən/"},
+      {"term": "uncle", "definition_for_learner": "The brother of your mother or father.", "ipa": "/ˈʌŋ.kəl/"},
+      {"term": "aunt", "definition_for_learner": "The sister of your mother or father.", "ipa": "/ɑːnt/ (UK) or /ænt/ (US)"},
+      {"term": "cousin", "definition_for_learner": "The child of your uncle or aunt (boy or girl).", "ipa": "/ˈkʌz.ən/"},
+      {"term": "nephew", "definition_for_learner": "The son of your brother or sister.", "ipa": "/ˈnef.juː/"},
+      {"term": "niece", "definition_for_learner": "The daughter of your brother or sister.", "ipa": "/niːs/"}
+    ]
+  },
+  "prerequisite_knowledge": [
+    {"concept": "Personal Pronouns (I, he, she, they, we)", "remediation_if_missing": "Explicit color-coded avatars on whiteboard (Blue=He, Teal=She, Yellow/Multi=They)."},
+    {"concept": "Possessive Adjectives ('my', 'his', 'her')", "remediation_if_missing": "Use arrow labels: 'Liam -> Liam's father -> his father'."},
+    {"concept": "Singular vs Plural Nouns (-s suffix)", "remediation_if_missing": "Visual bracket grouping singular items into a plural label (1 parent + 1 parent = 2 parents)."}
+  ],
+  "concept_structure": {
+    "relationship_type": "HIERARCHICAL_TREE_WITH_COLLECTIVE_BRACKETS",
+    "nodes": [
+      {"node_id": "NODE_GEN1", "concept_name": "Generation 1: Grandparents", "parent_id": null},
+      {"node_id": "NODE_GEN2_NUCLEAR", "concept_name": "Generation 2A: Parents (Father & Mother)", "parent_id": "NODE_GEN1"},
+      {"node_id": "NODE_GEN2_EXTENDED", "concept_name": "Generation 2B: Relatives (Uncle & Aunt)", "parent_id": "NODE_GEN1"},
+      {"node_id": "NODE_GEN3_SELF", "concept_name": "Generation 3A: Focus Person (Liam)", "parent_id": "NODE_GEN2_NUCLEAR"},
+      {"node_id": "NODE_GEN3_SIBLINGS", "concept_name": "Generation 3B: Siblings (Brother & Sister)", "parent_id": "NODE_GEN2_NUCLEAR"},
+      {"node_id": "NODE_GEN3_COUSINS", "concept_name": "Generation 3C: Cousins", "parent_id": "NODE_GEN2_EXTENDED"},
+      {"node_id": "NODE_GEN3_NEPHEW_NIECE", "concept_name": "Generation 3D: Nephew & Niece (Viewed from Liam's perspective as an uncle)", "parent_id": "NODE_GEN3_SIBLINGS"}
+    ],
+    "explanation": "A central 3-tier family tree with Liam at Gen 3 center. Connectors show biological descent; horizontal brackets show marriage/partners and sibling groups; colored boxes demonstrate collective plural terms."
+  },
+  "common_misconceptions": [
+    {
+      "misconception_id": "MISC_01",
+      "erroneous_belief": "Believing English must have distinct words for older vs younger uncle/aunt or maternal vs paternal relatives (like Vietnamese bác, chú, cô, dì, cậu, thím, mợ).",
+      "l1_interference_factor": "Vietnamese kinship system is strictly stratified by seniority and lineage.",
+      "pedagogical_antidote": "The 'Universal Umbrella' visual technique: Show 4 diverse Vietnamese relatives (bác trai, chú, cậu) all walking under ONE large umbrella labeled 'UNCLE'."
+    },
+    {
+      "misconception_id": "MISC_02",
+      "erroneous_belief": "Confusing 'nephew' and 'niece' or forgetting which gender each refers to.",
+      "l1_interference_factor": "In Vietnamese, both are called 'cháu' and need a trailing modifier 'trai/gái'. English uses two entirely different Latin roots.",
+      "pedagogical_antidote": "Phonetic & visual mnemonic: N**E**PHEW has 'E' like H**E** (boy). NI**ECE** has 'C' like S**HE** (girl) and sounds like a piece of sweet candy."
+    },
+    {
+      "misconception_id": "MISC_03",
+      "erroneous_belief": "Saying 'cousin brother' or 'cousin sister' to specify gender.",
+      "l1_interference_factor": "Direct translation from Vietnamese 'anh họ', 'chị họ', 'em họ'.",
+      "pedagogical_antidote": "A red strike-through marker crossing out 'cousin brother' on the whiteboard with an alert note: 'In English, COUSIN is always gender-neutral! Just say COUSIN.'."
+    },
+    {
+      "misconception_id": "MISC_04",
+      "erroneous_belief": "Pronouncing 'father, mother, brother' with a hard /d/ ('fader') or /z/ ('fazer').",
+      "l1_interference_factor": "Vietnamese phonology lacks the voiced dental fricative /ð/.",
+      "pedagogical_antidote": "Visual animated lip/teeth diagram showing tongue tip touching the upper teeth lightly with vibrating voice icon."
+    }
+  ],
+  "teaching_sequence": [
+    {
+      "stage_order": 1,
+      "stage_name": "HOOK_AND_DISCOVERY",
+      "instructional_focus": "Activate curiosity with a family photo album and introduce Liam's quest to draw his family tree.",
+      "pedagogical_intent": "Establish context, lower affective filter, and introduce the 3-generation canvas structure."
+    },
+    {
+      "stage_order": 2,
+      "stage_name": "NUCLEAR_CORE_AND_COLLECTIVES",
+      "instructional_focus": "Father, Mother, Parents, Brother, Sister, Siblings, Son, Daughter, Children.",
+      "pedagogical_intent": "Anchor the immediate core family and master the 2 essential collective brackets (Parents, Siblings)."
+    },
+    {
+      "stage_order": 3,
+      "stage_name": "THE_ELDERS_AND_GENERATIONS",
+      "instructional_focus": "Grandfather, Grandmother, Grandparents, Grandchildren.",
+      "pedagogical_intent": "Establish Generation 1, teach the 'grand-' prefix pattern, and contrast with 'parents'."
+    },
+    {
+      "stage_order": 4,
+      "stage_name": "EXTENDED_KINSHIP_AND_L1_ANTIDOTE",
+      "instructional_focus": "Uncle, Aunt, Cousin, Nephew, Niece.",
+      "pedagogical_intent": "Debunk Vietnamese over-complication with the Universal Umbrella and resolve the Nephew/Niece gender challenge."
+    },
+    {
+      "stage_order": 5,
+      "stage_name": "PRONUNCIATION_LAB",
+      "instructional_focus": "The /ð/ sound in father/mother/brother, and final /s/, /z/ endings in parents/cousins.",
+      "pedagogical_intent": "Phonological precision check to prevent fossilized pronunciation errors."
+    },
+    {
+      "stage_order": 6,
+      "stage_name": "INTERACTIVE_CHALLENGE_1",
+      "instructional_focus": "Flash Quiz: 'Who is this?' with a 3-second hand countdown.",
+      "pedagogical_intent": "Formative retrieval practice under timed condition; active recall of immediate kinship terms."
+    },
+    {
+      "stage_order": 7,
+      "stage_name": "INTERACTIVE_CHALLENGE_2",
+      "instructional_focus": "The Family Detective: Deductive logic riddle on the tree.",
+      "pedagogical_intent": "Deductive cognitive processing; tests relational comprehension (e.g. My father's brother's daughter = my cousin)."
+    },
+    {
+      "stage_order": 8,
+      "stage_name": "ANCHOR_RECAP",
+      "instructional_focus": "Full family tree summary anchor with color-coded memory takeaway.",
+      "pedagogical_intent": "Long-term memory consolidation and celebration of mastery."
+    }
+  ],
+  "examples_and_non_examples": [
+    {
+      "concept_ref": "parents",
+      "positive_examples": [
+        "John and Mary are Liam's parents.",
+        "My parents live in Hanoi."
+      ],
+      "negative_counter_examples": [
+        "Liam's uncle and aunt are his parents. (FALSE: They are relatives, not parents!)",
+        "Liam has three parents. (FALSE: In standard biological kinship, you have two parents.)"
+      ],
+      "boundary_distinction_note": "Parents refers EXCLUSIVELY to father and mother together."
+    },
+    {
+      "concept_ref": "siblings",
+      "positive_examples": [
+        "Liam has two siblings: one brother and one sister.",
+        "Do you have any siblings?"
+      ],
+      "negative_counter_examples": [
+        "Liam and his cousins are siblings. (FALSE: Cousins are not siblings!)",
+        "My dog and I are siblings. (FALSE: Siblings must be human children sharing the same parents.)"
+      ],
+      "boundary_distinction_note": "Siblings strictly refers to brothers and sisters who share the same parents."
+    },
+    {
+      "concept_ref": "cousin",
+      "positive_examples": [
+        "Sarah is Liam's cousin. She is 12 years old.",
+        "David is also Liam's cousin. He is 20 years old."
+      ],
+      "negative_counter_examples": [
+        "Sarah is Liam's cousin sister. (INCORRECT: In English, never say 'cousin sister' or 'cousin brother'!)",
+        "Sarah is Liam's aunt. (FALSE: Aunt is the parent's sister, cousin is the aunt's child.)"
+      ],
+      "boundary_distinction_note": "'Cousin' is completely gender-neutral and age-neutral in English."
+    },
+    {
+      "concept_ref": "nephew_vs_niece",
+      "positive_examples": [
+        "Liam has one nephew (his brother's son) and one niece (his sister's daughter)."
+      ],
+      "negative_counter_examples": [
+        "Liam has a female nephew. (FALSE: A nephew is ALWAYS male!)",
+        "Liam's brother's son is his cousin. (FALSE: Brother's son is nephew, not cousin!)"
+      ],
+      "boundary_distinction_note": "Nephew = Male child of sibling; Niece = Female child of sibling."
+    }
+  ],
+  "teaching_strategy": {
+    "primary_method": "CONCRETE_REPRESENTATIONAL_ABSTRACT_WITH_ACTIVE_RECALL",
+    "visual_analogies": [
+      "The Universal Kinship Umbrella: One English word covers multiple Vietnamese titles.",
+      "The Tree Branching Analogy: Generations stacked vertically like tree tiers.",
+      "The Orange Collective Brackets: Uniting individual members into collective nouns."
+    ],
+    "decision_rules_for_learner": [
+      "If it's the child of your brother/sister: Boy = Nephew, Girl = Niece.",
+      "If it's the brother/sister of your parents: Male = Uncle, Female = Aunt.",
+      "If it's the child of your uncle/aunt: Always COUSIN (no gender suffix!).",
+      "If they are both your father and mother: PARENTS (with final -s!)."
+    ]
+  },
+  "knowledge_check": {
+    "assessment_type": "TIMED_INTERACTIVE_RETRIEVAL",
+    "sample_questions": [
+      {
+        "question_id": "Q1",
+        "format": "FLASH_IDENTIFICATION",
+        "prompt": "Look at the tree: Lisa is Liam's sister. John is their father. What is Lisa to John?",
+        "options": ["Sister", "Daughter", "Aunt"],
+        "correct_answer": "Daughter",
+        "feedback_explanation": "Correct! Lisa is John's DAUGHTER, and Liam is John's SON!"
+      },
+      {
+        "question_id": "Q2",
+        "format": "FAMILY_DETECTIVE_RIDDLE",
+        "prompt": "Riddle Time: 'My father has a brother named Tom. Uncle Tom has a son named Lucas. Who is Lucas to me?'",
+        "options": ["Brother", "Nephew", "Cousin"],
+        "correct_answer": "Cousin",
+        "feedback_explanation": "Brilliant! Your uncle's son is your COUSIN!"
+      }
+    ]
+  },
+  "content_boundaries": {
+    "forbidden_extensions": [
+      "No in-law relationships (father-in-law, mother-in-law, brother-in-law)",
+      "No step-family or half-sibling terminology",
+      "No distant multi-tier relatives (great-grandparents, second cousins)"
+    ],
+    "deferred_to_future_lessons": [
+      "Marital status vocabulary (married, divorced, single, widowed)",
+      "Describing physical appearances and personality traits of family members"
+    ]
+  },
+  "approval_gate": {
+    "gate_id": "G02",
+    "state": "PENDING_USER_APPROVAL"
+  }
+}
+

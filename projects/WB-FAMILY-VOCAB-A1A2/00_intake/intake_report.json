@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "WB-FAMILY-VOCAB-A1A2",
+  "intake_mode": "COLD_START",
+  "audit_timestamp": "2026-11-09T23:55:30+07:00",
+  "auditor_role": "S00-project-intake-audit",
+  "overall_status": "PASS",
+  "source_inventory": [
+    {
+      "source_id": "SRC_USER_PROMPT",
+      "file_path": "chat_session_input",
+      "source_type": "USER_INSTRUCTION",
+      "version_tag": "v1.0",
+      "authority_tier": 1,
+      "cefr_alignment": "A1-A2",
+      "integrity_status": "VALID",
+      "extracted_data": {
+        "topic": "Từ vựng chủ đề family",
+        "duration_range": "5 - 10 minutes",
+        "requirements": ["Có bài tập luyện tập", "Đối tượng: A1 - A2"]
+      }
+    },
+    {
+      "source_id": "SRC_MASTER_PROMPT",
+      "file_path": "whiteboard_master_prompt_scene_generator_v2.1.md",
+      "source_type": "PRODUCTION_STANDARD",
+      "version_tag": "v2.1",
+      "authority_tier": 2,
+      "integrity_status": "VALID"
+    },
+    {
+      "source_id": "SRC_STYLE_BIBLE",
+      "file_path": "whiteboard_visual_style_bible_v1.0_accepted.md",
+      "source_type": "PRODUCTION_STANDARD",
+      "version_tag": "v1.0",
+      "authority_tier": 2,
+      "integrity_status": "VALID"
+    },
+    {
+      "source_id": "SRC_INVARIANTS",
+      "file_path": ".agents/rules/whiteboard-production-invariants.md",
+      "source_type": "PRODUCTION_STANDARD",
+      "version_tag": "v1.0",
+      "authority_tier": 2,
+      "integrity_status": "VALID"
+    }
+  ],
+  "precedence_rules_applied": [
+    "Tier 1 (User Request) sets Topic, Duration, Target Level, Practice Requirement.",
+    "Tier 2 (Workspace Standards) enforces Master Prompt v2.1, Typography Lock, Zero-contact Ink-Islands, Subtitle Safe Zone."
+  ],
+  "conflicts_detected": [],
+  "missing_prerequisites": [],
+  "downstream_readiness": {
+    "ready_for_s01": true,
+    "blocking_issues_count": 0
+  }
+}
+

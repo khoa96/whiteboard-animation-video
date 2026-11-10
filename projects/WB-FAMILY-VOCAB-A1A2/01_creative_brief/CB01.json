@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.1.0",
+  "project_id": "WB-FAMILY-VOCAB-A1A2",
+  "artifact_id": "CB01",
+  "version": "1.0",
+  "status": "approved",
+  "part_a_user_inputs": {
+    "topic": "Từ vựng chủ đề gia đình (Family Vocabulary)",
+    "working_title": "Family Members & Relatives: Essential Vocabulary & Interactive Practice (A1–A2)",
+    "primary_purpose": "TEACH_RULE_AND_VOCABULARY",
+    "target_audience": {
+      "level": "A1-A2",
+      "l1_background": "Vietnamese",
+      "age_group": "Teens and Adults (EFL Learners)"
+    },
+    "format": {
+      "platform": "YouTube / LMS Educational Explainer",
+      "aspect_ratio": "16:9",
+      "resolution": "1920x1080"
+    },
+    "target_duration_seconds": 400,
+    "duration_range_seconds": [300, 600],
+    "presentation_style": {
+      "voice_id": "david",
+      "tone": "Warm, encouraging, pedagogically clear, articulate",
+      "accent": "Standard US / General English",
+      "pacing_target_wpm": 135
+    },
+    "user_constraints": [
+      "Must include dedicated interactive practice exercises (bài tập luyện tập)",
+      "Strictly calibrated for A1-A2 comprehension level"
+    ]
+  },
+  "part_b_ai_pedagogical_proposal": {
+    "curricular_fit_analysis": "For A1-A2 learners, family vocabulary is a cornerstone communicative topic. A1 requires mastering immediate/nuclear family members (parents, siblings, children). A2 extends to 3-generation kinship (grandparents, grandchildren) and relational relatives (uncles, aunts, cousins, nephews, nieces). Combining vocabulary acquisition with sentence frames ('This is my...', 'He is her...') and 2 structured micro-practice games establishes immediate speaking and listening competence.",
+    "core_cognitive_obstacle": "Vietnamese L1 interference presents two severe friction points: (1) Asymmetry of kinship systems: Vietnamese distinguishes relatives by age and maternal/paternal lineage ('bác, chú, cô, dì, cậu, thím, mợ'), whereas English collapses these into broad gendered categories ('uncle', 'aunt') or gender-neutral ('cousin'). (2) Pronunciation and phonological stumbling blocks: Voiced dental fricative /ð/ in 'father, mother, brother', final /s/ in 'parents', and distinction between /s/ and /z/ in 'niece' vs 'nephew/cousin'.",
+    "recommended_didactic_strategy": {
+      "approach": "VISUAL_FAMILY_TREE_WITH_CRA_FLOW",
+      "pedagogical_rationale": "A 3-generation Visual Family Tree acts as an invariant cognitive anchor. Learners do not memorize isolated word lists; they observe spatial relationships on the whiteboard (Generation 1: Grandparents -> Generation 2: Parents, Uncle/Aunt -> Generation 3: Self, Sibling, Cousin). The lesson uses Concrete-Representational-Abstract (CRA) staging, transitioning from character avatars into structural branches, then into relational linguistic formulas, culminating in interactive game challenges."
+    },
+    "scope_boundaries": {
+      "in_scope": [
+        "Generation 1: grandfather, grandmother, grandparents",
+        "Generation 2: father, mother, parents, uncle, aunt",
+        "Generation 3: brother, sister, siblings, son, daughter, children, cousin, nephew, niece",
+        "Collective/Plural terms: parents, grandparents, children, siblings, relatives",
+        "Pronunciation spotlights on /ð/ sound (father, mother, brother) and final consonants",
+        "Interactive Practice 1: 'Who is this?' (Visual Identification Challenge)",
+        "Interactive Practice 2: 'Family Tree Riddle' (Relational Deduction Challenge)"
+      ],
+      "out_of_scope_exclusions": [
+        "Multi-tier in-laws (father-in-law, sister-in-law) — deferred to B1 to prevent cognitive overload",
+        "Blended/step-family terms (step-father, half-brother) — excluded for clarity",
+        "Distant relatives (great-grandparents, second cousin once removed) — strictly forbidden"
+      ]
+    },
+    "recommended_macro_structure": [
+      "Module 1: Hook & The Family Tree Anchor (~45s) — Introduction to Liam's family",
+      "Module 2: The Nuclear Family (~65s) — Parents, siblings, children, and collective terms",
+      "Module 3: The Grandparents & Three Generations (~50s) — Grandparents, grandchildren",
+      "Module 4: Extended Relatives & The L1 Trap (~75s) — Uncle, aunt, cousin, nephew, niece (debunking Vietnamese over-complication)",
+      "Module 5: Pronunciation Lab (~35s) — The secret of the /ð/ sound in father/mother/brother",
+      "Module 6: Interactive Practice Challenge 1 (~55s) — Flash Quiz: Name the relative before the 3-second hand countdown",
+      "Module 7: Interactive Practice Challenge 2 (~50s) — The Family Detective Riddle",
+      "Module 8: Summary Anchor Rule (~25s) — Visual recap of the completed tree"
+    ],
+    "visual_cognitive_accelerators": [
+      {
+        "concept": "Family Tree Hierarchy",
+        "visual_metaphor": "Top-to-bottom branch diagram with distinct horizontal generation tiers (Gen 1, Gen 2, Gen 3)",
+        "ink_color_strategy": "Black outlines for avatars; Cobalt Blue #2563EB for male titles; Teal #0D9488 for female titles; Warm Orange #EA580C for connector arrows and collective bracket labels"
+      },
+      {
+        "concept": "Collective Plural Brackets",
+        "visual_metaphor": "Hand drawing a wide bracket uniting Father + Mother labeled 'PARENTS', and Brother + Sister labeled 'SIBLINGS'",
+        "ink_color_strategy": "Orange bracket #EA580C with crisp black typography"
+      },
+      {
+        "concept": "Interactive 3-Second Visual Countdown Hand",
+        "visual_metaphor": "Marker draws a ticking clock / '3... 2... 1...' countdown with a prominent question mark, followed by hand revealing the correct answer badge",
+        "ink_color_strategy": "Orange alert circle with vibrant checkmark reveal"
+      }
+    ]
+  },
+  "scope_duration_veto_analysis": {
+    "status": "APPROVED",
+    "target_duration_seconds": 400,
+    "core_lexical_items_count": 16,
+    "practice_items_count": 4,
+    "seconds_per_concept_ratio": 20.0,
+    "wpm_budget": 135,
+    "verdict": "Optimal pedagogical density. Allows adequate hand-drawing time (2-3s per icon), unhurried pronunciation modeling, and full 3-second thinking pauses for learners during exercises."
+  },
+  "decisions_log": [
+    {"decision_id": "D01", "decision": "Fixed target duration at 400s (~6m40s), perfectly within user's 5-10m range.", "status": "CONFIRMED"},
+    {"decision_id": "D02", "decision": "Included 2 distinct interactive practice modules (Flash Identification + Relational Riddle) to satisfy practice mandate.", "status": "CONFIRMED"},
+    {"decision_id": "D03", "decision": "Excluded complex in-laws to keep cognitive focus sharp for A1-A2.", "status": "CONFIRMED"}
+  ],
+  "risks_and_mitigations": [
+    {
+      "risk": "Learners getting confused by Vietnamese paternal vs maternal uncle/aunt distinctions.",
+      "mitigation": "Scene specifically illustrates that English simplifies all brothers of parents into 'Uncle' and all sisters into 'Aunt', shown with side-by-side connector arrows."
+    }
+  ],
+  "approval_gate": {
+    "gate_id": "G01",
+    "state": "PENDING_USER_APPROVAL"
+  }
+}
+

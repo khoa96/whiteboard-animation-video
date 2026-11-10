@@ -1,0 +1,26 @@
+project_id: WB-FAMILY-VOCAB-A1A2
+title: "English Family Vocabulary & Interactive Practice (A1-A2)"
+created_at: "2026-11-09T23:55:00+07:00"
+target_audience:
+  level: "A1-A2"
+  l1_background: "Vietnamese"
+target_duration_range_seconds: [300, 600]
+planned_duration_seconds: 400
+current_phase: "PHASE_2_LESSON_DESIGN"
+active_skill: "lesson-design-architect"
+gates:
+  G00_intake: "APPROVED"
+  G01_creative_brief: "APPROVED"
+  G02_lesson_design: "IN_REVIEW"
+  G03_script_blueprint: "NOT_STARTED"
+  G04_beat_plan: "NOT_STARTED"
+  G05_narration_and_matrix: "NOT_STARTED"
+  G06_image_prompts: "NOT_STARTED"
+  G07_cv_manifest: "NOT_STARTED"
+  G08_timeline: "NOT_STARTED"
+  G09_readiness: "NOT_STARTED"
+standards_locked:
+  master_prompt: "whiteboard_master_prompt_scene_generator_v2.1.md"
+  style_bible: "whiteboard_visual_style_bible_v1.0_accepted.md"
+  invariants: ".agents/rules/whiteboard-production-invariants.md"
+
